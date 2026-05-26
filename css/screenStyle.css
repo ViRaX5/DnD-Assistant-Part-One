@@ -1,0 +1,84 @@
+* {
+  margin: 0;
+  padding: 0;
+}
+
+/* Wrapper */
+
+#wrapper {
+  background-color: #c9d3df;
+  width: 1920px;
+  height: 1080px;
+
+  padding: 12px 8px;
+
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+}
+
+/* Left Panel */
+
+#left-panel {
+  background-color: white;
+  width: 366px;
+  height: 1080px;
+}
+
+#player-info {
+  background-color: aquamarine;
+  width: 366px;
+  height: 587px;
+}
+
+#equipment-and-traits {
+  background-color: blue;
+  width: 366px;
+  height: 460px;
+}
+
+/* Main */
+
+#main {
+  background-color: aqua;
+  width: 1172px;
+  height: 1080px;
+
+  display: flex;
+  flex-direction: column;
+  gap: 23px;
+  justify-content: center;
+  align-items: center;
+}
+
+#main-map {
+  background-color: aliceblue;
+  width: 906px;
+  height: 906px;
+}
+
+#action-bar {
+  background-color: brown;
+  width: 1172px;
+  height: 85px;
+}
+
+/* Right Panel */
+
+#right-panel {
+  background-color: white;
+  width: 345px;
+  height: 1080px;
+}
+
+#dice-roller {
+  background-color: chartreuse;
+  width: 345px;
+  height: 451px;
+}
+
+#chat-box {
+  background-color: blueviolet;
+  width: 345px;
+  height: 599px;
+}
