@@ -1,6 +1,24 @@
+@import url("https://fonts.googleapis.com/css2?family=MedievalSharp&display=swap");
+:root {
+  --accent-color: #e2e8f0;
+  --base-color: #c9d3df;
+  --text-color-base: #000000;
+  --text-color-alt: #63748c;
+  --input-color: #f1f5f9;
+}
+
 * {
-  margin: 0;
-  padding: 0;
+  margin: 0px;
+  padding: 0px;
+
+  font-family: MedievalSharp, sans-serif;
+  font-size: clamp(14px, 1vw + 12px, 22px);
+  color: var(--text-color-base);
+  text-align: center;
+}
+
+ul {
+  list-style: none;
 }
 
 /* Wrapper */
@@ -11,25 +29,127 @@
   height: 1080px;
 
   padding: 12px 8px;
+  margin: auto;
 
   display: flex;
   flex-direction: row;
   justify-content: space-between;
 }
 
-/* Left Panel */
+/*   Left Panel */
 
 #left-panel {
-  background-color: white;
-  width: 366px;
-  height: 1080px;
+  background-color: black;
+  /* width: 366px;
+    height: 1080px; */
+
+  display: flex;
+  flex-direction: column;
+  gap: 9px;
+  justify-content: center;
+  align-items: center;
 }
 
+/*      Player Info */
+
 #player-info {
-  background-color: aquamarine;
+  background-color: #fdfbf7;
+  border: 1px solid #8e9eb5;
+  border-radius: 28px;
   width: 366px;
   height: 587px;
+
+  padding: 7px 14px;
+
+  display: flex;
+  flex-direction: column;
 }
+
+/*          Player Info Header */
+#player-info-header {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: space-between;
+}
+
+#player-name {
+  font-size: 24px;
+  color: #000000;
+}
+
+#player-character-summary {
+  font-size: 12px;
+  color: #556985;
+}
+
+#xp-title {
+  font-size: 14px;
+  color: #91a1b7;
+}
+
+#xp-amount {
+  font-size: 12px;
+  color: #000000;
+}
+
+/*          Player Info Main */
+#player-info-main {
+  display: flex;
+  flex-direction: row;
+}
+
+/*              Player Info Main Left */
+#player-info-main-left {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.attribute-container {
+  background-color: #e2e8f0;
+  border: 1px solid #ced8e3;
+  border-radius: 12px;
+  width: 60px;
+  height: 65px;
+
+  padding: 5px;
+
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  /* gap: 7px; */
+}
+
+.modifier-amount {
+  font-size: 20px;
+  color: #000000;
+}
+
+.attribute-name-title {
+  font-size: 11px;
+  color: #758297;
+}
+
+.attribute-amount-container {
+  background-color: #ffffff;
+  border: 1px solid #d5dde6;
+  border-radius: 21px;
+}
+
+.attribute-amount {
+  font-size: 11px;
+  color: #000000;
+}
+
+/*          Player Info Footer */
+#player-info-main {
+  display: flex;
+  flex-direction: column;
+}
+
+/*      Equipment and Traits */
 
 #equipment-and-traits {
   background-color: blue;
@@ -37,12 +157,12 @@
   height: 460px;
 }
 
-/* Main */
+/*  Main */
 
 #main {
   background-color: aqua;
-  width: 1172px;
-  height: 1080px;
+  /* width: 1172px;
+    height: 1080px; */
 
   display: flex;
   flex-direction: column;
@@ -63,12 +183,18 @@
   height: 85px;
 }
 
-/* Right Panel */
+/*  Right Panel */
 
 #right-panel {
   background-color: white;
-  width: 345px;
-  height: 1080px;
+  /* width: 345px;
+    height: 1080px; */
+
+  display: flex;
+  flex-direction: column;
+  gap: 9px;
+  justify-content: center;
+  align-items: center;
 }
 
 #dice-roller {

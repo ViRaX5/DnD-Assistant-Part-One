@@ -23,7 +23,122 @@
   <body>
     <div id="wrapper" class="container-fluid">
       <div id="left-panel">
-        <div id="player-info"></div>
+        <div id="player-info">
+          <div id="player-info-header">
+            <ul>
+              <li><h3 id="player-name">Gamur</h3></li>
+              <li>
+                <h4 id="player-character-summary">Human Fighter Level 3</h4>
+              </li>
+            </ul>
+            <ul>
+              <li><h4 id="xp-title">XP</h4></li>
+              <li><h4 id="xp-amount">1,200</h4></li>
+            </ul>
+          </div>
+          <div id="player-info-main">
+            <div id="player-info-main-left">
+              <div class="attribute-container">
+                <h4 class="attribute-name-title">STR</h4>
+                <h3 id="strength-modifier" class="modifier-amount">+3</h3>
+                <div class="attribute-amount-container">
+                  <h3 id="strength-amount" class="attribute-amount">16</h3>
+                </div>
+              </div>
+              <div class="attribute-container">
+                <h4 class="attribute-name-title">DEX</h4>
+                <h3 id="dexterity-modifier" class="modifier-amount">+1</h3>
+                <div class="attribute-amount-container">
+                  <h3 id="dexterity-amount" class="attribute-amount">12</h3>
+                </div>
+              </div>
+              <div class="attribute-container">
+                <h4 class="attribute-name-title">CON</h4>
+                <h3 id="constituition-modifier" class="modifier-amount">+2</h3>
+                <div class="attribute-amount-container">
+                  <h3 id="constituition-amount" class="attribute-amount">15</h3>
+                </div>
+              </div>
+              <div class="attribute-container">
+                <h4 class="attribute-name-title">INT</h4>
+                <h3 id="intelligence-modifier" class="modifier-amount">0</h3>
+                <div class="attribute-amount-container">
+                  <h3 id="intelligence-amount" class="attribute-amount">10</h3>
+                </div>
+              </div>
+              <div class="attribute-container">
+                <h4 class="attribute-name-title">WIS</h4>
+                <h3 id="wisdom-modifier" class="modifier-amount">+1</h3>
+                <div class="attribute-amount-container">
+                  <h3 id="wisdom-amount" class="attribute-amount">13</h3>
+                </div>
+              </div>
+              <div class="attribute-container">
+                <h4 class="attribute-name-title">CHA</h4>
+                <h3 id="charisma-modifier" class="modifier-amount">-1</h3>
+                <div class="attribute-amount-container">
+                  <h3 id="charisma-amount" class="attribute-amount">13</h3>
+                </div>
+              </div>
+            </div>
+            <div id="player-info-main-right">
+              <div id="stats-top-container">
+                <div class="stat-container">
+                  <h4 class="attribute-name-title">AC</h4>
+                  <h3 id="armor-class-amount" class="modifier-amount">18</h3>
+                </div>
+                <div class="stat-container">
+                  <h4 class="attribute-name-title">INIT</h4>
+                  <h3 id="initiative-amount" class="modifier-amount">+1</h3>
+                </div>
+                <div class="stat-container">
+                  <h4 class="attribute-name-title">SPD</h4>
+                  <h3 id="speed-amount" class="modifier-amount">30</h3>
+                </div>
+              </div>
+              <div id="hit-points-container" class="stats-middle-container">
+                <div id="hit-points-container-top">
+                  <h4 id="hit-points-title">CURRENT HIT POINTS</h4>
+                  <h4 id="hit-point-max">MAX: 28</h4>
+                </div>
+                <div id="hit-points-container-bottom">
+                  <h2 id="hit-points-amount" class="modifier-amount">22</h2>
+                </div>
+              </div>
+              <div id="stats-bottom-container">
+                <ul>
+                  <li id="athletics" class="skill-modifier">
+                    +3 Athletics(STR)
+                  </li>
+                  <li id="acrobatics" class="skill-modifier">
+                    +1 Acrobatics(DEX)
+                  </li>
+                  <li id="arcana" class="skill-modifier">0 Arcana(INT)</li>
+                  <li id="history" class="skill-modifier">+1 History(INT)</li>
+                  <li id="perception" class="skill-modifier">
+                    +3 Perception(WIS)
+                  </li>
+                  <li id="persuasion" class="skill-modifier">
+                    -1 Persuasion(CHA)
+                  </li>
+                  <li id="stealth" class="skill-modifier">+1 Stealth(DEX)</li>
+                </ul>
+              </div>
+            </div>
+          </div>
+          <div id="player-info-footer">
+            <div id="longsword-attack" class="attack-container">
+              <h4 class="weapon-name">Longsword</h4>
+              <h4 class="attack-bonus">+5</h4>
+              <h4 class="damage-dice">1d8+3</h4>
+            </div>
+            <div id="javelin-attack" class="attack-container">
+              <h4 class="weapon-name">Javelin</h4>
+              <h4 class="attack-bonus">+5</h4>
+              <h4 class="damage-dice">1d6+3</h4>
+            </div>
+          </div>
+        </div>
         <div id="equipment-and-traits"></div>
       </div>
       <div id="main">
