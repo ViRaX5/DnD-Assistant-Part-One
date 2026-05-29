@@ -21,6 +21,15 @@ ul {
   list-style: none;
 }
 
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+  margin: 0;
+}
+
 /* Wrapper */
 
 #wrapper {
@@ -69,34 +78,55 @@ ul {
 #player-info-header {
   display: flex;
   flex-direction: row;
-  align-items: center;
+  align-items: flex-end;
   justify-content: space-between;
+
+  padding-bottom: 3px;
+}
+
+#player-info-header-left {
+  display: flex;
+  flex-direction: column;
+}
+
+#player-info-header-right {
+  display: flex;
+  flex-direction: column;
 }
 
 #player-name {
   font-size: 24px;
   color: #000000;
+  text-align: left;
 }
 
 #player-character-summary {
   font-size: 12px;
   color: #556985;
+  text-align: left;
 }
 
 #xp-title {
   font-size: 14px;
   color: #91a1b7;
+  text-align: right;
 }
 
 #xp-amount {
   font-size: 12px;
   color: #000000;
+  text-align: right;
 }
 
 /*          Player Info Main */
 #player-info-main {
+  border-top: 2px solid #c7d2df;
+  border-bottom: 2px solid #c7d2df;
+
   display: flex;
   flex-direction: row;
+
+  padding: 9px 0px;
 }
 
 /*              Player Info Main Left */
@@ -119,7 +149,6 @@ ul {
   flex-direction: column;
   justify-content: center;
   align-items: center;
-  /* gap: 7px; */
 }
 
 .modifier-amount {
@@ -136,6 +165,8 @@ ul {
   background-color: #ffffff;
   border: 1px solid #d5dde6;
   border-radius: 21px;
+  width: 29px;
+  height: 16px;
 }
 
 .attribute-amount {
@@ -143,18 +174,240 @@ ul {
   color: #000000;
 }
 
-/*          Player Info Footer */
-#player-info-main {
+/*              Player Info Main Right */
+#player-info-main-right {
   display: flex;
   flex-direction: column;
+  gap: 8px;
+
+  padding: 10px 15px;
+}
+
+#stats-top-container {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-evenly;
+}
+
+.stat-container {
+  background-color: #ffffff;
+  border: 2px solid #c9d3e0;
+  border-radius: 11px;
+  width: 77px;
+  height: 48px;
+
+  padding-top: 5px;
+}
+
+#hit-points-container {
+  background-color: #ffffff;
+  border: 2px solid #c9d3e0;
+  border-radius: 11px;
+  width: 259px;
+  height: 81px;
+
+  padding: 7px;
+}
+
+#hit-points-container-top {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+
+  border-bottom: 1px solid #c7d2df;
+  padding-bottom: 6px;
+}
+
+#hit-points-container-top > h4 {
+  font-size: 13px;
+  color: #a5b1c2;
+}
+
+#hit-points-container-bottom {
+  padding-top: 5px;
+}
+
+#hit-points-amount {
+  font-size: 32px;
+}
+
+/* Skill Toggle */
+.skill-toggle input[type="checkbox"] {
+  /* Visually hide the native checkbox */
+  position: absolute;
+  opacity: 0;
+  cursor: pointer;
+  height: 0;
+  width: 0;
+}
+
+.skill-toggle label {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  color: #63748c;
+  font-size: 11px;
+  cursor: pointer; /* Makes it clear you can click the whole row */
+  user-select: none; /* Prevents text highlighting when clicking rapidly */
+}
+
+.skill-toggle label::before {
+  content: "";
+  display: inline-block;
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  border: 1px solid #cbd5e1;
+  background-color: transparent;
+  flex-shrink: 0;
+  transition: all 0.2s ease;
+}
+.modifier {
+  display: inline-block;
+  font-size: 11px;
+  color: #63748c;
+  width: 9px;
+  text-align: right;
+}
+
+.skill-toggle input[type="checkbox"]:checked + label::before {
+  /* When the input is checked, find the adjacent label and style its ::before */
+  background-color: #cdd3df;
+  border-color: #cdd3df;
+}
+
+.skill-toggle input[type="checkbox"]:checked + label {
+  color: #000000;
+}
+
+/*          Player Info Footer */
+#player-info-footer {
+  display: flex;
+  flex-direction: column;
+  align-items: end;
+  gap: 10px;
+
+  padding: 6px 0px;
+}
+
+.attack-container {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+
+  background-color: #f1f5f9;
+  border-radius: 12px;
+  width: 258px;
+  height: 22px;
+
+  padding: 2px 5px;
+}
+
+.attack-container > span {
+  font-size: 15px;
+}
+
+.weapon-name {
+  flex: 1; /* Takes up all available space on the left */
+  text-align: left; /* Aligns text to the left edge */
+}
+
+.damage-dice {
+  flex: 1; /* Takes up the exact same amount of space on the right */
+  text-align: right; /* Aligns text to the right edge */
+}
+
+/* --- Perfecting the Circle --- */
+.attack-bonus {
+  flex: 0 0 auto; /* Prevents the circle from squishing or growing */
+
+  /* Flexbox to perfectly center the +5 inside the circle */
+  display: flex;
+  justify-content: center;
+  align-items: center;
+
+  width: 20px; /* Fixed width */
+  height: 20px; /* Fixed height matching width */
+  border-radius: 50%;
+
+  color: #888c93;
+  background-color: #e2e8f0;
+  font-size: 15px;
 }
 
 /*      Equipment and Traits */
 
 #equipment-and-traits {
-  background-color: blue;
+  background-color: #fdfbf7;
+  border: 1px solid #8e9eb5;
+  border-radius: 28px;
   width: 366px;
   height: 460px;
+
+  padding: 15px;
+
+  display: flex;
+  flex-direction: column;
+}
+
+#equipment-and-traits-top > span {
+  font-size: 24px;
+  color: #556985;
+
+  display: flex;
+  align-items: start;
+
+  padding-bottom: 10px;
+}
+
+#equipment-and-traits-middle {
+  display: flex;
+  flex-direction: column;
+  align-items: start;
+  gap: 13px;
+
+  padding: 11px 0px;
+  border-top: 2px solid #c7d2df;
+  border-bottom: 2px solid #c7d2df;
+}
+
+.trait {
+  display: flex;
+  flex-direction: column;
+  align-items: start;
+  gap: 5px;
+}
+
+.trait > span {
+  font-size: 14px;
+}
+
+.trait-description {
+  color: #556985;
+}
+
+#equipment-and-traits-bottom {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+
+  padding-top: 13px;
+}
+
+.equipment {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.equipment-name {
+  font-size: 14px;
+}
+
+.equipment-modifier {
+  font-size: 16px;
+  color: #556985;
 }
 
 /*  Main */

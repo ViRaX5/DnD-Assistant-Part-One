@@ -3,7 +3,6 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <link rel="stylesheet" href="css/screenStyle.css" />
     <link
       rel="stylesheet"
       href="node_modules/bootstrap/dist/css/bootstrap.min.css"
@@ -18,6 +17,7 @@
       integrity="sha384-G/EV+4j2dNv+tEPo3++6LCgdCROaejBqfUeNjuKAiuXbjrxilcCdDz6ZAVfHWe1Y"
       crossorigin="anonymous"
     ></script>
+    <link rel="stylesheet" href="css/screenStyle.css" />
     <title>DnD Assistant</title>
   </head>
   <body>
@@ -25,16 +25,14 @@
       <div id="left-panel">
         <div id="player-info">
           <div id="player-info-header">
-            <ul>
-              <li><h3 id="player-name">Gamur</h3></li>
-              <li>
-                <h4 id="player-character-summary">Human Fighter Level 3</h4>
-              </li>
-            </ul>
-            <ul>
-              <li><h4 id="xp-title">XP</h4></li>
-              <li><h4 id="xp-amount">1,200</h4></li>
-            </ul>
+            <div id="player-info-header-left">
+              <h3 id="player-name">Gamur</h3>
+              <h4 id="player-character-summary">Human Fighter Level 3</h4>
+            </div>
+            <div id="player-info-header-right">
+              <h4 id="xp-title">XP</h4>
+              <h4 id="xp-amount">1,200</h4>
+            </div>
           </div>
           <div id="player-info-main">
             <div id="player-info-main-left">
@@ -96,7 +94,7 @@
                   <h3 id="speed-amount" class="modifier-amount">30</h3>
                 </div>
               </div>
-              <div id="hit-points-container" class="stats-middle-container">
+              <div id="hit-points-container">
                 <div id="hit-points-container-top">
                   <h4 id="hit-points-title">CURRENT HIT POINTS</h4>
                   <h4 id="hit-point-max">MAX: 28</h4>
@@ -106,40 +104,134 @@
                 </div>
               </div>
               <div id="stats-bottom-container">
-                <ul>
-                  <li id="athletics" class="skill-modifier">
-                    +3 Athletics(STR)
-                  </li>
-                  <li id="acrobatics" class="skill-modifier">
-                    +1 Acrobatics(DEX)
-                  </li>
-                  <li id="arcana" class="skill-modifier">0 Arcana(INT)</li>
-                  <li id="history" class="skill-modifier">+1 History(INT)</li>
-                  <li id="perception" class="skill-modifier">
-                    +3 Perception(WIS)
-                  </li>
-                  <li id="persuasion" class="skill-modifier">
-                    -1 Persuasion(CHA)
-                  </li>
-                  <li id="stealth" class="skill-modifier">+1 Stealth(DEX)</li>
-                </ul>
+                <fieldset id="skill-list">
+                  <div class="skill-toggle">
+                    <input
+                      type="checkbox"
+                      id="athletics"
+                      name="skills"
+                      value="athletics"
+                    />
+                    <label for="athletics">
+                      <span class="modifier">+3</span> Athletics (STR)
+                    </label>
+                  </div>
+                  <div class="skill-toggle">
+                    <input
+                      type="checkbox"
+                      id="acrobatics"
+                      name="skills"
+                      value="acrobatics"
+                    />
+                    <label for="acrobatics">
+                      <span class="modifier">+1</span> Acrobatics(DEX)
+                    </label>
+                  </div>
+                  <div class="skill-toggle">
+                    <input
+                      type="checkbox"
+                      id="arcana"
+                      name="skills"
+                      value="arcana"
+                    />
+                    <label for="arcana">
+                      <span class="modifier">0</span> Arcana(INT)
+                    </label>
+                  </div>
+                  <div class="skill-toggle">
+                    <input
+                      type="checkbox"
+                      id="history"
+                      name="skills"
+                      value="history"
+                    />
+                    <label for="history">
+                      <span class="modifier">+1</span> History(INT)
+                    </label>
+                  </div>
+                  <div class="skill-toggle">
+                    <input
+                      type="checkbox"
+                      id="perception"
+                      name="skills"
+                      value="perception"
+                    />
+                    <label for="perception">
+                      <span class="modifier">+3</span> Perception(WIS)
+                    </label>
+                  </div>
+                  <div class="skill-toggle">
+                    <input
+                      type="checkbox"
+                      id="persuasion"
+                      name="skills"
+                      value="persuasion"
+                    />
+                    <label for="persuasion">
+                      <span class="modifier">-1</span> Persuasion(CHA)
+                    </label>
+                  </div>
+                  <div class="skill-toggle">
+                    <input
+                      type="checkbox"
+                      id="stealth"
+                      name="skills"
+                      value="stealth"
+                    />
+                    <label for="stealth">
+                      <span class="modifier">+1</span> Stealth(DEX)
+                    </label>
+                  </div>
+                </fieldset>
               </div>
             </div>
           </div>
           <div id="player-info-footer">
             <div id="longsword-attack" class="attack-container">
-              <h4 class="weapon-name">Longsword</h4>
-              <h4 class="attack-bonus">+5</h4>
-              <h4 class="damage-dice">1d8+3</h4>
+              <span class="weapon-name">Longsword</span>
+              <span class="attack-bonus">+5</span>
+              <span class="damage-dice">1d8+3</span>
             </div>
             <div id="javelin-attack" class="attack-container">
-              <h4 class="weapon-name">Javelin</h4>
-              <h4 class="attack-bonus">+5</h4>
-              <h4 class="damage-dice">1d6+3</h4>
+              <span class="weapon-name">Javelin</span>
+              <span class="attack-bonus">+5</span>
+              <span class="damage-dice">1d6+3</span>
             </div>
           </div>
         </div>
-        <div id="equipment-and-traits"></div>
+        <div id="equipment-and-traits">
+          <div id="equipment-and-traits-top">
+            <span>EQUIPMENT & TRAITS</span>
+          </div>
+          <div id="equipment-and-traits-middle">
+            <div class="trait">
+              <span class="trait-name">Second Wind</span>
+              <span class="trait-description"
+                >Regain 1d10 + level HP once per short rest.</span
+              >
+            </div>
+            <div class="trait">
+              <span class="trait-name">Action Surge</span>
+              <span class="trait-description"
+                >Take one additional action on your turn.</span
+              >
+            </div>
+          </div>
+          <div id="equipment-and-traits-bottom">
+            <div class="equipment">
+              <span class="equipment-name">Chain Mail</span>
+              <span class="equipment-modifier">AC 16</span>
+            </div>
+            <div class="equipment">
+              <span class="equipment-name">Shield</span>
+              <span class="equipment-modifier">+2 AC</span>
+            </div>
+            <div class="equipment">
+              <span class="equipment-name">Explorer's Pack</span>
+              <span class="equipment-modifier"></span>
+            </div>
+          </div>
+        </div>
       </div>
       <div id="main">
         <div id="main-map"></div>
