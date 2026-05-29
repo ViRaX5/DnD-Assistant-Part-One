@@ -1,3 +1,4 @@
+
 const sign_up_form = document.getElementsByClassName("signup-form")[0];
 const login_form = document.getElementsByClassName("login-form")[0];
 const buttons = document.getElementsByClassName("buttons")[0];
@@ -13,6 +14,11 @@ const repeat_password_input = document.getElementById("repeat-password-input");
 const error_message = document.getElementById("error-message")
 
 const allInputs = [firstname_input, lastname_input, email_input, email_input_login, password_input, password_input_login, repeat_password_input]
+
+
+
+const json = {"firstname": "Amit", "lastname": "Lachmann", "email": "amit505r@gmail.com", "password": "HelloWorld"};
+// const parsed = JSON.parse(jsonPreParse)
 
 signup_button.addEventListener('click', () => {
     if (signup_button.classList.contains("not-clicked")) {
@@ -61,6 +67,11 @@ sign_up_form.addEventListener('submit', (e) => {
         errors.push("")
         error_message.innerText = errors.join(". \n")
     }
+    else
+    {
+        /* logic for adding data to json and data base */
+        window.location.href = "../campaignList.html"
+    }
 })
 
 login_form.addEventListener('submit', (e) => {
@@ -72,6 +83,10 @@ login_form.addEventListener('submit', (e) => {
         e.preventDefault()
         errors.push("")
         error_message.innerText = errors.join(". \n")
+    }
+    else
+    {
+        window.location.href = "../campaignList.html"
     }
 })
 
@@ -88,6 +103,11 @@ function getSignupFormErrors(firstname, lastname, email, password, repeatPasswor
     }
     if (email === '' || email == null) {
         errors.push('Email is required')
+        email_input.parentElement.classList.add('incorrect')
+    }
+    if(json.email === email)
+    {
+        errors.push('This email already has an account')
         email_input.parentElement.classList.add('incorrect')
     }
     if (password === '' || password == null) {
@@ -120,16 +140,16 @@ function getLoginFormErrors(email, password) {
         password_input_login.parentElement.classList.add('incorrect')
     }
 
-    // if(email === '' || email == null)
-    // {
-    //     errors.push("Email is required")
-    //     email_input_login.parentElement.classList.add('incorrect')
-    // }
-    // if(password === '' || password == null)
-    // {
-    //     errors.push("Password is required")
-    //     password_input_login.parentElement.classList.add('incorrect')
-    // }
+    if(email !== json.email)
+    {
+        errors.push("Wrong email")
+        email_input_login.parentElement.classList.add('incorrect')
+    }
+    else if(password !== json.password)
+    {
+        errors.push("Wrong password")
+        password_input_login.parentElement.classList.add('incorrect')
+    }
 
     return errors
 }
