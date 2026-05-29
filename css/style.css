@@ -5,6 +5,8 @@
     --text-color-base: #000000;
     --text-color-alt: #63748C;
     --input-color: #F1F5F9;
+    --form-background: #F9FAFB;
+    --form-stroke: #CBD0D6;
 }
 
 * {
@@ -15,7 +17,7 @@
 html {
     font-family: MedievalSharp, sans-serif;
     /* font-size: 16px; trying something new in the line below */
-    font-size: clamp(14px, 1vw + 12px, 22px);
+    font-size: clamp(15px, 1vw + 13px, 23px);
     color: var(--text-color-base);
     text-align: center;
 }
@@ -60,7 +62,7 @@ h1 {
 
 form {
     width: min(500px, 100%);
-    height: 40vh;
+    /* height: 30vh; */
     margin-top: 10px;
     margin-bottom: 10px;
     display: flex;
@@ -89,6 +91,7 @@ form label {
     /* font-size: 1.5rem; final one, trying something yada yada yada */
     font-size: clamp(0.9rem, 1.5vw + 0.4rem, 1.1rem);
     font-weight: 500;
+    margin-left: 10px;
 }
 
 form label svg{
@@ -110,6 +113,7 @@ form input {
     border-left: none;
     background-color: var(--input-color);
     transition: 300ms ease;
+    margin-right: 10px;
 }
 
 form input:hover{
@@ -154,8 +158,75 @@ form div.incorrect label{
 form div.incorrect input{
     border-color: #f06272;
 }
+#error-message{
+    padding: 10px 10px 0 10px;
+    /* padding-top: 10px;
+    padding-right: 10px;
+    padding-left: 10px; */
+    font-size: 16px;
+    color: #f06272;
+}
 
+.entire-form{
+    display: flex;
+    justify-content: flex-start;
+    flex-direction: column;
+    background-color: var(--form-background);
+    border: none;
+    border-radius: 35px;
+    margin-left: 5px;
+    margin-right: 5px;
+    /* min-height: max(16.5rem, 300px);         /* add this if want the same box regarless of the form */
+    padding-bottom: 25px;                       /* remove this if the line above is not a comment */
+    border: 1px solid var(--form-stroke);
+}
 
+.buttons{
+    display: flex;
+    justify-content: space-evenly;
+    align-items: center;
+    border-radius: 35px 35px 0 0;
+}
+.buttons button{
+    font: inherit;
+    padding: 0.75rem;
+    flex-grow: 1;
+}
+.left{
+    border-radius: 35px 0 0 0;
+    border: none;
+    border-right: 1px solid black;
+}
+.right{
+    border: none;
+    border-radius: 0 35px 0 0;
+    border-left: 1px solid black;
+}
+
+.clicked{
+    background-color: var(--form-background);
+}
+.not-clicked{
+    transition: 200ms ease;
+    background-color: #E5E7EB;
+    border-bottom: 2px solid var(--form-stroke);
+}
+.not-clicked:hover{
+    background-color: #e5e7eb48;
+    border-bottom: 2px solid #CBD0D648;
+    cursor: pointer;
+}
+
+.login-form, .signup-form{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-grow: 1;
+}
+
+.not-active{
+    display: none;
+}
 
 @media(max-width: 401px){
     #wrapper{
