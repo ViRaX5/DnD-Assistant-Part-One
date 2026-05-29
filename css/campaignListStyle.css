@@ -1,0 +1,9 @@
+body{
+    background-color: blue;
+}
+
+.logo{
+    width: 150px;
+    height: 150px;
+    background-color: red;
+}

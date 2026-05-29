@@ -58,35 +58,35 @@ login_button.addEventListener('click', () => {
 })
 
 sign_up_form.addEventListener('submit', (e) => {
+    e.preventDefault()
 
     let errors = []
     errors = getSignupFormErrors(firstname_input.value, lastname_input.value, email_input.value, password_input.value, repeat_password_input.value)
 
     if (errors.length > 0) {
-        e.preventDefault()
         errors.push("")
         error_message.innerText = errors.join(". \n")
     }
     else
     {
         /* logic for adding data to json and data base */
-        window.location.href = "../campaignList.html"
+        window.location.href = "./campaignList.html";
     }
 })
 
 login_form.addEventListener('submit', (e) => {
+    e.preventDefault()
 
     let errors = []
     errors = getLoginFormErrors(email_input_login.value, password_input_login.value)
 
     if (errors.length > 0) {
-        e.preventDefault()
         errors.push("")
         error_message.innerText = errors.join(". \n")
     }
     else
     {
-        window.location.href = "../campaignList.html"
+        window.location.href = "./campaignList.html";
     }
 })
 
@@ -135,21 +135,21 @@ function getLoginFormErrors(email, password) {
         errors.push('Email is required')
         email_input_login.parentElement.classList.add('incorrect')
     }
-    if (password === '' || password == null) {
-        errors.push('Password is required')
-        password_input_login.parentElement.classList.add('incorrect')
-    }
-
     if(email !== json.email)
     {
         errors.push("Wrong email")
         email_input_login.parentElement.classList.add('incorrect')
     }
-    else if(password !== json.password)
+    else if(password !== json.password && password !== '')
     {
         errors.push("Wrong password")
         password_input_login.parentElement.classList.add('incorrect')
     }
+    if (password === '' || password == null) {
+        errors.push('Password is required')
+        password_input_login.parentElement.classList.add('incorrect')
+    }
+
 
     return errors
 }
