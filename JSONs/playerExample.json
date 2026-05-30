@@ -1,0 +1,131 @@
+{
+  "name": "Eldrin",
+  "race": "Elf",
+  "class": "Wizard",
+  "level": 9,
+  "xp": "48,000",
+  "attributes": {
+    "strength": {
+      "score": 8,
+      "modifier": "-1"
+    },
+    "dexterity": {
+      "score": 16,
+      "modifier": "+3"
+    },
+    "constituition": {
+      "score": 10,
+      "modifier": "0"
+    },
+    "intelligence": {
+      "score": 20,
+      "modifier": "+5"
+    },
+    "wisdom": {
+      "score": 14,
+      "modifier": "+2"
+    },
+    "charisma": {
+      "score": 12,
+      "modifier": "+1"
+    }
+  },
+  "combat": {
+    "armorClass": 13,
+    "initiative": "+3",
+    "speed": 35
+  },
+  "health": {
+    "current": 42,
+    "max": 54
+  },
+  "skills": [
+    {
+      "id": "athletics",
+      "name": "Athletics",
+      "modifier": "+3",
+      "attribute": "STR",
+      "proficient": true
+    },
+    {
+      "id": "acrobatics",
+      "name": "Acrobatics",
+      "modifier": "+1",
+      "attribute": "DEX",
+      "proficient": false
+    },
+    {
+      "id": "arcana",
+      "name": "Arcana",
+      "modifier": "0",
+      "attribute": "INT",
+      "proficient": false
+    },
+    {
+      "id": "history",
+      "name": "History",
+      "modifier": "+1",
+      "attribute": "INT",
+      "proficient": true
+    },
+    {
+      "id": "perception",
+      "name": "Perception",
+      "modifier": "+3",
+      "attribute": "WIS",
+      "proficient": false
+    },
+    {
+      "id": "persuasion",
+      "name": "Persuasion",
+      "modifier": "-1",
+      "attribute": "CHA",
+      "proficient": true
+    },
+    {
+      "id": "stealth",
+      "name": "Stealth",
+      "modifier": "+1",
+      "attribute": "DEX",
+      "proficient": false
+    }
+  ],
+  "attacks": [
+    {
+      "id": "firebolt-attack",
+      "name": "Fire Bolt",
+      "bonus": "+9",
+      "damage": "2d10"
+    },
+    {
+      "id": "ray-of-frost-attack",
+      "name": "Ray of Frost",
+      "bonus": "+9",
+      "damage": "2d8"
+    },
+    {
+      "id": "scorching-ray-attack",
+      "name": "Scorching Ray",
+      "bonus": "+9",
+      "damage": "2d6"
+    },
+    {
+      "id": "magic-missile-attack",
+      "name": "Magic Missile",
+      "bonus": "N/A",
+      "damage": "3d4+3"
+    },
+    {
+      "id": "shatter-attack",
+      "name": "Shatter (CON Save)",
+      "bonus": "17",
+      "damage": "3d8"
+    },
+    {
+      "id": "silver-dagger-attack",
+      "name": "Silvered Dagger",
+      "bonus": "+7",
+      "damage": "1d4+3"
+    }
+  ]
+}

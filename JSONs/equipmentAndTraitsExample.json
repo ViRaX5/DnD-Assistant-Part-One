@@ -1,0 +1,38 @@
+{
+    "traits": [
+        {
+            "name": "Second Wind",
+            "description": "Regain 1d10 + level HP once per short rest."
+        },
+        {
+            "name": "Action Surge",
+            "description": "Take one additional action on your turn."
+        },
+        {
+            "name": "Fighting Style: Defense",
+            "description": "While you are wearing armor, you gain a +1 bonus to AC."
+        }
+    ],
+    "equipment": [
+        {
+            "name": "Chain Mail",
+            "modifier": "AC 16"
+        },
+        {
+            "name": "Shield",
+            "modifier": "+2 AC"
+        },
+        {
+            "name": "Longsword",
+            "modifier": "1d8 Slashing"
+        },
+        {
+            "name": "Explorer's Pack",
+            "modifier": ""
+        },
+        {
+            "name": "Health Potion",
+            "modifier": "x2"
+        }
+    ]
+}
