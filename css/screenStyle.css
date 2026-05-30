@@ -46,16 +46,19 @@ h6 {
 
   display: grid;
 
-  grid-template-columns: 19vw 1fr 18vw;
+  grid-template-columns: 19vw 1fr 19.2vw;
   gap: 16px;
 
   overflow: hidden;
 }
 
+#left-panel{
+  justify-content: flex-start;
+}
 #left-panel,
 #right-panel {
   height: 100%;
-  /* overflow-y: auto; */
+  overflow-y: auto;
 
   display: flex;
   justify-content: center;
@@ -68,7 +71,9 @@ h6 {
 #right-panel,
 #actions-list,
 #dice-grid,
-#player-info-footer {
+#player-info-footer,
+#equipment-and-traits-bottom,
+#equipment-and-traits-middle {
   scrollbar-width: thin;
   scrollbar-color: #8e9eb5 transparent;
 }
@@ -77,7 +82,9 @@ h6 {
 #right-panel::-webkit-scrollbar-track,
 #actions-list::-webkit-scrollbar-track,
 #dice-grid::-webkit-scrollbar-track,
-#player-info-footer::-webkit-scrollbar-track {
+#player-info-footer::-webkit-scrollbar-track,
+#equipment-and-traits-bottom::-webkit-scrollbar-track,
+#equipment-and-traits-middle::-webkit-scrollbar-track {
   background: transparent;
   margin-top: 15px;
   margin-bottom: 15px;
@@ -87,7 +94,9 @@ h6 {
 #right-panel::-webkit-scrollbar-thumb,
 #actions-list::-webkit-scrollbar-thumb,
 #dice-grid::-webkit-scrollbar-thumb,
-#player-info-footer::-webkit-scrollbar-thumb {
+#player-info-footer::-webkit-scrollbar-thumb,
+#equipment-and-traits-bottom::-webkit-scrollbar-thumb,
+#equipment-and-traits-middle::-webkit-scrollbar-thumb {
   background-color: #8e9eb5;
   border-radius: 10px;
 }
@@ -96,7 +105,9 @@ h6 {
 #right-panel::-webkit-scrollbar-thumb:hover,
 #actions-list::-webkit-scrollbar-thumb:hover,
 #dice-grid::-webkit-scrollbar-thumb:hover,
-#player-info-footer::-webkit-scrollbar-thumb:hover {
+#player-info-footer::-webkit-scrollbar-thumb:hover,
+#equipment-and-traits-bottom::-webkit-scrollbar-thumb:hover,
+#equipment-and-traits-middle::-webkit-scrollbar-thumb:hover {
   background-color: #63748c;
 }
 
@@ -393,7 +404,8 @@ h6 {
   border-radius: 28px;
 
   width: 100%;
-  height: 450px;
+  flex: 1;
+  min-height: 0;
 
   padding: 8px 14px;
   box-sizing: border-box;
@@ -421,6 +433,11 @@ h6 {
   padding: 11px 0px;
   border-top: 2px solid #c7d2df;
   border-bottom: 2px solid #c7d2df;
+
+  flex: 1; 
+  min-height: 0;
+  overflow-y: auto;
+  padding-right: 5px;
 }
 
 .trait {
@@ -444,6 +461,18 @@ h6 {
   gap: 5px;
 
   padding-top: 13px;
+  flex: 1;
+  min-height: 0;
+  overflow-y: auto;
+  padding-right: 5px;
+}
+
+#equipment-and-traits-top,
+#equipment-and-traits-middle {
+  flex-shrink: 0;
+}
+#equipment-and-traits-top{
+  flex-shrink: 0;
 }
 
 .equipment {
