@@ -92,6 +92,7 @@ form label {
     font-size: clamp(0.9rem, 1.5vw + 0.4rem, 1.1rem);
     font-weight: 500;
     margin-left: 10px;
+    transition: 300ms ease;
 }
 
 form label svg{
@@ -192,6 +193,7 @@ form div.incorrect input{
     padding: 0.75rem;
     flex-grow: 1;
 }
+
 .left{
     border-radius: 35px 0 0 0;
     border: none;
@@ -206,10 +208,19 @@ form div.incorrect input{
 .clicked{
     background-color: var(--form-background);
 }
+.clicked:focus{
+    outline: none;
+    border-bottom: 2px solid #CBD0D648;
+}
 .not-clicked{
     transition: 200ms ease;
     background-color: #E5E7EB;
     border-bottom: 2px solid var(--form-stroke);
+}
+.not-clicked:focus{
+    outline: none;
+    background-color: #e5e7eb48;
+    border-bottom: 2px solid #CBD0D648;
 }
 .not-clicked:hover{
     background-color: #e5e7eb48;

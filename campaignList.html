@@ -1,16 +1,32 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>DnD Assistant - Campaigns</title>
     <link rel="stylesheet" href="./css/campaignListStyle.css">
+    <script type="text/javascript" src="./JavaScript/campgain-list.js" defer></script>
 </head>
+
 <body>
     <div id="wrapper">
         <header>
-            <a href="campaignList.html"> <img class="logo" src="./images/D&DLogoTransparent.png" alt="Home"></a>
+            <div class="image-container">
+            <a href="campaignList.html">
+                <img class="logo" src="./images/D&DLogoTransparent.png" alt="Home">
+            </a>
+            </div>
+            <nav>
+                <!-- <span>Filter by:</span> -->
+                <div class="filters">
+                    <button type="button" class="DM not-clicked">DM</button>
+                    <button type="button" class="DM not-clicked">Player</button>
+                    <button type="button" class="log-out">Log Out</button>
+                </div>
+            </nav>
         </header>
     </div>
 </body>
+
 </html>
