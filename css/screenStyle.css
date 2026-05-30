@@ -63,14 +63,16 @@ h6 {
 
 #left-panel,
 #right-panel,
-#actions-list {
+#actions-list,
+#player-info-footer {
   scrollbar-width: thin;
   scrollbar-color: #8e9eb5 transparent;
 }
 
 #left-panel::-webkit-scrollbar-track,
 #right-panel::-webkit-scrollbar-track,
-#actions-list::-webkit-scrollbar-track {
+#actions-list::-webkit-scrollbar-track,
+#player-info-footer::-webkit-scrollbar-track {
   background: transparent;
   margin-top: 15px;
   margin-bottom: 15px;
@@ -78,14 +80,16 @@ h6 {
 
 #left-panel::-webkit-scrollbar-thumb,
 #right-panel::-webkit-scrollbar-thumb,
-#actions-list::-webkit-scrollbar-thumb {
+#actions-list::-webkit-scrollbar-thumb,
+#player-info-footer::-webkit-scrollbar-thumb {
   background-color: #8e9eb5;
   border-radius: 10px;
 }
 
 #left-panel::-webkit-scrollbar-thumb:hover,
 #right-panel::-webkit-scrollbar-thumb:hover,
-#actions-list::-webkit-scrollbar-thumb:hover {
+#actions-list::-webkit-scrollbar-thumb:hover,
+#player-info-footer::-webkit-scrollbar-thumb:hover {
   background-color: #63748c;
 }
 
@@ -160,19 +164,6 @@ h6 {
 
   width: 100%;
   padding: 7px;
-  box-sizing: border-box;
-}
-
-.attack-container {
-  display: flex;
-  flex-direction: row;
-  align-items: center;
-
-  background-color: #f1f5f9;
-  border-radius: 12px;
-
-  width: 100%;
-  padding: 4px 12px;
   box-sizing: border-box;
 }
 
@@ -297,7 +288,7 @@ h6 {
   align-items: center;
   gap: 10px;
   color: #63748c;
-  font-size: 11px;
+  font-size: 14px;
   cursor: pointer; /* Makes it clear you can click the whole row */
   user-select: none; /* Prevents text highlighting when clicking rapidly */
 }
@@ -312,13 +303,6 @@ h6 {
   background-color: transparent;
   flex-shrink: 0;
   transition: all 0.2s ease;
-}
-.modifier {
-  display: inline-block;
-  font-size: 11px;
-  color: #63748c;
-  width: 9px;
-  text-align: right;
 }
 
 .skill-toggle input[type="checkbox"]:checked + label::before {
@@ -338,7 +322,26 @@ h6 {
   align-items: end;
   gap: 10px;
 
-  padding: 6px 0px;
+  max-height: 140px; /* Locks the height so it doesn't crush the equipment box */
+  overflow-y: auto; /* Enables the vertical scrollbar */
+  overflow-x: hidden;
+
+  padding: 4px 0px;
+  padding-right: 8px;
+}
+
+.attack-container {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  gap: 8px;
+
+  background-color: #f1f5f9;
+  border-radius: 12px;
+
+  width: 100%;
+  padding: 4px 12px;
+  box-sizing: border-box;
 }
 
 .attack-container > span {
@@ -351,20 +354,20 @@ h6 {
 }
 
 .damage-dice {
-  flex: 1; /* Takes up the exact same amount of space on the right */
+  flex: 0 0 auto; /* Takes up the exact same amount of space on the right */
   text-align: right; /* Aligns text to the right edge */
+  min-width: 50px;
 }
 
 .attack-bonus {
-  flex: 0 0 auto; /* Prevents the circle from squishing or growing */
+  flex: 0 0 auto;
 
-  /* Flexbox to perfectly center the +5 inside the circle */
   display: flex;
   justify-content: center;
   align-items: center;
 
-  width: 23px; /* Fixed width */
-  height: 23px; /* Fixed height matching width */
+  width: 23px;
+  height: 23px;
   border-radius: 50%;
 
   color: #888c93;
@@ -496,6 +499,8 @@ h6 {
     flex: 0 0 0px;
     padding-top: 0px;
     padding-bottom: 0px;
+
+    overflow: hidden;
   }
 }
 
