@@ -929,13 +929,13 @@ h6 {
   height: clamp(35px, 2vw + 1em, 50px);
 }
 
-a:focus {
+/* a:focus {
   height: clamp(35px, 8vw, 80px);
   outline: none;
   background-color: hsla(211, 81%, 30%, 0.4);
   border-radius: 15px;
 
-}
+} */
 
 #DMHeader {
   height: clamp(45px, 2vw + 1em, 50px);
