@@ -1,0 +1,8 @@
+[
+    {
+        "campaign_name": "test1", "status": "player", "character_name": "Steve Rogers"
+    },
+    {
+        "campaign_name": "test2", "status": "DM", "amout_of_players": "5"
+    }
+]
