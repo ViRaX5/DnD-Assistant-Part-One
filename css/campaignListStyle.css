@@ -139,15 +139,25 @@ nav{
 .campaigns-section{
     display: flex;
     flex-grow: 1;
-    align-items: flex-start;
+    /* align-items: flex-start; */
 }
 
 .campaigns-container{
     flex-grow: 1;
     padding-top: 10px;
+    
     /* background-color: #ffffff9d;   only for now, delete for final */
     /* font-size: clamp(15px, 0.8rem, 30px); */
 }
+.no-campaigns-container{
+    flex-grow: 1;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    /* background-color: #ffffff9d;   only for now, delete for final */
+    /* font-size: clamp(15px, 0.8rem, 30px); */
+}
+
 .campaigns-container span{
     padding-right: 10px;
 }
@@ -194,7 +204,7 @@ nav{
 }
 .buttons-container{
     display: flex;
-    justify-content: center;
+    justify-content: space-between;
     align-items: center;
 }
 .instance-buttons-container button{
@@ -259,7 +269,7 @@ nav{
 .buttons-container button{
     border: none;
     border-radius: 1000px;
-    padding: 0.6em 2.5vw;
+    padding: 0.5em 2vw;
     margin-right: 5px;
     background-color: var(--accent-color);
     color: var(--text-color-alt);
@@ -268,6 +278,25 @@ nav{
     text-transform: uppercase;
     cursor: pointer;
     transition: 200ms ease;
+}
+
+.no-sessions-container{
+    flex-grow: 1;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+.empty-state-message{
+    border-radius: 25px;
+    background-color: #63748cbe;
+    padding: 15px;
+}
+
+.buttons-container{
+    transform: 200ms ease;
+}
+.create-button:hover, .join-button:hover{
+    background-color: var(--form-stroke);
 }
 
 @media(max-width: 401px){
