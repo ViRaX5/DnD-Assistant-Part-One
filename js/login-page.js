@@ -12,6 +12,8 @@ const password_input = document.getElementById("password-input");
 const password_input_login = document.getElementById("password-input-login");
 const repeat_password_input = document.getElementById("repeat-password-input");
 const error_message = document.getElementById("error-message")
+const signup_submit = document.getElementsByClassName("signup-submit")[0];
+const login_submit = document.getElementsByClassName("login-submit")[0];
 
 const allInputs = [firstname_input, lastname_input, email_input, email_input_login, password_input, password_input_login, repeat_password_input]
 
@@ -72,6 +74,7 @@ sign_up_form.addEventListener('submit', (e) => {
         /* logic for adding data to json and data base */
         window.location.href = "./campaignList.html";
     }
+    signup_submit.blur()
 })
 
 login_form.addEventListener('submit', (e) => {
@@ -88,6 +91,7 @@ login_form.addEventListener('submit', (e) => {
     {
         window.location.href = "./campaignList.html";
     }
+    login_submit.blur()
 })
 
 function getSignupFormErrors(firstname, lastname, email, password, repeatPassword) {
