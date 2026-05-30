@@ -19,7 +19,7 @@ const campaigns1 = [
 ]
 const campaigns2 = []
 
-const campaigns = campaigns2
+const campaigns = campaigns1
 
 const campaignContainerSection = document.querySelector('.campaigns-container')
 const noCampaignContainerSection = document.querySelector('.no-campaigns-container')
@@ -42,6 +42,15 @@ else {
     });
     addButtons(campaignContainerSection)
 }
+
+campaignContainerSection.addEventListener('click', (e) => {
+    if(e.target.classList.contains('join-button')){
+        window.location.href = "./playerScreen.html"
+    }
+    else if(e.target.classList.contains('start-session-button')){
+        window.location.href = "./DMScreen.html"
+    }
+})
 
 function addButtons(location) {
     const buttonsContainer = document.createElement('div')

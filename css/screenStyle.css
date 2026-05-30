@@ -1,4 +1,5 @@
 @import url("https://fonts.googleapis.com/css2?family=MedievalSharp&display=swap");
+
 :root {
   --accent-color: #e2e8f0;
   --base-color: #c9d3df;
@@ -14,6 +15,7 @@
 }
 
 body {
+  height: 100vh;
   font-family: "MedievalSharp", sans-serif;
   font-size: clamp(14px, 0.5vw + 12px, 16px);
   color: var(--text-color-base);
@@ -44,7 +46,7 @@ h6 {
 
   display: grid;
 
-  grid-template-columns: 366px 1fr 345px;
+  grid-template-columns: 19vw 1fr 18vw;
   gap: 16px;
 
   overflow: hidden;
@@ -53,10 +55,11 @@ h6 {
 #left-panel,
 #right-panel {
   height: 100%;
-  width: 100%;
-  overflow-y: auto;
+  /* overflow-y: auto; */
 
   display: flex;
+  justify-content: center;
+  align-items: center;
   flex-direction: column;
   gap: 9px;
 }
@@ -64,6 +67,7 @@ h6 {
 #left-panel,
 #right-panel,
 #actions-list,
+#dice-grid,
 #player-info-footer {
   scrollbar-width: thin;
   scrollbar-color: #8e9eb5 transparent;
@@ -72,6 +76,7 @@ h6 {
 #left-panel::-webkit-scrollbar-track,
 #right-panel::-webkit-scrollbar-track,
 #actions-list::-webkit-scrollbar-track,
+#dice-grid::-webkit-scrollbar-track,
 #player-info-footer::-webkit-scrollbar-track {
   background: transparent;
   margin-top: 15px;
@@ -81,6 +86,7 @@ h6 {
 #left-panel::-webkit-scrollbar-thumb,
 #right-panel::-webkit-scrollbar-thumb,
 #actions-list::-webkit-scrollbar-thumb,
+#dice-grid::-webkit-scrollbar-thumb,
 #player-info-footer::-webkit-scrollbar-thumb {
   background-color: #8e9eb5;
   border-radius: 10px;
@@ -89,6 +95,7 @@ h6 {
 #left-panel::-webkit-scrollbar-thumb:hover,
 #right-panel::-webkit-scrollbar-thumb:hover,
 #actions-list::-webkit-scrollbar-thumb:hover,
+#dice-grid::-webkit-scrollbar-thumb:hover,
 #player-info-footer::-webkit-scrollbar-thumb:hover {
   background-color: #63748c;
 }
@@ -349,14 +356,17 @@ h6 {
 }
 
 .weapon-name {
-  flex: 1; /* Takes up all available space on the left */
-  text-align: left; /* Aligns text to the left edge */
+  flex: 1;
+  /* Takes up all available space on the left */
+  text-align: left;
+  /* Aligns text to the left edge */
 }
 
 .damage-dice {
-  flex: 0 0 auto; /* Takes up the exact same amount of space on the right */
-  text-align: right; /* Aligns text to the right edge */
-  min-width: 50px;
+  flex: 1;
+  /* Takes up the exact same amount of space on the right */
+  text-align: right;
+  /* Aligns text to the right edge */
 }
 
 .attack-bonus {
@@ -367,7 +377,9 @@ h6 {
   align-items: center;
 
   width: 23px;
+
   height: 23px;
+
   border-radius: 50%;
 
   color: #888c93;
@@ -491,19 +503,6 @@ h6 {
     opacity 0.3s ease;
 }
 
-@media (max-width: 1200px) {
-  #action-bar {
-    opacity: 0;
-    pointer-events: none;
-
-    flex: 0 0 0px;
-    padding-top: 0px;
-    padding-bottom: 0px;
-
-    overflow: hidden;
-  }
-}
-
 #actions-list {
   flex: 1;
   display: flex;
@@ -546,7 +545,8 @@ h6 {
 
 /* --- 1. The Anchor & Button --- */
 #active-effects-wrapper {
-  position: relative; /* CRITICAL: Anchors the popup to this specific spot */
+  position: relative;
+  /* CRITICAL: Anchors the popup to this specific spot */
   display: flex;
 }
 
@@ -558,7 +558,8 @@ h6 {
   flex: 0 1 auto;
   /* THE WIDTH FIX: Double the horizontal padding to stretch the button */
   padding: 0 32px;
-  min-width: 160px; /* Guarantees it never gets too narrow */
+  min-width: 160px;
+  /* Guarantees it never gets too narrow */
 
   white-space: nowrap;
   display: flex;
@@ -578,8 +579,10 @@ h6 {
 
 #active-effects-popup {
   position: absolute;
-  bottom: 120%; /* Pushes the popup completely above the button */
-  right: 0; /* Aligns the right edge of the popup with the right edge of the button */
+  bottom: 120%;
+  /* Pushes the popup completely above the button */
+  right: 0;
+  /* Aligns the right edge of the popup with the right edge of the button */
   width: 220px;
 
   background-color: #721f83;
@@ -602,11 +605,13 @@ h6 {
 #active-effects-wrapper:hover #active-effects-popup {
   opacity: 1;
   pointer-events: auto;
-  transform: translateY(0); /* Slides up into place smoothly */
+  transform: translateY(0);
+  /* Slides up into place smoothly */
 }
 
 .effects-header {
-  background-color: #b969d2; /* Lighter orchid header */
+  background-color: #b969d2;
+  /* Lighter orchid header */
   color: white;
   padding: 8px;
   font-size: 14px;
@@ -667,11 +672,14 @@ h6 {
 
 #dice-grid {
   display: grid;
-  grid-template-columns: repeat(4, 1fr);
+  grid-template-columns: repeat(4, minmax(55px, 1fr));
   row-gap: 24px;
   column-gap: 18px;
   justify-items: center;
   align-items: end;
+  width: 100%;
+  overflow-x: auto;
+  padding-bottom: 8px;
 }
 
 .die-button {
@@ -738,7 +746,8 @@ h6 {
 
 #quantity-amount {
   font-size: 30px;
-  min-width: 20px; /* Keeps the buttons from jumping if it goes to double digits */
+  min-width: 20px;
+  /* Keeps the buttons from jumping if it goes to double digits */
 }
 
 #dice-tray-area {
@@ -788,7 +797,7 @@ h6 {
   background-color: #6366f1;
   border: 5px solid #4f46e5;
   border-radius: 28px;
-
+  width: 100%;
   flex: 1;
   min-height: 230px;
 
@@ -801,6 +810,7 @@ h6 {
 
 #chat-history {
   flex: 1;
+  min-height: 0;
   background-color: #e0e7ff;
   border-radius: 16px;
   padding: 12px;
@@ -822,21 +832,26 @@ h6 {
 
 .system-msg {
   border-left: 6px solid #8b5cf6;
-} /* Purple accent for dice rolls */
+}
+
+/* Purple accent for dice rolls */
 .action-msg {
   border-left: 6px solid #10b981;
-} /* Green accent for attacks */
+}
+
+/* Green accent for attacks */
 
 /* --- The Input Bar --- */
 #chat-controls {
   flex: 0 0 45px;
   display: flex;
   flex-direction: row;
-  gap: 4px;
+  gap: clamp(2px, 0.5vw, 4px);
 }
 
 #chat-input {
   flex: 1;
+  min-width: 0;
   border-radius: 20px;
   border: none;
   padding: 0 16px;
@@ -849,7 +864,7 @@ h6 {
   color: #ffffff;
   border: none;
   border-radius: 20px;
-  padding: 0 16px;
+  padding: 0 clamp(8px, 1vw, 20px);
   font-size: 13px;
   cursor: pointer;
   transition: filter 0.2s ease;
@@ -863,7 +878,7 @@ h6 {
   background-color: #e2e8f0;
   border: none;
   border-radius: 20px;
-  padding: 0 20px;
+  padding: 0 clamp(8px, 1vw, 20px);
   font-weight: bold;
   cursor: pointer;
   transition: background-color 0.2s ease;
@@ -871,4 +886,118 @@ h6 {
 
 #send-btn:hover {
   background-color: #cbd5e1;
+}
+
+/* From here on out it is for DM screen only */
+/* #DMBody {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+} */
+
+/* left side */
+
+#combat-turn-tracker {
+  background-color: #10b981;
+  height: 30vh;
+  width: 366px;
+}
+
+#assests {
+  background-color: #153b2f;
+  height: 30vh;
+}
+
+/* header-nav stuff */
+
+.image-container {
+  height: clamp(35px, 8vw, 70px);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 5px 1vw 5px 1vw;
+}
+
+.logo {
+  padding-left: 5px;
+  width: auto;
+  height: clamp(35px, 2vw + 1em, 50px);
+}
+
+a:focus {
+  height: clamp(35px, 8vw, 80px);
+  outline: none;
+  background-color: hsla(211, 81%, 30%, 0.4);
+  border-radius: 15px;
+}
+
+#DMHeader {
+  height: clamp(45px, 2vw + 1em, 50px);
+  width: auto;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  border-radius: 20px 20px 20px 20px;
+  background-color: hsla(211, 76%, 49%, 0.4);
+}
+
+nav {
+  padding: 10px;
+  padding-right: 0px;
+  border-radius: 20px 20px 20px 20px;
+  background-color: hsla(211, 85%, 24%, 0.584);
+  flex-grow: 1;
+  height: 100%;
+  display: flex;
+  justify-content: flex-start;
+  align-items: center;
+  font-size: clamp(0.6rem, 1.4vw, 1rem);
+}
+
+.filters {
+  display: flex;
+  flex-grow: 1;
+  justify-content: space-evenly;
+}
+
+.filters button {
+  border: none;
+  border-radius: 1000px;
+  padding: 0.6em 2vw;
+  margin-right: 10px;
+  background-color: var(--accent-color);
+  color: var(--text-color-alt);
+  font: inherit;
+  font-weight: 600;
+  text-transform: uppercase;
+  cursor: pointer;
+  transition: 200ms ease;
+}
+
+.filters button:hover {
+  background-color: var(--form-stroke);
+}
+
+.filters button:focus {
+  outline: none;
+  background-color: #a6a8ab;
+}
+
+/* media for all */
+
+@media (max-width: 1200px) {
+  #action-bar {
+    opacity: 0;
+    pointer-events: none;
+
+    flex: 0 0 0px;
+    padding-top: 0px;
+    padding-bottom: 0px;
+  }
+
+  @media (max-width: 620px) {
+    nav {
+      display: none;
+    }
+  }
 }
