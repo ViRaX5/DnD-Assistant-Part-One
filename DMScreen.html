@@ -1,0 +1,148 @@
+<!doctype html>
+<html lang="en">
+
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="stylesheet" href="node_modules/bootstrap/dist/css/bootstrap.min.css" />
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.8/dist/umd/popper.min.js"
+      integrity="sha384-I7E8VVD/ismYTF4hNIPjVp/Zjvgyol6VFvRkX/vR+Vc4jQkC+hVqc2pM8ODewa9r"
+      crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.min.js"
+      integrity="sha384-G/EV+4j2dNv+tEPo3++6LCgdCROaejBqfUeNjuKAiuXbjrxilcCdDz6ZAVfHWe1Y"
+      crossorigin="anonymous"></script>
+    <link rel="stylesheet" href="css/screenStyle.css" />
+    <title>DnD Assistant</title>
+  </head>
+
+  <body id="DMBody">
+    <div id="wrapper" class="container-fluid">
+      <div id="left-panel">
+        <div id="combat-turn-tracker">
+          <span>test</span>
+        </div>
+        <div id="assests">
+          <span>test</span>
+        </div>
+      </div>
+      <div id="main">
+        <header id="DMHeader">
+          <div class="image-container">
+            <a href="campaignList.html">
+              <img class="logo" src="./images/D&DLogoTransparent.png" alt="Home">
+            </a>
+          </div>
+          <nav>
+            <!-- <span>Filter by:</span> -->
+            <div class="filters">
+              <button type="button" class="DM not-clicked">DM</button>
+              <button type="button" class="player not-clicked">Player</button>
+              <button type="button" class="log-out">Log Out</button>
+              <dialog id="logout-modal">
+                <div class="modal-content">
+                  <h2>Ending the Adventure</h2>
+                  <p>Are you sure you want to log out?</p>
+                  <div class="modal-buttons">
+                    <button type="button" id="cancel-logout" class="cancel-button">Cancel</button>
+                    <button type="button" id="confirm-logout" class="confirm-button">Yes, Log Out</button>
+                  </div>
+                </div>
+              </dialog>
+            </div>
+          </nav>
+        </header>
+        <iframe id="main-map" src="./map-grid.html" title="Grid map" loading="lazy"></iframe>
+        <div id="action-bar">
+          <div id="start-end">
+            <div id="start-combat">
+
+            </div>
+            <div id="end-combat">
+
+            </div>
+          </div>
+          <div id="current-round">
+
+          </div>
+          <div id="active-effects-wrapper">
+            <button id="active-effects">Active Effects</button>
+
+            <div id="active-effects-popup">
+              <div class="effects-header">Name | Turns remaining</div>
+
+              <div class="effects-list">
+                <div class="effect-item">Spirit Guardians: 5</div>
+                <div class="effect-item">Cloud Kill: 2</div>
+              </div>
+
+              <button class="add-effect-btn">Add Effect</button>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div id="right-panel">
+        <div id="dice-roller-outer">
+          <div id="dice-roller-inner">
+            <div id="dice-grid">
+              <button class="die-button">
+                <img src="./images/d4.png" alt="d4" />
+                <span>d4</span>
+              </button>
+              <button class="die-button">
+                <img src="./images/d6.png" alt="d6" />
+                <span>d6</span>
+              </button>
+              <button class="die-button">
+                <img src="./images/d8.png" alt="d8" />
+                <span>d8</span>
+              </button>
+              <button class="die-button">
+                <img src="./images/d10.png" alt="d10" />
+                <span>d10</span>
+              </button>
+
+              <button class="die-button">
+                <img src="./images/d12.png" alt="d12" />
+                <span>d12</span>
+              </button>
+              <button class="die-button">
+                <img src="./images/d20.png" alt="d20" />
+                <span>d20</span>
+              </button>
+
+              <div id="dice-quantity-container">
+                <div class="quantity-pill">
+                  <button class="quantity-button">-</button>
+                  <span id="quantity-amount">1</span>
+                  <button class="quantity-button">+</button>
+                </div>
+                <span class="quantity-label">Quantity</span>
+              </div>
+            </div>
+            <div id="dice-tray-area"></div>
+            <button id="roll-button">Roll</button>
+          </div>
+        </div>
+        <div id="chat-box">
+          <div id="chat-history">
+            <div class="chat-message system-msg">
+              Gamur rolled: 18 and 5 on 2d20
+            </div>
+            <div class="chat-message action-msg">
+              Gamur used Longsword: 8 damage total
+            </div>
+          </div>
+
+          <div id="chat-controls">
+            <input type="text" id="chat-input" placeholder="Type Message..." autocomplete="off" />
+
+            <button id="recipient-btn">To: All</button>
+
+            <button id="send-btn">Send</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </body>
+
+</html>

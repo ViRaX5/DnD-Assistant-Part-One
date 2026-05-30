@@ -47,6 +47,9 @@ campaignContainerSection.addEventListener('click', (e) => {
     if(e.target.classList.contains('join-button')){
         window.location.href = "./playerScreen.html"
     }
+    else if(e.target.classList.contains('start-session-button')){
+        window.location.href = "./DMScreen.html"
+    }
 })
 
 function addButtons(location) {
