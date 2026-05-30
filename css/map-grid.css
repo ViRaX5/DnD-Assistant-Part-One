@@ -1,0 +1,39 @@
+html,
+body {
+  margin: 0;
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+  background-color: aliceblue;
+}
+
+#map {
+  width: 100%;
+  height: 100%;
+  cursor: grab;
+  touch-action: none;
+}
+
+#map.dragging {
+  cursor: grabbing;
+}
+
+#hint {
+  position: fixed;
+  left: 12px;
+  bottom: 12px;
+  padding: 6px 8px;
+  border: 1px solid #000;
+  background: #fff;
+  font-family: Arial, sans-serif;
+  font-size: 12px;
+  user-select: none;
+  pointer-events: none;
+}
+
+/* Add this to your CSS */
+.hidden-ui {
+  opacity: 0;
+  pointer-events: none; /* Guarantees the invisible element won't accidentally block mouse clicks */
+  transition: opacity 0.3s ease; /* Smooth fade animation */
+}

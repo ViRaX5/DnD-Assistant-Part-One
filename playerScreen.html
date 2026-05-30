@@ -234,12 +234,112 @@
         </div>
       </div>
       <div id="main">
-        <div id="main-map"></div>
-        <div id="action-bar"></div>
+        <iframe
+          id="main-map"
+          src="./map-grid.html"
+          title="Grid map"
+          loading="lazy"
+        ></iframe>
+        <div id="action-bar">
+          <div id="actions-list">
+            <button id="longsword-action" class="action-container">
+              <img src="./images/Sword.png" alt="Longsword" />
+            </button>
+            <button id="javelin-action" class="action-container">
+              <img src="./images/Javelin.png" alt="Javelin" />
+            </button>
+            <button id="second-wind-action" class="action-container">
+              <img src="./images/Second Wind.png" alt="Second Wind" />
+            </button>
+            <button id="action-surge-action" class="action-container">
+              <img src="./images/Action surge.png" alt="Action Surge" />
+            </button>
+            <button id="potion-of-healing-action" class="action-container">
+              <img src="./images/Potion.png" alt="Potion" />
+            </button>
+          </div>
+          <div id="active-effects-wrapper">
+            <button id="active-effects">Active Effects</button>
+
+            <div id="active-effects-popup">
+              <div class="effects-header">Name | Turns remaining</div>
+
+              <div class="effects-list">
+                <div class="effect-item">Spirit Guardians: 5</div>
+                <div class="effect-item">Cloud Kill: 2</div>
+              </div>
+
+              <button class="add-effect-btn">Add Effect</button>
+            </div>
+          </div>
+        </div>
       </div>
       <div id="right-panel">
-        <div id="dice-roller"></div>
-        <div id="chat-box"></div>
+        <div id="dice-roller-outer">
+          <div id="dice-roller-inner">
+            <div id="dice-grid">
+              <button class="die-button">
+                <img src="./images/d4.png" alt="d4" />
+                <span>d4</span>
+              </button>
+              <button class="die-button">
+                <img src="./images/d6.png" alt="d6" />
+                <span>d6</span>
+              </button>
+              <button class="die-button">
+                <img src="./images/d8.png" alt="d8" />
+                <span>d8</span>
+              </button>
+              <button class="die-button">
+                <img src="./images/d10.png" alt="d10" />
+                <span>d10</span>
+              </button>
+
+              <button class="die-button">
+                <img src="./images/d12.png" alt="d12" />
+                <span>d12</span>
+              </button>
+              <button class="die-button">
+                <img src="./images/d20.png" alt="d20" />
+                <span>d20</span>
+              </button>
+
+              <div id="dice-quantity-container">
+                <div class="quantity-pill">
+                  <button class="quantity-button">-</button>
+                  <span id="quantity-amount">1</span>
+                  <button class="quantity-button">+</button>
+                </div>
+                <span class="quantity-label">Quantity</span>
+              </div>
+            </div>
+            <div id="dice-tray-area"></div>
+            <button id="roll-button">Roll</button>
+          </div>
+        </div>
+        <div id="chat-box">
+          <div id="chat-history">
+            <div class="chat-message system-msg">
+              Gamur rolled: 18 and 5 on 2d20
+            </div>
+            <div class="chat-message action-msg">
+              Gamur used Longsword: 8 damage total
+            </div>
+          </div>
+
+          <div id="chat-controls">
+            <input
+              type="text"
+              id="chat-input"
+              placeholder="Type Message..."
+              autocomplete="off"
+            />
+
+            <button id="recipient-btn">To: All</button>
+
+            <button id="send-btn">Send</button>
+          </div>
+        </div>
       </div>
     </div>
   </body>
