@@ -1,5 +1,6 @@
 import { renderPlayerInfo } from './player-info.js';
 import { renderEquipmentAndTraits } from './equipment-and-traits.js';
+import { setupUIInteractions } from './ui-interactions.js';
 
 // A global variable to hold your state once it loads
 let playerState = null;
@@ -36,6 +37,13 @@ async function initializeApp() {
 
     } catch (error) {
         console.error("Failed to load equipment and traits data:", error);
+    }
+
+    try {
+        setupUIInteractions();
+
+    } catch (error) {
+        console.error("Failed to setup UI interactions:", error);
     }
 }
 

@@ -4,7 +4,7 @@ export function renderEquipmentAndTraits(data) {
         renderTraits(data.traits);
     }
 
-    // Equiopment
+    // Equipment
     if (data.equipment) {
         renderEquipment(data.equipment);
     }

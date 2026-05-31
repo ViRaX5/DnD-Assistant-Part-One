@@ -52,16 +52,13 @@ h6 {
   overflow: hidden;
 }
 
-#left-panel{
-  justify-content: flex-start;
-}
 #left-panel,
 #right-panel {
   height: 100%;
   overflow-y: auto;
 
   display: flex;
-  justify-content: center;
+  justify-content: flex-start;
   align-items: center;
   flex-direction: column;
   gap: 9px;
@@ -363,7 +360,7 @@ h6 {
 }
 
 .attack-container > span {
-  font-size: 15px;
+  font-size: 13px;
 }
 
 .weapon-name {
@@ -374,10 +371,11 @@ h6 {
 }
 
 .damage-dice {
-  flex: 1;
+  flex: 0 0 auto;
   /* Takes up the exact same amount of space on the right */
   text-align: right;
   /* Aligns text to the right edge */
+  min-width: 40px;
 }
 
 .attack-bonus {
@@ -387,15 +385,17 @@ h6 {
   justify-content: center;
   align-items: center;
 
-  width: 23px;
-
-  height: 23px;
+  min-width: 24px;
+  height: 24px;
+  border-radius: 12px; /* Half of the height keeps the edges perfectly round */
+  padding: 0 6px; /* Gives the text breathing room on the left/right */
+  box-sizing: border-box;
 
   border-radius: 50%;
 
   color: #888c93;
   background-color: #e2e8f0;
-  font-size: 15px;
+  font-size: 13px;
 }
 
 #equipment-and-traits {
@@ -405,7 +405,7 @@ h6 {
 
   width: 100%;
   flex: 1;
-  min-height: 0;
+  min-height: 230px;
 
   padding: 8px 14px;
   box-sizing: border-box;
@@ -434,10 +434,11 @@ h6 {
   border-top: 2px solid #c7d2df;
   border-bottom: 2px solid #c7d2df;
 
-  flex: 1; 
+  flex: 1;
   min-height: 0;
   overflow-y: auto;
   padding-right: 5px;
+  text-align: left;
 }
 
 .trait {
@@ -447,8 +448,9 @@ h6 {
   gap: 5px;
 }
 
-.trait > span {
-  font-size: 14px;
+.trait > span,
+.equipment-name {
+  font-size: 13px;
 }
 
 .trait-description {
@@ -471,7 +473,7 @@ h6 {
 #equipment-and-traits-middle {
   flex-shrink: 0;
 }
-#equipment-and-traits-top{
+#equipment-and-traits-top {
   flex-shrink: 0;
 }
 
@@ -482,12 +484,8 @@ h6 {
   align-items: center;
 }
 
-.equipment-name {
-  font-size: 14px;
-}
-
 .equipment-modifier {
-  font-size: 16px;
+  font-size: 13px;
   color: #556985;
 }
 
@@ -585,10 +583,8 @@ h6 {
   border-radius: 29px;
 
   flex: 0 1 auto;
-  /* THE WIDTH FIX: Double the horizontal padding to stretch the button */
   padding: 0 32px;
   min-width: 160px;
-  /* Guarantees it never gets too narrow */
 
   white-space: nowrap;
   display: flex;
@@ -629,9 +625,8 @@ h6 {
   transition: all 0.2s ease;
 }
 
-/* --- 3. The Hover Trigger --- */
 /* When the mouse enters the wrapper, reveal the popup */
-#active-effects-wrapper:hover #active-effects-popup {
+#active-effects-wrapper.is-open #active-effects-popup {
   opacity: 1;
   pointer-events: auto;
   transform: translateY(0);
@@ -1024,10 +1019,10 @@ nav {
     padding-top: 0px;
     padding-bottom: 0px;
   }
+}
 
-  @media (max-width: 620px) {
-    nav {
-      display: none;
-    }
+@media (max-width: 620px) {
+  nav {
+    display: none;
   }
 }

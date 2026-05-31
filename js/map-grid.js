@@ -246,6 +246,17 @@ canvas.addEventListener("touchend", () => {
   isDragging = false;
 });
 
+document.addEventListener('click', () => {
+  if (window.parent !== window) {
+
+    const parentWrapper = window.parent.document.getElementById("active-effects-wrapper");
+
+    if (parentWrapper && parentWrapper.classList.contains("is-open")) {
+      parentWrapper.classList.remove("is-open");
+    }
+  }
+});
+
 // Creates an observer that calls your resize() function 
 // whenever the canvas's physical layout dimensions change.
 const canvasObserver = new ResizeObserver(() => {
