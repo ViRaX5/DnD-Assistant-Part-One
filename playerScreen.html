@@ -18,6 +18,13 @@
       crossorigin="anonymous"
     ></script>
     <link rel="stylesheet" href="css/screenStyle.css" />
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css"
+      integrity="sha512-SnH5WK+bZxgPHs44uWIX+LLJAJ9/2PkPKZ5QiAj6Ta86w+fsb2TkcmfRyVX3pBnMFcV7oQPJkl9QevSCWr3W6A=="
+      crossorigin="anonymous"
+      referrerpolicy="no-referrer"
+    />
     <script type="module" src="./js/app.js"></script>
     <title>DnD Assistant</title>
   </head>
@@ -220,7 +227,48 @@
           </div>
         </div>
       </div>
-      <div id="main">
+      <div id="main" class="mobile-active">
+        <header id="player-header">
+          <div class="image-container">
+            <a href="campaignList.html">
+              <img
+                class="logo"
+                src="./images/D&DLogoTransparent.png"
+                alt="Home"
+              />
+            </a>
+          </div>
+          <nav>
+            <!-- <span>Filter by:</span> -->
+            <div class="filters">
+              <button type="button" class="DM not-clicked">DM</button>
+              <button type="button" class="player not-clicked">Player</button>
+              <button type="button" class="log-out">Log Out</button>
+              <dialog id="logout-modal">
+                <div class="modal-content">
+                  <h2>Ending the Adventure</h2>
+                  <p>Are you sure you want to log out?</p>
+                  <div class="modal-buttons">
+                    <button
+                      type="button"
+                      id="cancel-logout"
+                      class="cancel-button"
+                    >
+                      Cancel
+                    </button>
+                    <button
+                      type="button"
+                      id="confirm-logout"
+                      class="confirm-button"
+                    >
+                      Yes, Log Out
+                    </button>
+                  </div>
+                </div>
+              </dialog>
+            </div>
+          </nav>
+        </header>
         <iframe
           id="main-map"
           src="./map-grid.html"
@@ -327,6 +375,21 @@
             <button id="send-btn">Send</button>
           </div>
         </div>
+      </div>
+      <div id="nav-footer">
+        <button class="nav-tab" id="nav-info-btn">
+          <i class="fa-solid fa-circle-info fa-2xl"></i>
+        </button>
+
+        <button class="nav-tab active" id="nav-map-btn">
+          <i class="fa-solid fa-map fa-lg"></i>
+          <i class="fa-solid fa-book-open fa-lg"></i>
+        </button>
+
+        <button class="nav-tab" id="nav-dice-btn">
+          <i class="fa-solid fa-dice-five fa-lg"></i>
+          <i class="fa-solid fa-comment-dots fa-lg"></i>
+        </button>
       </div>
     </div>
   </body>

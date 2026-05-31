@@ -62,6 +62,12 @@ h6 {
   align-items: center;
   flex-direction: column;
   gap: 9px;
+
+  opacity: 1;
+  transition:
+    flex 0.4s ease,
+    padding 0.4s ease,
+    opacity 0.3s ease;
 }
 
 #left-panel,
@@ -912,6 +918,10 @@ h6 {
   background-color: #cbd5e1;
 }
 
+#nav-footer {
+  display: none;
+}
+
 /* From here on out it is for DM screen only */
 /* #DMBody {
   display: flex;
@@ -966,6 +976,16 @@ h6 {
   background-color: hsla(211, 76%, 49%, 0.4);
 }
 
+#player-header {
+  height: clamp(45px, 2vw + 1em, 50px);
+  width: auto;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  border-radius: 20px;
+  background-color: hsla(211, 76%, 49%, 0.4);
+}
+
 nav {
   padding: 10px;
   padding-right: 0px;
@@ -1011,13 +1031,53 @@ nav {
 /* media for all */
 
 @media (max-width: 1200px) {
-  #action-bar {
-    opacity: 0;
-    pointer-events: none;
+  #wrapper {
+    grid-template-columns: 1fr;
+    grid-template-rows: 1fr 65px;
+    gap: 12px;
 
-    flex: 0 0 0px;
-    padding-top: 0px;
-    padding-bottom: 0px;
+    height: 100dvh;
+  }
+
+  #action-bar,
+  #left-panel,
+  #main,
+  #right-panel {
+    display: none;
+  }
+
+  #left-panel.mobile-active,
+  #main.mobile-active,
+  #right-panel.mobile-active {
+    display: flex;
+    min-height: 0;
+  }
+
+  #nav-footer {
+    background-color: #ffffff;
+    display: flex;
+    flex-direction: row;
+    border-radius: 16px;
+    overflow: hidden;
+  }
+
+  .nav-tab {
+    flex: 1;
+    background: transparent;
+    border: none;
+
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 8px;
+
+    color: #000000;
+    cursor: pointer;
+    transition: background-color 0.2s ease;
+  }
+
+  .nav-tab.active {
+    background-color: #e2e8f0;
   }
 }
 

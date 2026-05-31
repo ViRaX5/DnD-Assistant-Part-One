@@ -243,7 +243,7 @@ canvas.addEventListener("touchmove", (event) => {
 });
 
 canvas.addEventListener("touchend", () => {
-  isDragging = false;
+  isDraggingMap = false;
 });
 
 document.addEventListener('click', () => {
