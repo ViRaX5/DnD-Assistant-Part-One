@@ -1,5 +1,6 @@
 @import url('https://fonts.googleapis.com/css2?family=MedievalSharp&display=swap');
-:root{
+
+:root {
     --accent-color: #E2E8F0;
     --base-color: #C9D3DF;
     --text-color-base: #000000;
@@ -12,12 +13,30 @@
 * {
     margin: 0;
     padding: 0;
+    scrollbar-width: thin;
+    scrollbar-color: #8e9eb5 transparent;
+}
+*::-webkit-scrollbar {
+    width: 8px;
+    height: 8px;
+}
+*::-webkit-scrollbar-track {
+    background: transparent;
+    margin-top: 15px;
+    margin-bottom: 15px;
+}
+*::-webkit-scrollbar-thumb {
+    background-color: #8e9eb5;
+    border-radius: 10px;
+}
+*::-webkit-scrollbar-thumb:hover {
+    background-color: #63748c;
 }
 
 html {
     font-family: MedievalSharp, sans-serif;
     /* font-size: 16px; trying something new in the line below */
-    font-size: clamp(15px, 1vw + 13px, 23px);
+    font-size: clamp(15px, 2vmin + 10px, 23px);
     color: var(--text-color-base);
     text-align: center;
 }
@@ -29,7 +48,7 @@ body {
     background-size: cover;
     background-position: right;
     background-attachment: fixed;
-    overflow: hidden;
+    overflow-y: hidden;
 }
 
 #wrapper {
@@ -38,7 +57,7 @@ body {
     height: 100vh;
     width: max(40%, 400px);
     padding: 10px;
-    border-radius:  0 20px 20px 0;
+    border-radius: 0 20px 20px 0;
     display: flex;
     flex-direction: column;
     align-items: center;
@@ -49,7 +68,8 @@ body {
     margin-top: 20px;
     margin-bottom: auto;
 }
-#wrapper .spacer{
+
+#wrapper .spacer {
     margin-bottom: auto;
 }
 
@@ -58,6 +78,10 @@ h1 {
     font-size: clamp(35px, 2vw + 0.75rem, 50px);
     font-weight: 900;
     text-transform: uppercase;
+    flex-shrink: 0;
+    text-align: center;
+    word-wrap: break-word;
+    max-width: 100%;
 }
 
 form {
@@ -69,12 +93,19 @@ form {
     flex-direction: column;
     align-items: center;
     gap: 10px;
+
+    flex: 1;
+    min-height: 0;
+    overflow-y: auto;
+    padding-right: 5px;
 }
-form > div {
+
+form>div {
     width: 100%;
     display: flex;
     justify-content: center;
 }
+
 form label {
     flex-shrink: 0;
     /* height: 40px;
@@ -95,7 +126,7 @@ form label {
     transition: 300ms ease;
 }
 
-form label svg{
+form label svg {
     width: 1.2em;
     height: 1.2em;
 }
@@ -117,17 +148,19 @@ form input {
     margin-right: 10px;
 }
 
-form input:hover{
+form input:hover {
     border-color: var(--accent-color);
 }
 
-form input:focus{
+form input:focus {
     outline: none;
     border-color: var(--text-color-alt);
 }
-div:has(input:focus) > label {
+
+div:has(input:focus)>label {
     background-color: var(--text-color-alt);
 }
+
 /* form input::placeholder {                //THIS IS OPTIONAL IF WE WANT LATER
     color: var(--text-color-alt);
 } */
@@ -145,21 +178,25 @@ form button {
     cursor: pointer;
     transition: 200ms ease;
 }
+
 form button:hover {
     background-color: var(--text-color-alt);
 }
-form button:focus{
+
+form button:focus {
     outline: none;
     background-color: var(--text-color-alt);
 }
 
-form div.incorrect label{
+form div.incorrect label {
     background-color: #f06272;
 }
-form div.incorrect input{
+
+form div.incorrect input {
     border-color: #f06272;
 }
-#error-message{
+
+#error-message {
     padding: 10px 10px 0 10px;
     /* padding-top: 10px;
     padding-right: 10px;
@@ -168,7 +205,7 @@ form div.incorrect input{
     color: #f06272;
 }
 
-.entire-form{
+.entire-form {
     display: flex;
     justify-content: flex-start;
     flex-direction: column;
@@ -177,71 +214,141 @@ form div.incorrect input{
     border-radius: 35px;
     margin-left: 5px;
     margin-right: 5px;
-    /* min-height: max(16.5rem, 300px);         /* add this if want the same box regarless of the form */
-    padding-bottom: 25px;                       /* remove this if the line above is not a comment */
+    /* min-height: max(16.5rem, 300px); */
+    padding-bottom: 25px;
     border: 1px solid var(--form-stroke);
+    min-height: 0;
 }
 
-.buttons{
+.buttons {
     display: flex;
     justify-content: space-evenly;
     align-items: center;
     border-radius: 35px 35px 0 0;
+    flex-shrink: 0;
 }
-.buttons button{
+
+.buttons button {
     font: inherit;
     padding: 0.75rem;
     flex-grow: 1;
 }
 
-.left{
+.left {
     border-radius: 35px 0 0 0;
     border: none;
     border-right: 1px solid black;
 }
-.right{
+
+.right {
     border: none;
     border-radius: 0 35px 0 0;
     border-left: 1px solid black;
 }
 
-.clicked{
+.clicked {
     background-color: var(--form-background);
 }
-.clicked:focus{
+
+.clicked:focus {
     outline: none;
     border-bottom: 2px solid #CBD0D648;
 }
-.not-clicked{
+
+.not-clicked {
     transition: 200ms ease;
     background-color: #E5E7EB;
     border-bottom: 2px solid var(--form-stroke);
 }
-.not-clicked:focus{
+
+.not-clicked:focus {
     outline: none;
     background-color: #e5e7eb48;
     border-bottom: 2px solid #CBD0D648;
 }
-.not-clicked:hover{
+
+.not-clicked:hover {
     background-color: #e5e7eb48;
     border-bottom: 2px solid #CBD0D648;
     cursor: pointer;
 }
 
-.login-form, .signup-form{
+.login-form,
+.signup-form {
     display: flex;
-    justify-content: center;
+    justify-content: flex-start;
     align-items: center;
     flex-grow: 1;
 }
 
-.not-active{
+.not-active {
     display: none;
 }
 
-@media(max-width: 401px){
-    #wrapper{
-        width: min(400px ,100%);
+@media (max-height: 450px) {
+    body {
+        overflow-y: auto;
+    }
+
+    #wrapper {
+        height: auto;
+        min-height: 100vh;
+        padding-top: 20px;
+        padding-bottom: 20px;
+    }
+
+    form {
+        overflow-y: visible;
+        min-height: 250px;
+    }
+}
+
+@media(max-width: 401px) {
+    #wrapper {
+        width: 100%;
         border-radius: 0;
+        padding: 5px;
+    }
+
+    .entire-form {
+        margin-left: 0;
+        margin-right: 0;
+        width: 100%;
+        box-sizing: border-box;
+        overflow: hidden;
+    }
+
+    .buttons button {
+        padding: 0.5rem 0.5rem;
+        font-size: clamp(12px, 4vw, 16px);
+    }
+
+    .login-form,
+    .signup-form {
+        overflow-x: auto;
+        padding-bottom: 8px;
+        align-items: flex-start;
+        min-width: 0;
+        width: 100%;
+        box-sizing: border-box;
+        padding-right: 0;
+    }
+
+    .login-form input,
+    .signup-form input {
+        margin-right: 0;
+    }
+
+    .login-form>div,
+    .signup-form>div {
+        min-width: 200px;
+        padding: 0 10px;
+        box-sizing: border-box;
+        justify-content: flex-start;
+    }
+
+    .login-form>div:last-child,
+    .signup-form>div:last-child {
+        justify-content: center;
     }
 }

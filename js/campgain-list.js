@@ -5,8 +5,45 @@ const confirm_logout_button = document.getElementById("confirm-logout");
 const player_button = document.getElementsByClassName("player")[0];
 const dm_button = document.getElementsByClassName("DM")[0];
 const logo = document.getElementsByClassName("logo")[0];
+const button_container = document.getElementsByClassName("buttons-placeholder")[0];
 
 const campaigns1 = [
+    {
+        "campaign_name": "test1", "status": "player", "character_name": "Steve Rogers"
+    },
+    {
+        "campaign_name": "test2", "status": "DM", "amout_of_players": "5"
+    },
+    {
+        "campaign_name": "test3", "status": "player", "character_name": "Crash Bandicot"
+    },
+    {
+        "campaign_name": "test1", "status": "player", "character_name": "Steve Rogers"
+    },
+    {
+        "campaign_name": "test2", "status": "DM", "amout_of_players": "5"
+    },
+    {
+        "campaign_name": "test3", "status": "player", "character_name": "Crash Bandicot"
+    },
+    {
+        "campaign_name": "test1", "status": "player", "character_name": "Steve Rogers"
+    },
+    {
+        "campaign_name": "test2", "status": "DM", "amout_of_players": "5"
+    },
+    {
+        "campaign_name": "test3", "status": "player", "character_name": "Crash Bandicot"
+    },
+    {
+        "campaign_name": "test1", "status": "player", "character_name": "Steve Rogers"
+    },
+    {
+        "campaign_name": "test2", "status": "DM", "amout_of_players": "5"
+    },
+    {
+        "campaign_name": "test3", "status": "player", "character_name": "Crash Bandicot"
+    },
     {
         "campaign_name": "test1", "status": "player", "character_name": "Steve Rogers"
     },
@@ -52,18 +89,18 @@ campaignContainerSection.addEventListener('click', (e) => {
     }
 })
 
-function addButtons(location) {
+function addButtons() {
     const buttonsContainer = document.createElement('div')
     const createButton = document.createElement('button')
     const joinButton = document.createElement('button')
     buttonsContainer.classList.add("buttons-container")
     createButton.classList.add("create-button")
-    joinButton.classList.add("join-button")
+    joinButton.classList.add("join-new-button")
     createButton.innerText = "Create Campaign"
     joinButton.innerText = "Join Campaign"
     buttonsContainer.appendChild(joinButton)
     buttonsContainer.appendChild(createButton)
-    location.appendChild(buttonsContainer)
+    button_container.appendChild(buttonsContainer)
 }
 
 function noSessions() {
