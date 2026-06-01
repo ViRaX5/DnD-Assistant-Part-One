@@ -119,9 +119,18 @@ function diceTrayInteraction() {
 
         const rollString = rollData.rolls.join(" and ");
 
-        const playerName = document.getElementById("player-name").textContent || "Unknown Hero";
+        let message = '';
 
-        let message = `${playerName} rolled: ${rollString} on ${diceAmount}${selectedDie}.`;
+        if (window.location.pathname.endsWith("playerScreen.html")) {
+            const playerName = document.getElementById("player-name").textContent || "Unknown Hero";
+
+            message = `${playerName} rolled: ${rollString} on ${diceAmount}${selectedDie}.`;
+        }
+        else {
+            message = `DM rolled: ${rollString} on ${diceAmount}${selectedDie}.`;
+        }
+
+
 
         if (diceAmount > 1) {
             message += ` (Total: ${rollData.total})`;

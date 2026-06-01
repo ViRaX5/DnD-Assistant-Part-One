@@ -1368,6 +1368,28 @@ nav {
   background-color: #a6a8ab;
 }
 
+#DMBody .combat-group {
+  flex: 2 1 0;
+}
+
+#DMBody .combat-group .action-btn {
+  flex: 1 1 0;
+}
+
+#DMBody #reset-map-btn {
+  flex: 1 1 0;
+}
+
+#DMBody #active-effects-wrapper {
+  flex: 1 1 0;
+  display: flex;
+}
+
+#DMBody #active-effects {
+  flex: 1 1 0;
+  width: 100%;
+}
+
 /* media for all */
 
 @media (max-width: 1200px) {

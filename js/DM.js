@@ -4,11 +4,6 @@ const assetsDB1 = [
     { id: "t3", name: "dog_token" },
     { id: "t4", name: "cat_token" },
     { id: "t5", name: "goblin_token" },
-    { id: "t1", name: "player1_token" },
-    { id: "t2", name: "player2_token" },
-    { id: "t3", name: "dog_token" },
-    { id: "t4", name: "cat_token" },
-    { id: "t5", name: "goblin_token" },
     { id: "t6", name: "" }
 ];
 const assetsDB2 = [];
@@ -29,20 +24,18 @@ const audioDB2 = [];
 const combatTracker1 = {
     currentTurn: { id: 2, name: "Player 2", initiative: 10 },
     upcoming: [
-        { id: 3, name: "Goblin", initiative: 8 },
-        { id: 1, name: "Player 1", initiative: 14 },
-        { id: 3, name: "Goblin", initiative: 8 },
-        { id: 1, name: "Player 1", initiative: 14 },
-        { id: 3, name: "Goblin", initiative: 8 },
-        { id: 1, name: "Player 1", initiative: 14 },
-        { id: 3, name: "Goblin", initiative: 8 },
-        { id: 1, name: "Player 1", initiative: 14 },
-        { id: 3, name: "Goblin", initiative: 8 },
-        { id: 1, name: "Player 1", initiative: 14 },
-        { id: 3, name: "Goblin", initiative: 8 },
-        { id: 1, name: "Player 1", initiative: 14 },
-        { id: 3, name: "Goblin", initiative: 8 },
-        { id: 1, name: "Player 1", initiative: 14 }
+        { id: 4, name: "Tharion (Rogue)", initiative: 19 },
+        { id: 5, name: "Eldrin (Wizard)", initiative: 18 },
+        { id: 6, name: "Young Red Dragon", initiative: 17 },
+        { id: 7, name: "Lurking Grick", initiative: 16 },
+        { id: 8, name: "Orc Warlord", initiative: 15 },
+        { id: 9, name: "Dire Wolf", initiative: 14 },
+        { id: 10, name: "Hobgoblin Captain", initiative: 13 },
+        { id: 11, name: "Skeletal Archer", initiative: 12 },
+        { id: 12, name: "Goblin Shaman", initiative: 11 },
+        { id: 13, name: "Kaelen (Paladin)", initiative: 9 },
+        { id: 14, name: "Cave Troll", initiative: 6 },
+        { id: 15, name: "Gelatinous Cube", initiative: 4 }
     ]
 };
 const combatTracker2 = {};
