@@ -46,11 +46,10 @@ h6 {
   box-sizing: border-box;
 
   display: grid;
+
   grid-template-columns: 19vw 1fr 19.2vw;
-
-  grid-template-rows: minmax(0, 1fr);
-
   gap: 16px;
+
   overflow: hidden;
 }
 
@@ -71,8 +70,6 @@ h6 {
     padding 0.4s ease,
     opacity 0.3s ease;
 }
-
-/* Scrollbars */
 
 #left-panel,
 #right-panel,
@@ -117,8 +114,6 @@ h6 {
 #equipment-and-traits-middle::-webkit-scrollbar-thumb:hover {
   background-color: #63748c;
 }
-
-/* Player Info */
 
 #player-info {
   background-color: #fdfbf7;
@@ -208,6 +203,7 @@ h6 {
   align-items: center;
 }
 
+/*          Player Info Header */
 #player-info-header {
   display: flex;
   flex-direction: row;
@@ -251,6 +247,7 @@ h6 {
   text-align: right;
 }
 
+/*          Player Info Main */
 #player-info-main {
   border-top: 2px solid #c7d2df;
   border-bottom: 2px solid #c7d2df;
@@ -300,6 +297,7 @@ h6 {
 
 /* Skill Toggle */
 .skill-toggle input[type="checkbox"] {
+  /* Visually hide the native checkbox */
   position: absolute;
   opacity: 0;
   cursor: pointer;
@@ -330,6 +328,7 @@ h6 {
 }
 
 .skill-toggle input[type="checkbox"]:checked + label::before {
+  /* When the input is checked, find the adjacent label and style its ::before */
   background-color: #cdd3df;
   border-color: #cdd3df;
 }
@@ -338,6 +337,7 @@ h6 {
   color: #000000;
 }
 
+/*          Player Info Footer */
 #player-info-footer {
   display: flex;
   flex-direction: column;
@@ -345,7 +345,9 @@ h6 {
   gap: 10px;
 
   max-height: 140px;
+  /* Locks the height so it doesn't crush the equipment box */
   overflow-y: auto;
+  /* Enables the vertical scrollbar */
   overflow-x: hidden;
 
   padding: 4px 0px;
@@ -372,12 +374,16 @@ h6 {
 
 .weapon-name {
   flex: 1;
+  /* Takes up all available space on the left */
   text-align: left;
+  /* Aligns text to the left edge */
 }
 
 .damage-dice {
   flex: 0 0 auto;
+  /* Takes up the exact same amount of space on the right */
   text-align: right;
+  /* Aligns text to the right edge */
   min-width: 40px;
 }
 
@@ -391,7 +397,9 @@ h6 {
   min-width: 24px;
   height: 24px;
   border-radius: 12px;
+  /* Half of the height keeps the edges perfectly round */
   padding: 0 6px;
+  /* Gives the text breathing room on the left/right */
   box-sizing: border-box;
 
   border-radius: 50%;
@@ -502,34 +510,14 @@ h6 {
   height: 100%;
   width: 100%;
   min-width: 0;
-  min-height: 0;
 }
 
 #main-map {
   background-color: aliceblue;
   flex: 1;
+  width: 100%;
   border: none;
   border-radius: 8px;
-
-  aspect-ratio: 1 / 1;
-  align-self: center;
-  max-width: 100%;
-  min-height: 0;
-}
-
-.action-divider {
-  width: 1px;
-  min-width: 1px;
-  flex-shrink: 0;
-  align-self: stretch;
-  margin: 6px 0;
-  background-color: #cbd5e1;
-  border-radius: 1px;
-}
-
-.combat-group {
-  display: flex;
-  gap: 12px;
 }
 
 .action-divider {
@@ -799,12 +787,6 @@ h6 {
   object-fit: contain;
 }
 
-.die-tray-img {
-  width: 40px;
-  height: 40px;
-  object-fit: contain;
-}
-
 .die-button span,
 .quantity-label {
   font-size: 10px;
@@ -820,7 +802,7 @@ h6 {
   color: #fff;
 }
 
-#quantity-pill {
+.quantity-pill {
   background-color: #476f63;
   border: 1px solid #153b2f;
   border-radius: 10px;
@@ -989,7 +971,7 @@ h6 {
   display: none;
 }
 
-/* DM Screen */
+/* From here on out it is for DM screen only */
 
 /* left side */
 
@@ -1098,13 +1080,16 @@ h6 {
 
 #add-initiative-btn {
   background: transparent;
-  border: 2px solid #cbd5e1;
-  border-radius: 1000px;
-  padding: 8px 16px;
+  border: none;
+  border-top: 1px solid #cbd0d6;
+  /* border: 2px solid #cbd5e1; */
+  /* border-radius: 1000px; */
+  /* padding: 8px 16px; */
   font: inherit;
   font-weight: bold;
   cursor: pointer;
-  margin: 12px auto;
+  padding-top: 12px;
+  padding-bottom: 12px;
   display: block;
   transition: 200ms ease;
 }
@@ -1122,7 +1107,7 @@ h6 {
   display: flex;
   justify-content: space-between;
   background-color: #cbd5e1;
-  border-radius: 20px;
+  border-radius: 0px 0px 20px 20px;
   padding: 0;
   overflow: hidden;
 }
@@ -1138,7 +1123,7 @@ h6 {
 }
 
 .turn-controls button:first-child {
-  border-right: 2px solid #a6b3c4;
+  border-right: 2px solid #f4f4f4;
 }
 
 .turn-controls button:hover {
@@ -1249,9 +1234,12 @@ dialog::backdrop {
 }
 
 #assets-grid {
-  display: grid;
-  grid-template-columns: repeat(2, minmax(90px, 130px));
-  justify-content: center;
+  display: flex;
+  flex-wrap: wrap;
+  padding: 6px;
+  /* grid-template-columns: repeat(2, minmax(90px, 130px));  */
+  align-content: flex-start;
+  justify-content: flex-start;
   gap: 10px;
   overflow-y: auto;
   flex: 1;
@@ -1381,12 +1369,6 @@ nav {
 }
 
 /* media for all */
-
-@media (max-width: 1400px) {
-  .skill-toggle label {
-    font-size: 10.5px;
-  }
-}
 
 @media (max-width: 1200px) {
   #wrapper {

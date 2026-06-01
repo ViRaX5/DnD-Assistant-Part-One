@@ -1,387 +1,3 @@
-<<<<<<< HEAD
-<!doctype html>
-<html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <link
-      rel="stylesheet"
-      href="node_modules/bootstrap/dist/css/bootstrap.min.css"
-    />
-    <script
-      src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.8/dist/umd/popper.min.js"
-      integrity="sha384-I7E8VVD/ismYTF4hNIPjVp/Zjvgyol6VFvRkX/vR+Vc4jQkC+hVqc2pM8ODewa9r"
-      crossorigin="anonymous"
-    ></script>
-    <script
-      src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.min.js"
-      integrity="sha384-G/EV+4j2dNv+tEPo3++6LCgdCROaejBqfUeNjuKAiuXbjrxilcCdDz6ZAVfHWe1Y"
-      crossorigin="anonymous"
-    ></script>
-    <link rel="stylesheet" href="css/screenStyle.css" />
-    <link
-      rel="stylesheet"
-      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css"
-      integrity="sha512-SnH5WK+bZxgPHs44uWIX+LLJAJ9/2PkPKZ5QiAj6Ta86w+fsb2TkcmfRyVX3pBnMFcV7oQPJkl9QevSCWr3W6A=="
-      crossorigin="anonymous"
-      referrerpolicy="no-referrer"
-    />
-    <script type="module" src="./js/app.js"></script>
-    <script type="text/javascript" src="./js/DM.js" defer></script>
-    <title>DnD Assistant</title>
-  </head>
-
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <link
-      rel="stylesheet"
-      href="node_modules/bootstrap/dist/css/bootstrap.min.css"
-    />
-    <script
-      src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.8/dist/umd/popper.min.js"
-      integrity="sha384-I7E8VVD/ismYTF4hNIPjVp/Zjvgyol6VFvRkX/vR+Vc4jQkC+hVqc2pM8ODewa9r"
-      crossorigin="anonymous"
-    ></script>
-    <script
-      src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.min.js"
-      integrity="sha384-G/EV+4j2dNv+tEPo3++6LCgdCROaejBqfUeNjuKAiuXbjrxilcCdDz6ZAVfHWe1Y"
-      crossorigin="anonymous"
-    ></script>
-    <link rel="stylesheet" href="css/screenStyle.css" />
-    <script type="module" src="./js/app.js"></script>
-    <script type="text/javascript" src="./js/DM.js" defer></script>
-    <title>DnD Assistant</title>
-  </head>
-
-  <body id="DMBody">
-    <div id="wrapper" class="container-fluid">
-      <div id="left-panel">
-        <div class="dm-panel-section" id="combat-turn-tracker">
-          <h2 class="panel-title">Combat Turn Tracker</h2>
-
-          <div class="tracker-group">
-            <h3>Current Player:</h3>
-            <div id="current-player-container"></div>
-          </div>
-          <div class="tracker-group">
-            <h3>Next Initiatives:</h3>
-            <div id="next-initiatives-container"></div>
-          </div>
-          <div class="tracker-group current-turn">
-            <h3>Current Player:</h3>
-            <div id="current-player-container"></div>
-          </div>
-          <div class="tracker-group">
-            <h3>Next Initiatives:</h3>
-            <div id="next-initiatives-container"></div>
-          </div>
-
-          <button id="add-initiative-btn">Add to initiative</button>
-
-          <dialog id="add-initiative-modal">
-            <div class="modal-content">
-              <h2>Add To Initiative</h2>
-              <button class="menu-btn">Add Existing Creature</button>
-              <button class="menu-btn">Add New Creature</button>
-              <div class="modal-buttons">
-                <button
-                  type="button"
-                  id="close-initiative-modal"
-                  class="cancel-button"
-                >
-                  Close
-                </button>
-              </div>
-            </div>
-          </dialog>
-          <dialog id="add-initiative-modal">
-            <div class="modal-content">
-              <h2>Add To Initiative</h2>
-              <button class="menu-btn">Add Existing Creature</button>
-              <button class="menu-btn">Add New Creature</button>
-              <div class="modal-buttons">
-                <button
-                  type="button"
-                  id="close-initiative-modal"
-                  class="cancel-button"
-                >
-                  Close
-                </button>
-              </div>
-            </div>
-          </dialog>
-
-          <div class="turn-controls">
-            <button id="prev-turn-btn">Previous</button>
-            <button id="next-turn-btn">Next</button>
-          </div>
-        </div>
-        <div class="dm-panel-section" id="assets-panel">
-          <div class="assets-tabs">
-            <button class="active">Tokens</button>
-            <button>Maps</button>
-            <button>Audio</button>
-          </div>
-          <div class="turn-controls">
-            <button id="prev-turn-btn">Previous</button>
-            <button id="next-turn-btn">Next</button>
-          </div>
-        </div>
-        <div class="dm-panel-section" id="assets-panel">
-          <div class="assets-tabs">
-            <button class="active">Tokens</button>
-            <button>Maps</button>
-            <button>Audio</button>
-          </div>
-
-          <div id="assets-grid"></div>
-          <div id="assets-grid"></div>
-
-          <input type="text" id="asset-search" placeholder="Search Assets..." />
-        </div>
-      </div>
-      <div id="main" class="mobile-active">
-        <header id="DMHeader">
-          <div class="image-container">
-            <a href="campaignList.html">
-              <img
-                class="logo"
-                src="./images/D&DLogoTransparent.png"
-                alt="Home"
-              />
-            </a>
-          </div>
-          <nav>
-            <div class="filters">
-              <button type="button" class="DM not-clicked">DM</button>
-              <button type="button" class="player not-clicked">Player</button>
-              <button type="button" class="log-out">Log Out</button>
-              <dialog id="logout-modal">
-                <div class="modal-content">
-                  <h2>Ending the Adventure</h2>
-                  <p>Are you sure you want to log out?</p>
-                  <div class="modal-buttons">
-                    <button
-                      type="button"
-                      id="cancel-logout"
-                      class="cancel-button"
-                    >
-                      Cancel
-                    </button>
-                    <button
-                      type="button"
-                      id="confirm-logout"
-                      class="confirm-button"
-                    >
-                      Yes, Log Out
-                    </button>
-                  </div>
-                </div>
-              </dialog>
-            </div>
-          </nav>
-        </header>
-        <iframe
-          id="main-map"
-          src="./map-grid.html"
-          title="Grid map"
-          loading="lazy"
-        ></iframe>
-        <div id="action-bar">
-          <div id="start-end">
-            <div id="start-combat">
-              <button class="start-button">start-combat</button>
-            </div>
-            <div id="end-combat">
-              <button class="end-button">end-combat</button>
-            </div>
-          </div>
-          <div id="current-round">
-            <span>current-round</span>
-          </div>
-          <div id="active-effects-wrapper">
-            <button id="active-effects">Active Effects</button>
-          </div>
-        </div>
-      </div>
-      <div id="main">
-        <header id="DMHeader">
-          <div class="image-container">
-            <a href="campaignList.html">
-              <img
-                class="logo"
-                src="./images/D&DLogoTransparent.png"
-                alt="Home"
-              />
-            </a>
-          </div>
-          <nav>
-            <!-- <span>Filter by:</span> -->
-            <div class="filters">
-              <button type="button" class="DM not-clicked">DM</button>
-              <button type="button" class="player not-clicked">Player</button>
-              <button type="button" class="log-out">Log Out</button>
-              <dialog id="logout-modal">
-                <div class="modal-content">
-                  <h2>Ending the Adventure</h2>
-                  <p>Are you sure you want to log out?</p>
-                  <div class="modal-buttons">
-                    <button
-                      type="button"
-                      id="cancel-logout"
-                      class="cancel-button"
-                    >
-                      Cancel
-                    </button>
-                    <button
-                      type="button"
-                      id="confirm-logout"
-                      class="confirm-button"
-                    >
-                      Yes, Log Out
-                    </button>
-                  </div>
-                </div>
-              </dialog>
-            </div>
-          </nav>
-        </header>
-        <iframe
-          id="main-map"
-          src="./map-grid.html"
-          title="Grid map"
-          loading="lazy"
-        ></iframe>
-        <div id="action-bar">
-          <div class="combat-group">
-            <button id="start-combat-btn" class="action-btn start-btn">
-              Start Combat
-            </button>
-            <button id="end-combat-btn" class="action-btn end-btn">
-              End Combat
-            </button>
-          </div>
-
-          <div class="action-divider"></div>
-
-          <div id="current-round-display">
-            <span class="round-label">current round:</span>
-            <span class="round-number">10</span>
-          </div>
-
-          <div class="action-divider"></div>
-
-          <button id="reset-map-btn" class="action-btn reset-btn">
-            Reset Map
-          </button>
-
-          <div class="action-divider"></div>
-
-          <div id="active-effects-wrapper">
-            <button id="active-effects" class="action-btn effects-btn">
-              Active Effects
-            </button>
-
-            <div id="active-effects-popup">
-              <div class="effects-header">Name | Turns remaining</div>
-
-              <div class="effects-list">
-                <div class="effect-item">Spirit Guardians: 5</div>
-                <div class="effect-item">Cloud Kill: 2</div>
-              </div>
-
-              <button class="add-effect-btn">Add Effect</button>
-            </div>
-          </div>
-        </div>
-      </div>
-      <div id="right-panel">
-        <div id="dice-roller-outer">
-          <div id="dice-roller-inner">
-            <div id="dice-grid">
-              <button class="die-button">
-                <img src="./images/d4.png" alt="d4" />
-                <span>d4</span>
-              </button>
-              <button class="die-button">
-                <img src="./images/d6.png" alt="d6" />
-                <span>d6</span>
-              </button>
-              <button class="die-button">
-                <img src="./images/d8.png" alt="d8" />
-                <span>d8</span>
-              </button>
-              <button class="die-button">
-                <img src="./images/d10.png" alt="d10" />
-                <span>d10</span>
-              </button>
-
-              <button class="die-button">
-                <img src="./images/d12.png" alt="d12" />
-                <span>d12</span>
-              </button>
-              <button class="die-button">
-                <img src="./images/d20.png" alt="d20" />
-                <span>d20</span>
-              </button>
-
-              <div id="dice-quantity-container">
-                <div class="quantity-pill">
-                  <button class="quantity-button">-</button>
-                  <span id="quantity-amount">1</span>
-                  <button class="quantity-button">+</button>
-                </div>
-                <span class="quantity-label">Quantity</span>
-              </div>
-            </div>
-            <div id="dice-tray-area"></div>
-            <button id="roll-button">Roll</button>
-          </div>
-        </div>
-        <div id="chat-box">
-          <div id="chat-history">
-            <div class="chat-message system-msg">
-              Gamur rolled: 18 and 5 on 2d20
-            </div>
-            <div class="chat-message action-msg">
-              Gamur used Longsword: 8 damage total
-            </div>
-          </div>
-
-          <div id="chat-controls">
-            <input
-              type="text"
-              id="chat-input"
-              placeholder="Type Message..."
-              autocomplete="off"
-            />
-
-            <button id="recipient-btn">To: All</button>
-
-            <button id="send-btn">Send</button>
-          </div>
-        </div>
-      </div>
-      <div id="nav-footer">
-        <button class="nav-tab" id="nav-info-btn">
-          <i class="fa-solid fa-circle-info fa-2xl"></i>
-        </button>
-
-        <button class="nav-tab active" id="nav-map-btn">
-          <i class="fa-solid fa-map fa-lg"></i>
-          <i class="fa-solid fa-book-open fa-lg"></i>
-        </button>
-
-        <button class="nav-tab" id="nav-dice-btn">
-          <i class="fa-solid fa-dice-five fa-lg"></i>
-          <i class="fa-solid fa-comment-dots fa-lg"></i>
-        </button>
-      </div>
-    </div>
-  </body>
-</html>
-=======
 <!doctype html>
 <html lang="en">
   <head>
@@ -557,37 +173,37 @@
         <div id="dice-roller-outer">
           <div id="dice-roller-inner">
             <div id="dice-grid">
-              <button class="die-button">
+              <button data-die="d4" class="die-button">
                 <img src="./images/d4.png" alt="d4" />
                 <span>d4</span>
               </button>
-              <button class="die-button">
+              <button data-die="d6" class="die-button">
                 <img src="./images/d6.png" alt="d6" />
                 <span>d6</span>
               </button>
-              <button class="die-button">
+              <button data-die="d8" class="die-button">
                 <img src="./images/d8.png" alt="d8" />
                 <span>d8</span>
               </button>
-              <button class="die-button">
+              <button data-die="d10" class="die-button">
                 <img src="./images/d10.png" alt="d10" />
                 <span>d10</span>
               </button>
 
-              <button class="die-button">
+              <button data-die="d12" class="die-button">
                 <img src="./images/d12.png" alt="d12" />
                 <span>d12</span>
               </button>
-              <button class="die-button">
+              <button data-die="d20" class="die-button">
                 <img src="./images/d20.png" alt="d20" />
                 <span>d20</span>
               </button>
 
               <div id="dice-quantity-container">
-                <div class="quantity-pill">
-                  <button class="quantity-button">-</button>
+                <div id="quantity-pill">
+                  <button id="minus-quantity" class="quantity-button">-</button>
                   <span id="quantity-amount">1</span>
-                  <button class="quantity-button">+</button>
+                  <button id="plus-quantity" class="quantity-button">+</button>
                 </div>
                 <span class="quantity-label">Quantity</span>
               </div>
@@ -638,4 +254,3 @@
     </div>
   </body>
 </html>
->>>>>>> d594545df4dd198cd1a5cff91ca77ee3a654a655

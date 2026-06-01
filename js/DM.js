@@ -149,14 +149,14 @@ function handleRemoveEntity(idStr) {
     renderCombatTracker(activeCombatTracker);
 }
 
-nextBtn.addEventListener('click', () => {handleNextTurn(nextBtn)});
-prevBtn.addEventListener('click', () => {handlePrevTurn(prevBtn)});
+nextBtn.addEventListener('click', () => { handleNextTurn(nextBtn) });
+prevBtn.addEventListener('click', () => { handlePrevTurn(prevBtn) });
 
 addInitBtn.addEventListener('click', () => {
     initModal.showModal()
     addInitBtn.blur()
 });
-closeInitModal.addEventListener('click', () => { 
+closeInitModal.addEventListener('click', () => {
     initModal.close()
     closeInitModal.blur()
 });
