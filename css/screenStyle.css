@@ -6,6 +6,7 @@
   --text-color-base: #000000;
   --text-color-alt: #63748c;
   --input-color: #f1f5f9;
+  --panel-stroke: #cbd0d6;
 }
 
 * {
@@ -475,6 +476,7 @@ h6 {
 #equipment-and-traits-middle {
   flex-shrink: 0;
 }
+
 #equipment-and-traits-top {
   flex-shrink: 0;
 }
@@ -515,19 +517,49 @@ h6 {
   min-height: 0;
 }
 
+.action-divider {
+  width: 1px;
+  min-width: 1px;
+  flex-shrink: 0;
+  align-self: stretch;
+  margin: 6px 0;
+  background-color: #cbd5e1;
+  border-radius: 1px;
+}
+
+.combat-group {
+  display: flex;
+  gap: 12px;
+}
+
+.action-divider {
+  width: 1px;
+  min-width: 1px;
+  flex-shrink: 0;
+  align-self: stretch;
+  margin: 6px 0;
+  background-color: #cbd5e1;
+  border-radius: 1px;
+}
+
+.combat-group {
+  display: flex;
+  gap: 12px;
+}
+
 #action-bar {
   background-color: #e2e8f0;
   width: 100%;
   flex: 0 0 85px;
   border-radius: 35px;
-
   padding: 8px 16px;
   box-sizing: border-box;
-
   display: flex;
   flex-direction: row;
-
-  gap: 12px;
+  /* started change make sure doesnt break player */
+  justify-content: space-evenly;
+  align-items: center;
+  gap: 8px;
 
   opacity: 1;
   overflow: visible;
@@ -535,6 +567,72 @@ h6 {
     flex 0.4s ease,
     padding 0.4s ease,
     opacity 0.3s ease;
+}
+
+.action-btn {
+  border: none;
+  border-radius: 1000px;
+  padding: 10px 14px;
+  font: inherit;
+  font-size: clamp(14px, 1.2vw, 18px);
+  font-weight: bold;
+  cursor: pointer;
+  color: #000;
+  white-space: nowrap;
+
+  transition:
+    filter 0.2s ease,
+    transform 0.1s ease;
+}
+
+.action-btn:hover {
+  filter: brightness(0.9);
+}
+
+.action-btn:active {
+  transform: scale(0.95);
+}
+
+/* --- Specific Button Colors --- */
+.start-btn {
+  background-color: #4ade80;
+}
+
+.end-btn {
+  background-color: #f87171;
+}
+
+.reset-btn {
+  background-color: #38bdf8;
+}
+
+.effects-btn {
+  background-color: #d946ef;
+}
+
+/* --- Current Round Display --- */
+#current-round-display {
+  background-color: #ffffff;
+  border-radius: 1000px;
+  padding: 6px 30px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-width: 80px;
+}
+
+.round-label {
+  font-size: 11px;
+  color: #63748c;
+  line-height: 1;
+}
+
+.round-number {
+  font-size: 24px;
+  font-weight: bold;
+  line-height: 1;
+  margin-top: 4px;
 }
 
 #actions-list {
@@ -580,31 +678,6 @@ h6 {
 #active-effects-wrapper {
   position: relative;
   display: flex;
-}
-
-#active-effects {
-  background-color: #ae1fc7a1;
-  border: 1px solid #d7dee7;
-  border-radius: 29px;
-
-  flex: 0 1 auto;
-  padding: 0 32px;
-  min-width: 160px;
-
-  white-space: nowrap;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-
-  cursor: pointer;
-  transition: opacity 0.2s ease;
-
-  font-size: clamp(16px, 1.5vw, 22px);
-  color: #000;
-}
-
-#active-effects:hover {
-  opacity: 0.8;
 }
 
 #active-effects-popup {
@@ -922,28 +995,40 @@ h6 {
 
 /* DM Left Panel Shared Styles */
 .dm-panel-section {
-  background-color: #e2e8f0;
-  border-radius: 20px;
+  background-color: #f9fafb;
+  border-radius: 42px;
+  border: 1px solid var(--panel-stroke);
   width: 100%;
-  padding: 16px;
+  /* padding: 16px; */
   box-sizing: border-box;
   display: flex;
   flex-direction: column;
-  gap: 12px;
+  /* gap: 12px; */
 }
 
 .panel-title {
+  /* border: 10px solid var(--form-stroke); */
+  border-radius: 41px 41px 0 0;
+  padding-top: 12px;
   font-size: 1.2rem;
   color: #000;
-  margin-bottom: 8px;
+  padding-bottom: 12px;
+  background-color: #d9d9d9;
 }
 
 /* Combat Tracker Specifics */
+.tracker-group {
+  padding-left: 6px;
+  padding-right: 6px;
+}
 .tracker-group h3 {
   font-size: 1rem;
   font-weight: normal;
   text-align: left;
   margin-bottom: 8px;
+}
+.current-turn {
+  padding-top: 10px;
 }
 
 #combat-turn-tracker {
@@ -951,6 +1036,7 @@ h6 {
   flex-direction: column;
   flex: 1 1 0;
   min-height: min-content;
+  background-color: white;
 }
 
 #combat-turn-tracker .tracker-group:nth-of-type(2) {
@@ -978,6 +1064,9 @@ h6 {
   font-size: 0.9rem;
   border: 1px solid #cbd0d6;
 }
+.initiative-card span {
+  padding-right: 6px;
+}
 
 .remove-btn {
   background: transparent;
@@ -994,11 +1083,13 @@ h6 {
   color: #63748c;
   transition: 200ms ease;
 }
+
 .remove-btn:hover {
   background-color: #f06272;
   border-color: #f06272;
   color: white;
 }
+
 .remove-btn:focus {
   outline: none;
   background-color: #ed253c;
@@ -1017,9 +1108,11 @@ h6 {
   display: block;
   transition: 200ms ease;
 }
+
 #add-initiative-btn:hover {
   background-color: #cbd5e1;
 }
+
 #add-initiative-btn:focus {
   outline: none;
   background-color: #a6b3c4;
@@ -1035,7 +1128,7 @@ h6 {
 }
 
 .turn-controls button {
-  background: transparent;
+  background: #d9d9d9;
   border: none;
   padding: 10px 16px;
   flex: 1;
@@ -1043,12 +1136,15 @@ h6 {
   font: inherit;
   transition: 200ms ease;
 }
+
 .turn-controls button:first-child {
   border-right: 2px solid #a6b3c4;
 }
+
 .turn-controls button:hover {
   background-color: #a6b3c4;
 }
+
 .turn-controls button:focus {
   outline: none;
   background-color: #8e9eb5;
@@ -1109,13 +1205,13 @@ dialog::backdrop {
   display: flex;
   flex-direction: column;
   flex: 1 1 0;
-  min-height: min-content;
+  min-height: 0;
 }
 
 .assets-tabs {
   display: flex;
-  border-bottom: 2px solid #cbd5e1;
-  border-radius: 12px 12px 0 0;
+  /* border-bottom: 2px solid #cbd5e1; */
+  border-radius: 39px 39px 0 0;
   flex-shrink: 0;
   overflow-x: auto;
   overflow-y: hidden;
@@ -1123,7 +1219,7 @@ dialog::backdrop {
 
 .assets-tabs button {
   flex: 1;
-  background: transparent;
+  background: #e5e7eb;
   border: none;
   padding: 10px 8px;
   cursor: pointer;
@@ -1132,20 +1228,24 @@ dialog::backdrop {
   min-width: fit-content;
   transition: 200ms ease;
 }
+
 .assets-tabs button:not(:last-child) {
-  border-right: 2px solid #cbd5e1;
+  border-right: 1px solid #cbd5e1;
 }
+
 .assets-tabs button:hover {
   background-color: #cbd5e1;
 }
+
 .assets-tabs button:focus {
   outline: none;
   background-color: #a6b3c4;
 }
 
 .assets-tabs button.active {
-  border-bottom: 3px solid #000;
+  border-bottom: 2px solid #5559f0;
   font-weight: bold;
+  background-color: #ffffff;
 }
 
 #assets-grid {
@@ -1159,21 +1259,36 @@ dialog::backdrop {
 }
 
 .asset-item {
-  background-color: #ffffff;
+  background-color: #d1d5db;
   border-radius: 8px;
-  height: 60px;
+  height: 75px;
+  width: 75px;
   display: flex;
   justify-content: center;
   align-items: center;
   font-size: 0.8rem;
-  color: #cbd5e1;
+  color: #656c7c;
   cursor: grab;
+  word-wrap: break-word;
+}
+
+.asset-item span {
+  word-wrap: break-word;
+  min-width: 0;
+}
+
+.search-container {
+  background-color: #f3f4f6;
+  border-top: 1px solid #cbd0d6;
+  padding: 5px;
+  border-radius: 0 0 20px 20px;
 }
 
 #asset-search {
+  background-color: #ffffff;
   border-radius: 20px;
   border: none;
-  padding: 10px 16px;
+  padding: 6px 12px;
   width: 100%;
   box-sizing: border-box;
   margin-top: auto;
@@ -1257,7 +1372,7 @@ nav {
 }
 
 .filters button:hover {
-  background-color: var(--form-stroke);
+  background-color: var(--panel-stroke);
 }
 
 .filters button:focus {

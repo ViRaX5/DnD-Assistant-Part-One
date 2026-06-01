@@ -4,6 +4,11 @@ const assetsDB1 = [
     { id: "t3", name: "dog_token" },
     { id: "t4", name: "cat_token" },
     { id: "t5", name: "goblin_token" },
+    { id: "t1", name: "player1_token" },
+    { id: "t2", name: "player2_token" },
+    { id: "t3", name: "dog_token" },
+    { id: "t4", name: "cat_token" },
+    { id: "t5", name: "goblin_token" },
     { id: "t6", name: "" }
 ];
 const assetsDB2 = [];
@@ -62,7 +67,7 @@ function renderCombatTracker(combatData) {
     if (!combatData || (!combatData.currentTurn && combatData.upcoming.length === 0)) {
         currentPlayerContainer.innerHTML = `<span style="color: #63748c;">No active combat</span>`;
         nextInitiativesContainer.innerHTML = '';
-        return; 
+        return;
     }
 
     if (combatData.currentTurn) {
@@ -90,7 +95,10 @@ function renderCombatTracker(combatData) {
     }
 
     document.querySelectorAll('.remove-btn').forEach(btn => {
-        btn.addEventListener('click', (e) => handleRemoveEntity(e.target.dataset.id));
+        btn.addEventListener('click', (e) => {
+            handleRemoveEntity(e.target.dataset.id)
+            e.target.blur()
+        });
     });
 }
 
@@ -98,58 +106,73 @@ function renderAssets(assetsData) {
     assetsGrid.innerHTML = '';
     if (!assetsData || assetsData.length === 0) {
         assetsGrid.innerHTML = `<span style="grid-column: span 2; text-align: center; color: #63748c; padding-top: 20px;">No assets found</span>`;
-        return; 
+        return;
     }
     assetsData.forEach(asset => {
-        if (!asset.name) return; 
+        if (!asset.name) return;
         const token = document.createElement('div');
+        const info = document.createElement('span')
         token.className = 'asset-item';
-        token.innerText = asset.name;
+        info.innerText = asset.name;
+        token.appendChild(info);
         assetsGrid.appendChild(token);
     });
 }
 
-function handleNextTurn() {
-    if (activeCombatTracker.upcoming.length === 0) return; 
+function handleNextTurn(clickedBtn) {
+    if (activeCombatTracker.upcoming.length === 0) return;
     const oldCurrent = activeCombatTracker.currentTurn;
-    activeCombatTracker.currentTurn = activeCombatTracker.upcoming.shift(); 
-    if (oldCurrent) activeCombatTracker.upcoming.push(oldCurrent); 
+    activeCombatTracker.currentTurn = activeCombatTracker.upcoming.shift();
+    if (oldCurrent) activeCombatTracker.upcoming.push(oldCurrent);
     renderCombatTracker(activeCombatTracker);
+    clickedBtn.blur()
 }
 
-function handlePrevTurn() {
-    if (activeCombatTracker.upcoming.length === 0) return; 
+function handlePrevTurn(clickedBtn) {
+    if (activeCombatTracker.upcoming.length === 0) return;
     const oldCurrent = activeCombatTracker.currentTurn;
-    activeCombatTracker.currentTurn = activeCombatTracker.upcoming.pop(); 
-    if (oldCurrent) activeCombatTracker.upcoming.unshift(oldCurrent); 
+    activeCombatTracker.currentTurn = activeCombatTracker.upcoming.pop();
+    if (oldCurrent) activeCombatTracker.upcoming.unshift(oldCurrent);
     renderCombatTracker(activeCombatTracker);
+    clickedBtn.blur()
 }
 
 function handleRemoveEntity(idStr) {
-    const id = parseInt(idStr) || idStr; 
+    const id = parseInt(idStr) || idStr;
 
     if (activeCombatTracker.currentTurn && activeCombatTracker.currentTurn.id === id) {
         activeCombatTracker.currentTurn = activeCombatTracker.upcoming.shift() || null;
-    } 
+    }
     else {
         activeCombatTracker.upcoming = activeCombatTracker.upcoming.filter(entity => entity.id !== id);
     }
     renderCombatTracker(activeCombatTracker);
 }
 
-nextBtn.addEventListener('click', handleNextTurn);
-prevBtn.addEventListener('click', handlePrevTurn);
+nextBtn.addEventListener('click', () => {handleNextTurn(nextBtn)});
+prevBtn.addEventListener('click', () => {handlePrevTurn(prevBtn)});
 
-addInitBtn.addEventListener('click', () => initModal.showModal());
-closeInitModal.addEventListener('click', () => initModal.close());
+addInitBtn.addEventListener('click', () => {
+    initModal.showModal()
+    addInitBtn.blur()
+});
+closeInitModal.addEventListener('click', () => { 
+    initModal.close()
+    closeInitModal.blur()
+});
 
 assetTabs.forEach(tab => {
     tab.addEventListener('click', (e) => {
-        assetTabs.forEach(t => t.classList.remove('active'));
-        e.target.classList.add('active');
+        assetTabs.forEach(t => {
+            t.classList.remove('active')
+            t.classList.add('not-active')
+        });
+        e.target.classList.add('active')
+        e.target.classList.remove('not-active')
+        e.target.blur()
 
         const tabName = e.target.innerText.toLowerCase();
-        if (tabName === 'tokens') renderAssets(assetsDB1);
+        if (tabName === 'tokens') renderAssets(activeAssetts);
         else if (tabName === 'maps') renderAssets(activeMaps);
         else if (tabName === 'audio') renderAssets(activeAudio);
     });
