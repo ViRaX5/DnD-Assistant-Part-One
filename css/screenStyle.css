@@ -6,6 +6,7 @@
   --text-color-base: #000000;
   --text-color-alt: #63748c;
   --input-color: #f1f5f9;
+  --panel-stroke: #CBD0D6;
 }
 
 * {
@@ -281,7 +282,7 @@ h6 {
   padding-bottom: 6px;
 }
 
-#hit-points-container-top > h4 {
+#hit-points-container-top>h4 {
   font-size: 13px;
   color: #a5b1c2;
 }
@@ -310,8 +311,8 @@ h6 {
   gap: 10px;
   color: #63748c;
   font-size: 14px;
-  cursor: pointer; /* Makes it clear you can click the whole row */
-  user-select: none; /* Prevents text highlighting when clicking rapidly */
+  cursor: pointer;
+  user-select: none;
 }
 
 .skill-toggle label::before {
@@ -326,13 +327,13 @@ h6 {
   transition: all 0.2s ease;
 }
 
-.skill-toggle input[type="checkbox"]:checked + label::before {
+.skill-toggle input[type="checkbox"]:checked+label::before {
   /* When the input is checked, find the adjacent label and style its ::before */
   background-color: #cdd3df;
   border-color: #cdd3df;
 }
 
-.skill-toggle input[type="checkbox"]:checked + label {
+.skill-toggle input[type="checkbox"]:checked+label {
   color: #000000;
 }
 
@@ -343,8 +344,10 @@ h6 {
   align-items: end;
   gap: 10px;
 
-  max-height: 140px; /* Locks the height so it doesn't crush the equipment box */
-  overflow-y: auto; /* Enables the vertical scrollbar */
+  max-height: 140px;
+  /* Locks the height so it doesn't crush the equipment box */
+  overflow-y: auto;
+  /* Enables the vertical scrollbar */
   overflow-x: hidden;
 
   padding: 4px 0px;
@@ -365,7 +368,7 @@ h6 {
   box-sizing: border-box;
 }
 
-.attack-container > span {
+.attack-container>span {
   font-size: 13px;
 }
 
@@ -393,8 +396,10 @@ h6 {
 
   min-width: 24px;
   height: 24px;
-  border-radius: 12px; /* Half of the height keeps the edges perfectly round */
-  padding: 0 6px; /* Gives the text breathing room on the left/right */
+  border-radius: 12px;
+  /* Half of the height keeps the edges perfectly round */
+  padding: 0 6px;
+  /* Gives the text breathing room on the left/right */
   box-sizing: border-box;
 
   border-radius: 50%;
@@ -420,7 +425,7 @@ h6 {
   flex-direction: column;
 }
 
-#equipment-and-traits-top > span {
+#equipment-and-traits-top>span {
   font-size: 24px;
   color: #556985;
 
@@ -454,7 +459,7 @@ h6 {
   gap: 5px;
 }
 
-.trait > span,
+.trait>span,
 .equipment-name {
   font-size: 13px;
 }
@@ -479,6 +484,7 @@ h6 {
 #equipment-and-traits-middle {
   flex-shrink: 0;
 }
+
 #equipment-and-traits-top {
   flex-shrink: 0;
 }
@@ -514,19 +520,34 @@ h6 {
   border-radius: 8px;
 }
 
+.action-divider {
+  width: 1px;
+  min-width: 1px;
+  flex-shrink: 0;
+  align-self: stretch;
+  margin: 6px 0;
+  background-color: #cbd5e1;
+  border-radius: 1px;
+}
+
+.combat-group {
+  display: flex;
+  gap: 12px;
+}
+
 #action-bar {
   background-color: #e2e8f0;
   width: 100%;
   flex: 0 0 85px;
   border-radius: 35px;
-
   padding: 8px 16px;
   box-sizing: border-box;
-
   display: flex;
   flex-direction: row;
-
-  gap: 12px;
+  /* started change make sure doesnt break player */
+  justify-content: space-evenly;
+  align-items: center;
+  gap: 8px;
 
   opacity: 1;
   overflow: visible;
@@ -534,6 +555,70 @@ h6 {
     flex 0.4s ease,
     padding 0.4s ease,
     opacity 0.3s ease;
+}
+
+.action-btn {
+  border: none;
+  border-radius: 1000px;
+  padding: 10px 14px;
+  font: inherit;
+  font-size: clamp(14px, 1.2vw, 18px);
+  font-weight: bold;
+  cursor: pointer;
+  color: #000;
+  white-space: nowrap;
+
+  transition: filter 0.2s ease, transform 0.1s ease;
+}
+
+.action-btn:hover {
+  filter: brightness(0.9);
+}
+
+.action-btn:active {
+  transform: scale(0.95);
+}
+
+/* --- Specific Button Colors --- */
+.start-btn {
+  background-color: #4ade80;
+}
+
+.end-btn {
+  background-color: #f87171;
+}
+
+.reset-btn {
+  background-color: #38bdf8;
+}
+
+.effects-btn {
+  background-color: #d946ef;
+}
+
+/* --- Current Round Display --- */
+#current-round-display {
+  background-color: #ffffff;
+  border-radius: 1000px;
+  padding: 6px 30px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-width: 80px;
+}
+
+.round-label {
+  font-size: 11px;
+  color: #63748c;
+  line-height: 1;
+}
+
+.round-number {
+  font-size: 24px;
+  font-weight: bold;
+  line-height: 1;
+  margin-top: 4px;
 }
 
 #actions-list {
@@ -576,44 +661,15 @@ h6 {
   object-fit: contain;
 }
 
-/* --- 1. The Anchor & Button --- */
 #active-effects-wrapper {
   position: relative;
-  /* CRITICAL: Anchors the popup to this specific spot */
   display: flex;
-}
-
-#active-effects {
-  background-color: #ae1fc7a1;
-  border: 1px solid #d7dee7;
-  border-radius: 29px;
-
-  flex: 0 1 auto;
-  padding: 0 32px;
-  min-width: 160px;
-
-  white-space: nowrap;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-
-  cursor: pointer;
-  transition: opacity 0.2s ease;
-
-  font-size: clamp(16px, 1.5vw, 22px);
-  color: #000;
-}
-
-#active-effects:hover {
-  opacity: 0.8;
 }
 
 #active-effects-popup {
   position: absolute;
   bottom: 120%;
-  /* Pushes the popup completely above the button */
   right: 0;
-  /* Aligns the right edge of the popup with the right edge of the button */
   width: 220px;
 
   background-color: #721f83;
@@ -631,17 +687,14 @@ h6 {
   transition: all 0.2s ease;
 }
 
-/* When the mouse enters the wrapper, reveal the popup */
 #active-effects-wrapper.is-open #active-effects-popup {
   opacity: 1;
   pointer-events: auto;
   transform: translateY(0);
-  /* Slides up into place smoothly */
 }
 
 .effects-header {
   background-color: #b969d2;
-  /* Lighter orchid header */
   color: white;
   padding: 8px;
   font-size: 14px;
@@ -777,7 +830,6 @@ h6 {
 #quantity-amount {
   font-size: 30px;
   min-width: 20px;
-  /* Keeps the buttons from jumping if it goes to double digits */
 }
 
 #dice-tray-area {
@@ -806,7 +858,6 @@ h6 {
   color: #000;
   cursor: pointer;
 
-  /* Inner shadow to match the felt tray depth */
   box-shadow:
     inset 0 -4px 6px rgba(255, 255, 255, 0.2),
     inset 0 4px 6px rgba(0, 0, 0, 0.2);
@@ -864,14 +915,11 @@ h6 {
   border-left: 6px solid #8b5cf6;
 }
 
-/* Purple accent for dice rolls */
 .action-msg {
   border-left: 6px solid #10b981;
 }
 
-/* Green accent for attacks */
 
-/* --- The Input Bar --- */
 #chat-controls {
   flex: 0 0 45px;
   display: flex;
@@ -923,59 +971,67 @@ h6 {
 }
 
 /* From here on out it is for DM screen only */
-/* #DMBody {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-} */
 
 /* left side */
 
 /* DM Left Panel Shared Styles */
 .dm-panel-section {
-  background-color: #e2e8f0;
-  border-radius: 20px;
+  background-color: #F9FAFB;
+  border-radius: 42px;
+  border: 1px solid var(--panel-stroke); 
   width: 100%;
-  padding: 16px;
+  /* padding: 16px; */
   box-sizing: border-box;
   display: flex;
   flex-direction: column;
-  gap: 12px;
+  /* gap: 12px; */
 }
 
 .panel-title {
+  /* border: 10px solid var(--form-stroke); */
+  border-radius: 41px 41px 0 0;
+  padding-top: 12px;
   font-size: 1.2rem;
   color: #000;
-  margin-bottom: 8px;
+  padding-bottom: 12px;
+  background-color: #D9D9D9;
 }
 
 /* Combat Tracker Specifics */
+.tracker-group{
+  padding-left: 6px;
+  padding-right: 6px;
+}
 .tracker-group h3 {
   font-size: 1rem;
   font-weight: normal;
   text-align: left;
   margin-bottom: 8px;
 }
+.current-turn {
+  padding-top: 10px;
+}
 
 #combat-turn-tracker {
-    display: flex;
-    flex-direction: column;
-    flex: 1 1 0;
-    min-height: min-content;
+  display: flex;
+  flex-direction: column;
+  flex: 1 1 0;
+  min-height: min-content;
+  background-color: white;
 }
 
 #combat-turn-tracker .tracker-group:nth-of-type(2) {
-    display: flex;
-    flex-direction: column;
-    flex: 1 1 0; 
-    min-height: 80px
+  display: flex;
+  flex-direction: column;
+  flex: 1 1 0;
+  min-height: 80px
 }
 
 #next-initiatives-container {
-    overflow-y: auto;
-    flex: 1;
-    min-height: 0px; 
-    padding-right: 8px;
+  overflow-y: auto;
+  flex: 1;
+  min-height: 0px;
+  padding-right: 8px;
 }
 
 .initiative-card {
@@ -988,6 +1044,9 @@ h6 {
   margin-bottom: 8px;
   font-size: 0.9rem;
   border: 1px solid #cbd0d6;
+}
+.initiative-card span{
+  padding-right: 6px;
 }
 
 .remove-btn {
@@ -1005,11 +1064,13 @@ h6 {
   color: #63748c;
   transition: 200ms ease;
 }
+
 .remove-btn:hover {
-  background-color: #f06272; /* Red hover state */
+  background-color: #f06272;
   border-color: #f06272;
   color: white;
 }
+
 .remove-btn:focus {
   outline: none;
   background-color: #ed253c;
@@ -1018,19 +1079,24 @@ h6 {
 
 #add-initiative-btn {
   background: transparent;
-  border: 2px solid #cbd5e1; /* Added the requested border! */
-  border-radius: 1000px; /* Pill shape */
-  padding: 8px 16px;
+  border: none;
+  border-top: 1px solid #CBD0D6;
+  /* border: 2px solid #cbd5e1; */
+  /* border-radius: 1000px; */
+  /* padding: 8px 16px; */
   font: inherit;
   font-weight: bold;
   cursor: pointer;
-  margin: 12px auto;
-  display: block; /* Centers the button neatly */
+  padding-top: 12px;
+  padding-bottom: 12px;
+  display: block;
   transition: 200ms ease;
 }
+
 #add-initiative-btn:hover {
   background-color: #cbd5e1;
 }
+
 #add-initiative-btn:focus {
   outline: none;
   background-color: #a6b3c4;
@@ -1040,13 +1106,13 @@ h6 {
   display: flex;
   justify-content: space-between;
   background-color: #cbd5e1;
-  border-radius: 20px;
-  padding: 0; /* Removed padding to let buttons fill the space */
-  overflow: hidden; /* Keeps the buttons strictly inside the rounded corners */
+  border-radius: 0px 0px 20px 20px;
+  padding: 0;
+  overflow: hidden;
 }
 
 .turn-controls button {
-  background: transparent;
+  background: #D9D9D9;
   border: none;
   padding: 10px 16px;
   flex: 1;
@@ -1054,12 +1120,15 @@ h6 {
   font: inherit;
   transition: 200ms ease;
 }
+
 .turn-controls button:first-child {
-  border-right: 2px solid #a6b3c4; 
+  border-right: 2px solid #F4F4F4;
 }
+
 .turn-controls button:hover {
   background-color: #a6b3c4;
 }
+
 .turn-controls button:focus {
   outline: none;
   background-color: #8e9eb5;
@@ -1118,15 +1187,15 @@ dialog::backdrop {
 /* Assets Specifics */
 #assets-panel {
   display: flex;
-    flex-direction: column;
-    flex: 1 1 0;
-    min-height: min-content;
+  flex-direction: column;
+  flex: 1 1 0;
+  min-height: 0;
 }
 
 .assets-tabs {
   display: flex;
-  border-bottom: 2px solid #cbd5e1;
-  border-radius: 12px 12px 0 0;
+  /* border-bottom: 2px solid #cbd5e1; */
+  border-radius: 39px 39px 0 0;
   flex-shrink: 0;
   overflow-x: auto;
   overflow-y: hidden;
@@ -1134,7 +1203,7 @@ dialog::backdrop {
 
 .assets-tabs button {
   flex: 1;
-  background: transparent;
+  background: #E5E7EB;
   border: none;
   padding: 10px 8px;
   cursor: pointer;
@@ -1143,59 +1212,82 @@ dialog::backdrop {
   min-width: fit-content;
   transition: 200ms ease;
 }
+
 .assets-tabs button:not(:last-child) {
-  border-right: 2px solid #cbd5e1;
+  border-right: 1px solid #cbd5e1;
 }
+
 .assets-tabs button:hover {
   background-color: #cbd5e1;
 }
+
 .assets-tabs button:focus {
   outline: none;
   background-color: #a6b3c4;
 }
 
 .assets-tabs button.active {
-  border-bottom: 3px solid #000;
+  border-bottom: 2px solid #5559F0;
   font-weight: bold;
+  background-color: #FFFFFF;
+
 }
 
 #assets-grid {
-  display: grid;
-  grid-template-columns: repeat(2, minmax(90px, 130px)); 
-  justify-content: center; 
+  display: flex;
+  flex-wrap: wrap;
+  padding: 6px;
+  /* grid-template-columns: repeat(2, minmax(90px, 130px));  */
+  align-content: flex-start;
+  justify-content: flex-start;
   gap: 10px;
-  overflow-y: auto; 
+  overflow-y: auto;
   flex: 1;
   min-height: 100px;
 }
 
 .asset-item {
-  background-color: #ffffff;
+  background-color: #D1D5DB;
   border-radius: 8px;
-  height: 60px;
+  height: 75px;
+  width: 75px;
   display: flex;
   justify-content: center;
   align-items: center;
   font-size: 0.8rem;
-  color: #cbd5e1;
+  color: #656C7C;
   cursor: grab;
+  word-wrap: break-word;
+}
+
+.asset-item span {
+  word-wrap: break-word;
+  min-width: 0;
+}
+
+.search-container {
+  background-color: #F3F4F6;
+  border-top: 1px solid #CBD0D6;
+  padding: 5px;
+  border-radius: 0 0 20px 20px;
 }
 
 #asset-search {
+  background-color: #ffffff;
   border-radius: 20px;
   border: none;
-  padding: 10px 16px;
+  padding: 6px 12px;
   width: 100%;
   box-sizing: border-box;
   margin-top: auto;
   flex-shrink: 0;
 }
 
-.panel-title, 
-.tracker-group:first-of-type, 
-#add-initiative-btn, 
+.panel-title,
+.tracker-group:first-of-type,
+#add-initiative-btn,
 .turn-controls {
-    flex-shrink: 0;
+  flex-shrink: 0;
 }
 
 /* header-nav stuff */
@@ -1214,13 +1306,7 @@ dialog::backdrop {
   height: clamp(35px, 2vw + 1em, 50px);
 }
 
-/* a:focus {
-  height: clamp(35px, 8vw, 80px);
-  outline: none;
-  background-color: hsla(211, 81%, 30%, 0.4);
-  border-radius: 15px;
 
-} */
 
 #DMHeader {
   height: clamp(45px, 2vw + 1em, 50px);
@@ -1276,7 +1362,7 @@ nav {
 }
 
 .filters button:hover {
-  background-color: var(--form-stroke);
+  background-color: var(--panel-stroke);
 }
 
 .filters button:focus {
