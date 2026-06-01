@@ -1,17 +1,30 @@
 <!doctype html>
 <html lang="en">
-
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <link rel="stylesheet" href="node_modules/bootstrap/dist/css/bootstrap.min.css" />
-    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.8/dist/umd/popper.min.js"
+    <link
+      rel="stylesheet"
+      href="node_modules/bootstrap/dist/css/bootstrap.min.css"
+    />
+    <script
+      src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.8/dist/umd/popper.min.js"
       integrity="sha384-I7E8VVD/ismYTF4hNIPjVp/Zjvgyol6VFvRkX/vR+Vc4jQkC+hVqc2pM8ODewa9r"
-      crossorigin="anonymous"></script>
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.min.js"
+      crossorigin="anonymous"
+    ></script>
+    <script
+      src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.min.js"
       integrity="sha384-G/EV+4j2dNv+tEPo3++6LCgdCROaejBqfUeNjuKAiuXbjrxilcCdDz6ZAVfHWe1Y"
-      crossorigin="anonymous"></script>
+      crossorigin="anonymous"
+    ></script>
     <link rel="stylesheet" href="css/screenStyle.css" />
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css"
+      integrity="sha512-SnH5WK+bZxgPHs44uWIX+LLJAJ9/2PkPKZ5QiAj6Ta86w+fsb2TkcmfRyVX3pBnMFcV7oQPJkl9QevSCWr3W6A=="
+      crossorigin="anonymous"
+      referrerpolicy="no-referrer"
+    />
     <script type="module" src="./js/app.js"></script>
     <script type="text/javascript" src="./js/DM.js" defer></script>
     <title>DnD Assistant</title>
@@ -25,25 +38,29 @@
 
           <div class="tracker-group">
             <h3>Current Player:</h3>
-            <div id="current-player-container">
-            </div>
+            <div id="current-player-container"></div>
           </div>
           <div class="tracker-group">
             <h3>Next Initiatives:</h3>
-            <div id="next-initiatives-container">
-              </div>
+            <div id="next-initiatives-container"></div>
           </div>
 
           <button id="add-initiative-btn">Add to initiative</button>
 
           <dialog id="add-initiative-modal">
             <div class="modal-content">
-                <h2>Add To Initiative</h2>
-                <button class="menu-btn">Add Existing Creature</button>
-                <button class="menu-btn">Add New Creature</button>
-                <div class="modal-buttons">
-                    <button type="button" id="close-initiative-modal" class="cancel-button">Close</button>
-                </div>
+              <h2>Add To Initiative</h2>
+              <button class="menu-btn">Add Existing Creature</button>
+              <button class="menu-btn">Add New Creature</button>
+              <div class="modal-buttons">
+                <button
+                  type="button"
+                  id="close-initiative-modal"
+                  class="cancel-button"
+                >
+                  Close
+                </button>
+              </div>
             </div>
           </dialog>
 
@@ -51,7 +68,6 @@
             <button id="prev-turn-btn">Previous</button>
             <button id="next-turn-btn">Next</button>
           </div>
-
         </div>
         <div class="dm-panel-section" id="assets-panel">
           <div class="assets-tabs">
@@ -60,21 +76,23 @@
             <button>Audio</button>
           </div>
 
-          <div id="assets-grid">
-          </div>
+          <div id="assets-grid"></div>
 
           <input type="text" id="asset-search" placeholder="Search Assets..." />
         </div>
       </div>
-      <div id="main">
+      <div id="main" class="mobile-active">
         <header id="DMHeader">
           <div class="image-container">
             <a href="campaignList.html">
-              <img class="logo" src="./images/D&DLogoTransparent.png" alt="Home" />
+              <img
+                class="logo"
+                src="./images/D&DLogoTransparent.png"
+                alt="Home"
+              />
             </a>
           </div>
           <nav>
-            <!-- <span>Filter by:</span> -->
             <div class="filters">
               <button type="button" class="DM not-clicked">DM</button>
               <button type="button" class="player not-clicked">Player</button>
@@ -84,10 +102,18 @@
                   <h2>Ending the Adventure</h2>
                   <p>Are you sure you want to log out?</p>
                   <div class="modal-buttons">
-                    <button type="button" id="cancel-logout" class="cancel-button">
+                    <button
+                      type="button"
+                      id="cancel-logout"
+                      class="cancel-button"
+                    >
                       Cancel
                     </button>
-                    <button type="button" id="confirm-logout" class="confirm-button">
+                    <button
+                      type="button"
+                      id="confirm-logout"
+                      class="confirm-button"
+                    >
                       Yes, Log Out
                     </button>
                   </div>
@@ -96,7 +122,12 @@
             </div>
           </nav>
         </header>
-        <iframe id="main-map" src="./map-grid.html" title="Grid map" loading="lazy"></iframe>
+        <iframe
+          id="main-map"
+          src="./map-grid.html"
+          title="Grid map"
+          loading="lazy"
+        ></iframe>
         <div id="action-bar">
           <div id="start-end">
             <div id="start-combat">
@@ -179,7 +210,12 @@
           </div>
 
           <div id="chat-controls">
-            <input type="text" id="chat-input" placeholder="Type Message..." autocomplete="off" />
+            <input
+              type="text"
+              id="chat-input"
+              placeholder="Type Message..."
+              autocomplete="off"
+            />
 
             <button id="recipient-btn">To: All</button>
 
@@ -204,5 +240,4 @@
       </div>
     </div>
   </body>
-
 </html>

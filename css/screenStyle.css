@@ -45,10 +45,11 @@ h6 {
   box-sizing: border-box;
 
   display: grid;
-
   grid-template-columns: 19vw 1fr 19.2vw;
-  gap: 16px;
 
+  grid-template-rows: minmax(0, 1fr);
+
+  gap: 16px;
   overflow: hidden;
 }
 
@@ -69,6 +70,8 @@ h6 {
     padding 0.4s ease,
     opacity 0.3s ease;
 }
+
+/* Scrollbars */
 
 #left-panel,
 #right-panel,
@@ -113,6 +116,8 @@ h6 {
 #equipment-and-traits-middle::-webkit-scrollbar-thumb:hover {
   background-color: #63748c;
 }
+
+/* Player Info */
 
 #player-info {
   background-color: #fdfbf7;
@@ -202,7 +207,6 @@ h6 {
   align-items: center;
 }
 
-/*          Player Info Header */
 #player-info-header {
   display: flex;
   flex-direction: row;
@@ -246,7 +250,6 @@ h6 {
   text-align: right;
 }
 
-/*          Player Info Main */
 #player-info-main {
   border-top: 2px solid #c7d2df;
   border-bottom: 2px solid #c7d2df;
@@ -296,7 +299,6 @@ h6 {
 
 /* Skill Toggle */
 .skill-toggle input[type="checkbox"] {
-  /* Visually hide the native checkbox */
   position: absolute;
   opacity: 0;
   cursor: pointer;
@@ -310,8 +312,8 @@ h6 {
   gap: 10px;
   color: #63748c;
   font-size: 14px;
-  cursor: pointer; /* Makes it clear you can click the whole row */
-  user-select: none; /* Prevents text highlighting when clicking rapidly */
+  cursor: pointer;
+  user-select: none;
 }
 
 .skill-toggle label::before {
@@ -327,7 +329,6 @@ h6 {
 }
 
 .skill-toggle input[type="checkbox"]:checked + label::before {
-  /* When the input is checked, find the adjacent label and style its ::before */
   background-color: #cdd3df;
   border-color: #cdd3df;
 }
@@ -336,15 +337,14 @@ h6 {
   color: #000000;
 }
 
-/*          Player Info Footer */
 #player-info-footer {
   display: flex;
   flex-direction: column;
   align-items: end;
   gap: 10px;
 
-  max-height: 140px; /* Locks the height so it doesn't crush the equipment box */
-  overflow-y: auto; /* Enables the vertical scrollbar */
+  max-height: 140px;
+  overflow-y: auto;
   overflow-x: hidden;
 
   padding: 4px 0px;
@@ -371,16 +371,12 @@ h6 {
 
 .weapon-name {
   flex: 1;
-  /* Takes up all available space on the left */
   text-align: left;
-  /* Aligns text to the left edge */
 }
 
 .damage-dice {
   flex: 0 0 auto;
-  /* Takes up the exact same amount of space on the right */
   text-align: right;
-  /* Aligns text to the right edge */
   min-width: 40px;
 }
 
@@ -393,8 +389,8 @@ h6 {
 
   min-width: 24px;
   height: 24px;
-  border-radius: 12px; /* Half of the height keeps the edges perfectly round */
-  padding: 0 6px; /* Gives the text breathing room on the left/right */
+  border-radius: 12px;
+  padding: 0 6px;
   box-sizing: border-box;
 
   border-radius: 50%;
@@ -504,14 +500,19 @@ h6 {
   height: 100%;
   width: 100%;
   min-width: 0;
+  min-height: 0;
 }
 
 #main-map {
   background-color: aliceblue;
   flex: 1;
-  width: 100%;
   border: none;
   border-radius: 8px;
+
+  aspect-ratio: 1 / 1;
+  align-self: center;
+  max-width: 100%;
+  min-height: 0;
 }
 
 #action-bar {
@@ -576,10 +577,8 @@ h6 {
   object-fit: contain;
 }
 
-/* --- 1. The Anchor & Button --- */
 #active-effects-wrapper {
   position: relative;
-  /* CRITICAL: Anchors the popup to this specific spot */
   display: flex;
 }
 
@@ -611,9 +610,7 @@ h6 {
 #active-effects-popup {
   position: absolute;
   bottom: 120%;
-  /* Pushes the popup completely above the button */
   right: 0;
-  /* Aligns the right edge of the popup with the right edge of the button */
   width: 220px;
 
   background-color: #721f83;
@@ -631,17 +628,14 @@ h6 {
   transition: all 0.2s ease;
 }
 
-/* When the mouse enters the wrapper, reveal the popup */
 #active-effects-wrapper.is-open #active-effects-popup {
   opacity: 1;
   pointer-events: auto;
   transform: translateY(0);
-  /* Slides up into place smoothly */
 }
 
 .effects-header {
   background-color: #b969d2;
-  /* Lighter orchid header */
   color: white;
   padding: 8px;
   font-size: 14px;
@@ -732,6 +726,12 @@ h6 {
   object-fit: contain;
 }
 
+.die-tray-img {
+  width: 40px;
+  height: 40px;
+  object-fit: contain;
+}
+
 .die-button span,
 .quantity-label {
   font-size: 10px;
@@ -747,7 +747,7 @@ h6 {
   color: #fff;
 }
 
-.quantity-pill {
+#quantity-pill {
   background-color: #476f63;
   border: 1px solid #153b2f;
   border-radius: 10px;
@@ -777,7 +777,6 @@ h6 {
 #quantity-amount {
   font-size: 30px;
   min-width: 20px;
-  /* Keeps the buttons from jumping if it goes to double digits */
 }
 
 #dice-tray-area {
@@ -806,7 +805,6 @@ h6 {
   color: #000;
   cursor: pointer;
 
-  /* Inner shadow to match the felt tray depth */
   box-shadow:
     inset 0 -4px 6px rgba(255, 255, 255, 0.2),
     inset 0 4px 6px rgba(0, 0, 0, 0.2);
@@ -864,14 +862,10 @@ h6 {
   border-left: 6px solid #8b5cf6;
 }
 
-/* Purple accent for dice rolls */
 .action-msg {
   border-left: 6px solid #10b981;
 }
 
-/* Green accent for attacks */
-
-/* --- The Input Bar --- */
 #chat-controls {
   flex: 0 0 45px;
   display: flex;
@@ -922,12 +916,7 @@ h6 {
   display: none;
 }
 
-/* From here on out it is for DM screen only */
-/* #DMBody {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-} */
+/* DM Screen */
 
 /* left side */
 
@@ -958,24 +947,24 @@ h6 {
 }
 
 #combat-turn-tracker {
-    display: flex;
-    flex-direction: column;
-    flex: 1 1 0;
-    min-height: min-content;
+  display: flex;
+  flex-direction: column;
+  flex: 1 1 0;
+  min-height: min-content;
 }
 
 #combat-turn-tracker .tracker-group:nth-of-type(2) {
-    display: flex;
-    flex-direction: column;
-    flex: 1 1 0; 
-    min-height: 80px
+  display: flex;
+  flex-direction: column;
+  flex: 1 1 0;
+  min-height: 80px;
 }
 
 #next-initiatives-container {
-    overflow-y: auto;
-    flex: 1;
-    min-height: 0px; 
-    padding-right: 8px;
+  overflow-y: auto;
+  flex: 1;
+  min-height: 0px;
+  padding-right: 8px;
 }
 
 .initiative-card {
@@ -1006,7 +995,7 @@ h6 {
   transition: 200ms ease;
 }
 .remove-btn:hover {
-  background-color: #f06272; /* Red hover state */
+  background-color: #f06272;
   border-color: #f06272;
   color: white;
 }
@@ -1018,14 +1007,14 @@ h6 {
 
 #add-initiative-btn {
   background: transparent;
-  border: 2px solid #cbd5e1; /* Added the requested border! */
-  border-radius: 1000px; /* Pill shape */
+  border: 2px solid #cbd5e1;
+  border-radius: 1000px;
   padding: 8px 16px;
   font: inherit;
   font-weight: bold;
   cursor: pointer;
   margin: 12px auto;
-  display: block; /* Centers the button neatly */
+  display: block;
   transition: 200ms ease;
 }
 #add-initiative-btn:hover {
@@ -1041,8 +1030,8 @@ h6 {
   justify-content: space-between;
   background-color: #cbd5e1;
   border-radius: 20px;
-  padding: 0; /* Removed padding to let buttons fill the space */
-  overflow: hidden; /* Keeps the buttons strictly inside the rounded corners */
+  padding: 0;
+  overflow: hidden;
 }
 
 .turn-controls button {
@@ -1055,7 +1044,7 @@ h6 {
   transition: 200ms ease;
 }
 .turn-controls button:first-child {
-  border-right: 2px solid #a6b3c4; 
+  border-right: 2px solid #a6b3c4;
 }
 .turn-controls button:hover {
   background-color: #a6b3c4;
@@ -1104,7 +1093,7 @@ dialog::backdrop {
 }
 
 .cancel-button {
-  background-color: #E5E7EB;
+  background-color: #e5e7eb;
   color: #000;
   border: none;
   border-radius: 1000px;
@@ -1118,9 +1107,9 @@ dialog::backdrop {
 /* Assets Specifics */
 #assets-panel {
   display: flex;
-    flex-direction: column;
-    flex: 1 1 0;
-    min-height: min-content;
+  flex-direction: column;
+  flex: 1 1 0;
+  min-height: min-content;
 }
 
 .assets-tabs {
@@ -1161,10 +1150,10 @@ dialog::backdrop {
 
 #assets-grid {
   display: grid;
-  grid-template-columns: repeat(2, minmax(90px, 130px)); 
-  justify-content: center; 
+  grid-template-columns: repeat(2, minmax(90px, 130px));
+  justify-content: center;
   gap: 10px;
-  overflow-y: auto; 
+  overflow-y: auto;
   flex: 1;
   min-height: 100px;
 }
@@ -1191,11 +1180,11 @@ dialog::backdrop {
   flex-shrink: 0;
 }
 
-.panel-title, 
-.tracker-group:first-of-type, 
-#add-initiative-btn, 
+.panel-title,
+.tracker-group:first-of-type,
+#add-initiative-btn,
 .turn-controls {
-    flex-shrink: 0;
+  flex-shrink: 0;
 }
 
 /* header-nav stuff */
@@ -1213,14 +1202,6 @@ dialog::backdrop {
   width: auto;
   height: clamp(35px, 2vw + 1em, 50px);
 }
-
-/* a:focus {
-  height: clamp(35px, 8vw, 80px);
-  outline: none;
-  background-color: hsla(211, 81%, 30%, 0.4);
-  border-radius: 15px;
-
-} */
 
 #DMHeader {
   height: clamp(45px, 2vw + 1em, 50px);
@@ -1285,6 +1266,12 @@ nav {
 }
 
 /* media for all */
+
+@media (max-width: 1400px) {
+  .skill-toggle label {
+    font-size: 10.5px;
+  }
+}
 
 @media (max-width: 1200px) {
   #wrapper {

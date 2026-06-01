@@ -112,119 +112,18 @@
                 </div>
               </div>
               <div id="stats-bottom-container">
-                <fieldset id="skill-list">
-                  <!-- <div class="skill-toggle">
-                    <input
-                      type="checkbox"
-                      id="athletics"
-                      name="skills"
-                      value="athletics"
-                    />
-                    <label for="athletics">+3 Athletics (STR)</label>
-                  </div>
-                  <div class="skill-toggle">
-                    <input
-                      type="checkbox"
-                      id="acrobatics"
-                      name="skills"
-                      value="acrobatics"
-                    />
-                    <label for="acrobatics"> +1 Acrobatics(DEX) </label>
-                  </div>
-                  <div class="skill-toggle">
-                    <input
-                      type="checkbox"
-                      id="arcana"
-                      name="skills"
-                      value="arcana"
-                    />
-                    <label for="arcana">0 Arcana(INT)</label>
-                  </div>
-                  <div class="skill-toggle">
-                    <input
-                      type="checkbox"
-                      id="history"
-                      name="skills"
-                      value="history"
-                    />
-                    <label for="history">+1 History(INT)</label>
-                  </div>
-                  <div class="skill-toggle">
-                    <input
-                      type="checkbox"
-                      id="perception"
-                      name="skills"
-                      value="perception"
-                    />
-                    <label for="perception">+3 Perception(WIS)</label>
-                  </div>
-                  <div class="skill-toggle">
-                    <input
-                      type="checkbox"
-                      id="persuasion"
-                      name="skills"
-                      value="persuasion"
-                    />
-                    <label for="persuasion">-1 Persuasion(CHA)</label>
-                  </div>
-                  <div class="skill-toggle">
-                    <input
-                      type="checkbox"
-                      id="stealth"
-                      name="skills"
-                      value="stealth"
-                    />
-                    <label for="stealth">+1 Stealth(DEX)</label>
-                  </div> -->
-                </fieldset>
+                <fieldset id="skill-list"></fieldset>
               </div>
             </div>
           </div>
-          <div id="player-info-footer">
-            <!-- <div id="longsword-attack" class="attack-container">
-              <span class="weapon-name">Longsword</span>
-              <span class="attack-bonus">+5</span>
-              <span class="damage-dice">1d8+3</span>
-            </div>
-            <div id="javelin-attack" class="attack-container">
-              <span class="weapon-name">Javelin</span>
-              <span class="attack-bonus">+5</span>
-              <span class="damage-dice">1d6+3</span>
-            </div> -->
-          </div>
+          <div id="player-info-footer"></div>
         </div>
         <div id="equipment-and-traits">
           <div id="equipment-and-traits-top">
             <span>EQUIPMENT & TRAITS</span>
           </div>
-          <div id="equipment-and-traits-middle">
-            <!-- <div class="trait">
-              <span class="trait-name">Second Wind</span>
-              <span class="trait-description"
-                >Regain 1d10 + level HP once per short rest.</span
-              >
-            </div>
-            <div class="trait">
-              <span class="trait-name">Action Surge</span>
-              <span class="trait-description"
-                >Take one additional action on your turn.</span
-              >
-            </div> -->
-          </div>
-          <div id="equipment-and-traits-bottom">
-            <!-- <div class="equipment">
-              <span class="equipment-name">Chain Mail</span>
-              <span class="equipment-modifier">AC 16</span>
-            </div>
-            <div class="equipment">
-              <span class="equipment-name">Shield</span>
-              <span class="equipment-modifier">+2 AC</span>
-            </div>
-            <div class="equipment">
-              <span class="equipment-name">Explorer's Pack</span>
-              <span class="equipment-modifier"></span>
-            </div> -->
-          </div>
+          <div id="equipment-and-traits-middle"></div>
+          <div id="equipment-and-traits-bottom"></div>
         </div>
       </div>
       <div id="main" class="mobile-active">
@@ -313,37 +212,37 @@
         <div id="dice-roller-outer">
           <div id="dice-roller-inner">
             <div id="dice-grid">
-              <button class="die-button">
+              <button data-die="d4" class="die-button">
                 <img src="./images/d4.png" alt="d4" />
                 <span>d4</span>
               </button>
-              <button class="die-button">
+              <button data-die="d6" class="die-button">
                 <img src="./images/d6.png" alt="d6" />
                 <span>d6</span>
               </button>
-              <button class="die-button">
+              <button data-die="d8" class="die-button">
                 <img src="./images/d8.png" alt="d8" />
                 <span>d8</span>
               </button>
-              <button class="die-button">
+              <button data-die="d10" class="die-button">
                 <img src="./images/d10.png" alt="d10" />
                 <span>d10</span>
               </button>
 
-              <button class="die-button">
+              <button data-die="d12" class="die-button">
                 <img src="./images/d12.png" alt="d12" />
                 <span>d12</span>
               </button>
-              <button class="die-button">
+              <button data-die="d20" class="die-button">
                 <img src="./images/d20.png" alt="d20" />
                 <span>d20</span>
               </button>
 
               <div id="dice-quantity-container">
-                <div class="quantity-pill">
-                  <button class="quantity-button">-</button>
+                <div id="quantity-pill">
+                  <button id="minus-quantity" class="quantity-button">-</button>
                   <span id="quantity-amount">1</span>
-                  <button class="quantity-button">+</button>
+                  <button id="plus-quantity" class="quantity-button">+</button>
                 </div>
                 <span class="quantity-label">Quantity</span>
               </div>

@@ -31,9 +31,8 @@ body {
   pointer-events: none;
 }
 
-/* Add this to your CSS */
 .hidden-ui {
   opacity: 0;
-  pointer-events: none; /* Guarantees the invisible element won't accidentally block mouse clicks */
-  transition: opacity 0.3s ease; /* Smooth fade animation */
+  pointer-events: none;
+  transition: opacity 0.3s ease;
 }

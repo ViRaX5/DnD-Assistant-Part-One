@@ -1,6 +1,12 @@
+import { addChatMessage } from './chat.js';
+
 export function setupUIInteractions() {
     // Navbar Page Switch
     navbarPageSwitch();
+
+    // Dice Tray Interaction
+    diceTrayInteraction();
+
     // Active Effects Pop-up
     activeEffectsPopUp();
 
@@ -24,6 +30,104 @@ function navbarPageSwitch() {
         if (!currentPath.endsWith("DMScreen.html")) {
             window.location.href = "DMScreen.html";
         }
+    });
+}
+
+function diceTrayInteraction() {
+    let selectedDie = null;
+    let diceAmount = 1;
+
+    const diceGrid = document.getElementById("dice-grid");
+    const diceTray = document.getElementById("dice-tray-area");
+    const diceQuantityAmount = document.getElementById("quantity-amount");
+
+    const plusBtn = document.getElementById("plus-quantity");
+    const minusBtn = document.getElementById("minus-quantity");
+    diceQuantityAmount.textContent = diceAmount;
+
+    function renderTray() {
+        diceQuantityAmount.textContent = diceAmount;
+
+        diceTray.innerHTML = '';
+
+        if (!selectedDie) {
+            return;
+        }
+
+        let htmlString = '';
+        for (let i = 0; i < diceAmount; i++) {
+            htmlString += `<img class="die-tray-img" src="./images/${selectedDie}.png" alt="${selectedDie}" />`;
+        }
+
+        diceTray.innerHTML = htmlString;
+    }
+
+    function rollDice(dieType, quantity) {
+        const maxNumber = parseInt(dieType.substring(1));
+
+        let rolls = [];
+        let total = 0;
+
+        for (let i = 0; i < quantity; i++) {
+            const result = Math.floor(Math.random() * maxNumber) + 1;
+            rolls.push(result);
+            total += result;
+        }
+
+        return { rolls, total };
+    }
+
+    diceGrid.addEventListener('click', (e) => {
+        const dieButton = e.target.closest('.die-button');
+
+        if (!dieButton) return;
+
+        const clickedDie = dieButton.getAttribute('data-die');
+
+        if (selectedDie !== clickedDie) {
+            selectedDie = clickedDie;
+            diceAmount = 1;
+            renderTray();
+        }
+    });
+
+    minusBtn.addEventListener('click', () => {
+        if (selectedDie && diceAmount > 1) {
+            diceAmount--;
+            renderTray();
+        }
+    });
+
+    plusBtn.addEventListener('click', () => {
+        if (selectedDie) {
+            diceAmount++;
+            renderTray();
+        }
+    });
+
+    renderTray();
+
+    const rollButton = document.getElementById("roll-button");
+
+    rollButton.addEventListener('click', () => {
+        if (!selectedDie) {
+            addChatMessage("Please select a die first!", "system-msg");
+            return;
+        }
+
+        const rollData = rollDice(selectedDie, diceAmount);
+
+        const rollString = rollData.rolls.join(" and ");
+
+        const playerName = document.getElementById("player-name").textContent || "Unknown Hero";
+
+        let message = `${playerName} rolled: ${rollString} on ${diceAmount}${selectedDie}.`;
+
+        if (diceAmount > 1) {
+            message += ` (Total: ${rollData.total})`;
+        }
+
+        addChatMessage(message, "system-msg");
     });
 }
 
