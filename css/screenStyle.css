@@ -931,15 +931,271 @@ h6 {
 
 /* left side */
 
-#combat-turn-tracker {
-  background-color: #10b981;
-  height: 30vh;
-  width: 366px;
+/* DM Left Panel Shared Styles */
+.dm-panel-section {
+  background-color: #e2e8f0;
+  border-radius: 20px;
+  width: 100%;
+  padding: 16px;
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
 }
 
-#assests {
-  background-color: #153b2f;
-  height: 30vh;
+.panel-title {
+  font-size: 1.2rem;
+  color: #000;
+  margin-bottom: 8px;
+}
+
+/* Combat Tracker Specifics */
+.tracker-group h3 {
+  font-size: 1rem;
+  font-weight: normal;
+  text-align: left;
+  margin-bottom: 8px;
+}
+
+#combat-turn-tracker {
+    display: flex;
+    flex-direction: column;
+    flex: 1 1 0;
+    min-height: min-content;
+}
+
+#combat-turn-tracker .tracker-group:nth-of-type(2) {
+    display: flex;
+    flex-direction: column;
+    flex: 1 1 0; 
+    min-height: 80px
+}
+
+#next-initiatives-container {
+    overflow-y: auto;
+    flex: 1;
+    min-height: 0px; 
+    padding-right: 8px;
+}
+
+.initiative-card {
+  background-color: #ffffff;
+  border-radius: 8px;
+  padding: 8px 12px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 8px;
+  font-size: 0.9rem;
+  border: 1px solid #cbd0d6;
+}
+
+.remove-btn {
+  background: transparent;
+  border: 2px solid #cbd5e1;
+  border-radius: 6px;
+  width: 24px;
+  height: 24px;
+  cursor: pointer;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font: inherit;
+  font-weight: bold;
+  color: #63748c;
+  transition: 200ms ease;
+}
+.remove-btn:hover {
+  background-color: #f06272; /* Red hover state */
+  border-color: #f06272;
+  color: white;
+}
+.remove-btn:focus {
+  outline: none;
+  background-color: #ed253c;
+  color: white;
+}
+
+#add-initiative-btn {
+  background: transparent;
+  border: 2px solid #cbd5e1; /* Added the requested border! */
+  border-radius: 1000px; /* Pill shape */
+  padding: 8px 16px;
+  font: inherit;
+  font-weight: bold;
+  cursor: pointer;
+  margin: 12px auto;
+  display: block; /* Centers the button neatly */
+  transition: 200ms ease;
+}
+#add-initiative-btn:hover {
+  background-color: #cbd5e1;
+}
+#add-initiative-btn:focus {
+  outline: none;
+  background-color: #a6b3c4;
+}
+
+.turn-controls {
+  display: flex;
+  justify-content: space-between;
+  background-color: #cbd5e1;
+  border-radius: 20px;
+  padding: 0; /* Removed padding to let buttons fill the space */
+  overflow: hidden; /* Keeps the buttons strictly inside the rounded corners */
+}
+
+.turn-controls button {
+  background: transparent;
+  border: none;
+  padding: 10px 16px;
+  flex: 1;
+  cursor: pointer;
+  font: inherit;
+  transition: 200ms ease;
+}
+.turn-controls button:first-child {
+  border-right: 2px solid #a6b3c4; 
+}
+.turn-controls button:hover {
+  background-color: #a6b3c4;
+}
+.turn-controls button:focus {
+  outline: none;
+  background-color: #8e9eb5;
+  color: white;
+}
+
+/* Add to initiative dialog */
+dialog {
+  margin: auto;
+  padding: 20px;
+  border: 2px solid #cbd0d6;
+  border-radius: 20px;
+  background-color: #f9fafb;
+  color: #000;
+  text-align: center;
+}
+
+dialog::backdrop {
+  background-color: rgba(0, 0, 0, 0.6);
+}
+
+.modal-content h2 {
+  margin-bottom: 15px;
+}
+
+.menu-btn {
+  display: block;
+  width: 100%;
+  background: transparent;
+  border: 1px solid #000;
+  border-radius: 8px;
+  padding: 10px;
+  margin-bottom: 10px;
+  cursor: pointer;
+  font: inherit;
+  font-size: 1rem;
+  transition: 200ms ease;
+}
+
+.menu-btn:hover {
+  background: #e2e8f0;
+}
+
+.cancel-button {
+  background-color: #E5E7EB;
+  color: #000;
+  border: none;
+  border-radius: 1000px;
+  padding: 0.6em 2em;
+  font: inherit;
+  font-weight: 600;
+  cursor: pointer;
+  margin-top: 10px;
+}
+
+/* Assets Specifics */
+#assets-panel {
+  display: flex;
+    flex-direction: column;
+    flex: 1 1 0;
+    min-height: min-content;
+}
+
+.assets-tabs {
+  display: flex;
+  border-bottom: 2px solid #cbd5e1;
+  border-radius: 12px 12px 0 0;
+  flex-shrink: 0;
+  overflow-x: auto;
+  overflow-y: hidden;
+}
+
+.assets-tabs button {
+  flex: 1;
+  background: transparent;
+  border: none;
+  padding: 10px 8px;
+  cursor: pointer;
+  font: inherit;
+  white-space: nowrap;
+  min-width: fit-content;
+  transition: 200ms ease;
+}
+.assets-tabs button:not(:last-child) {
+  border-right: 2px solid #cbd5e1;
+}
+.assets-tabs button:hover {
+  background-color: #cbd5e1;
+}
+.assets-tabs button:focus {
+  outline: none;
+  background-color: #a6b3c4;
+}
+
+.assets-tabs button.active {
+  border-bottom: 3px solid #000;
+  font-weight: bold;
+}
+
+#assets-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(90px, 130px)); 
+  justify-content: center; 
+  gap: 10px;
+  overflow-y: auto; 
+  flex: 1;
+  min-height: 100px;
+}
+
+.asset-item {
+  background-color: #ffffff;
+  border-radius: 8px;
+  height: 60px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-size: 0.8rem;
+  color: #cbd5e1;
+  cursor: grab;
+}
+
+#asset-search {
+  border-radius: 20px;
+  border: none;
+  padding: 10px 16px;
+  width: 100%;
+  box-sizing: border-box;
+  margin-top: auto;
+  flex-shrink: 0;
+}
+
+.panel-title, 
+.tracker-group:first-of-type, 
+#add-initiative-btn, 
+.turn-controls {
+    flex-shrink: 0;
 }
 
 /* header-nav stuff */
