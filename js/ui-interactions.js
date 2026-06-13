@@ -89,6 +89,11 @@ function diceTrayInteraction() {
             diceAmount = 1;
             renderTray();
         }
+        else {
+            diceAmount = 0;
+            selectedDie = null;
+            renderTray();
+        }
     });
 
     minusBtn.addEventListener('click', () => {
