@@ -312,6 +312,122 @@ nav {
   background-color: #ed253c;
 }
 
+
+
+
+
+/* for dialog in create and join new session */
+
+#join-new-campaign-modal {
+  margin: auto;
+  padding: 20px 30px; 
+  border: 2px solid var(--form-stroke);
+  border-radius: 20px;
+  background-color: var(--form-background);
+  color: var(--text-color-base);
+  text-align: center;
+  box-sizing: border-box; /* Forces padding to stay INSIDE the box */
+  width: min(400px, 95vw); /* Be 400px, but never wider than 95% of the viewport */
+  max-width: 100%;
+}
+
+#join-new-campaign-modal::backdrop {
+  background-color: rgba(0, 0, 0, 0.6);
+}
+
+/* Form Spacing */
+.join-new-campaign-form, .character-info {
+  display: flex;
+  flex-direction: column;
+  gap: 15px; /* Adds perfect spacing between every input */
+  margin-bottom: 15px;
+  margin-top: 15px;
+}
+
+.join-new-campaign-form h3 {
+  margin-bottom: 5px;
+}
+
+.join-new-campaign-form p {
+  font-size: 0.85rem;
+  color: var(--text-color-alt);
+  margin-bottom: 10px;
+}
+
+/* Input Box Styling */
+#join-new-campaign-modal input {
+  box-sizing: border-box;
+  width: 100%;
+  min-width: 0;
+  padding: 10px 15px;
+  font: inherit;
+  border: 2px solid var(--form-stroke);
+  border-radius: 10px;
+  background-color: var(--input-color);
+  color: var(--text-color-base);
+  transition: border-color 0.3s ease;
+  font-size: clamp(5px, 0.6rem, 4vmin);
+}
+
+#join-new-campaign-modal input:focus {
+  outline: none;
+  border-color: var(--text-color-alt);
+}
+
+/* Perfect 3x2 grid for D&D Stats */
+.stats {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr); /* 3 equal columns */
+  gap: 10px;
+}
+
+/* Center the numbers inside the stat boxes */
+.stats input {
+  text-align: center;
+  padding: 10px 5px;
+}
+
+/* Base button style for the modal */
+#join-new-campaign-modal button {
+  border: none;
+  border-radius: 1000px;
+  padding: 0.7em 2em;
+  font: inherit;
+  font-weight: 600;
+  text-transform: uppercase;
+  cursor: pointer;
+  transition: 200ms ease;
+  width: 100%; /* Makes buttons stretch to fill the modal */
+}
+
+/* The Green Action Buttons */
+.continue-join, .finish-join {
+  background-color: #148640;
+  color: white;
+  margin-bottom: 10px;
+}
+
+.continue-join:hover, .finish-join:hover {
+  background-color: #23e26c;
+}
+
+/* The Cancel Button */
+#cancel-join {
+  background-color: #e5e7eb;
+  color: var(--text-color-base);
+}
+
+#cancel-join:hover {
+  background-color: #d1d5db;
+}
+
+
+.not-active {
+  display: none;
+}
+
+
+
 @media (max-width: 590px) {
   nav {
     display: none;
@@ -325,6 +441,27 @@ nav {
     height: clamp(20px, 8vmin, 80px);
   }
 }
+
+/* Responsive adjustments for mobile screens */
+@media (max-width: 450px) {
+  /* 1. Reclaim horizontal space */
+  #logout-modal, #join-new-campaign-modal {
+    padding: 20px 15px; /* Shrink side padding from 30px to 15px */
+    width: 95%; /* Let the modal expand slightly closer to the screen edges */
+  }
+
+  /* 2. Fix the cramped input boxes */
+  #join-new-campaign-modal input {
+    font-size: 0.9rem; /* Slightly smaller font for long words */
+    padding: 10px; /* Reduce the inner padding of the text boxes */
+  }
+
+  /* 3. Drop the 3x2 grid to a 2x3 grid! */
+  .stats {
+    grid-template-columns: repeat(2, 1fr); 
+  }
+}
+
 @media (max-width: 401px) {
   #wrapper {
     width: min(400px, 100%);

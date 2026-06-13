@@ -95,12 +95,53 @@ function addButtons() {
     const joinButton = document.createElement('button')
     buttonsContainer.classList.add("buttons-container")
     createButton.classList.add("create-button")
+    let htmlCreate = `<dialog id="create-new-campaign-modal">
+
+            </dialog>`
     joinButton.classList.add("join-new-button")
+    let htmlJoin = `<dialog id="join-new-campaign-modal">
+              <form action="" class="join-new-campaign-form">
+                <div class="capaign-code">
+                  <h3>Enter the campaign code</h3>
+                  <p>This should be provided by the DM</p>
+                  <input type="text" name="campaign-code" id="campaign-code" placeholder="Campaign Code">
+                </div>
+                <div class="character-name">
+                  <h3>Enter your Character's name</h3>
+                  <input type="text" name="character-name" id="character-name" placeholder="Character's Name">
+                </div>
+                <div class="initial-submit">
+                  <button type="submit" class="continue-join">Continue</button>
+                  <!-- this is a submit on porpuse to give the dm time to approve while you create the character -->
+                </div>
+              </form>
+              <form action="" class="character-info not-active">
+                <input type="text" name="characters-class" id="characters-class" placeholder="Character's Class">
+                <input type="text" name="characters-race" id="characters-race" placeholder="Character's Race">
+                <div class="stats">
+                  <input type="number" name="characters-str" id="characters-str" placeholder="Strength">
+                  <input type="number" name="characters-dex" id="characters-dex" placeholder="Dexterity">
+                  <input type="number" name="characters-con" id="characters-con" placeholder="Constitution">
+                  <input type="number" name="characters-int" id="characters-int" placeholder="Inteligence">
+                  <input type="number" name="characters-wis" id="characters-wis" placeholder="Wisdom">
+                  <input type="number" name="characters-cha" id="characters-cha" placeholder="Charisma">
+                </div>
+                <div class="final-submit">
+                  <button type="submit" class="finish-join">Join the Adventure</button>
+                  <!-- add logic in back to actually add this -->
+                </div>
+              </form>
+              <button type="button" id="cancel-join" class="cancel-button">
+                Cancel
+              </button>
+            </dialog>`
+    let completeHTML = htmlJoin + htmlCreate
     createButton.innerText = "Create Campaign"
     joinButton.innerText = "Join Campaign"
     buttonsContainer.appendChild(joinButton)
     buttonsContainer.appendChild(createButton)
     button_container.appendChild(buttonsContainer)
+    buttonsContainer.innerHTML += completeHTML
 }
 
 function noSessions() {
@@ -256,4 +297,29 @@ cancel_logout_button.addEventListener('click', () => {
 confirm_logout_button.addEventListener('click', () => {
     /* some save to database logic that needs to come in the future */
     window.location.href = "index.html"
+})
+
+const join_new_campaign = document.getElementsByClassName("join-new-button")[0];
+const join_new_campaign_modal = document.getElementById("join-new-campaign-modal");
+const cancel_join_new_campaign = document.getElementById("cancel-join");
+const continue_join = document.getElementsByClassName("continue-join")[0];
+const join_form = document.getElementsByClassName("join-new-campaign-form")[0];
+const character_info = document.getElementsByClassName("character-info")[0];
+
+join_new_campaign.addEventListener('click', () => {
+    join_new_campaign_modal.showModal()
+    cancel_join_new_campaign.blur()
+})
+
+cancel_join_new_campaign.addEventListener('click', () => {
+    join_new_campaign_modal.close()
+    join_new_campaign.blur()
+})
+
+join_form.addEventListener('submit', (e) => {
+    e.preventDefault()
+    // send message to dm to confirm the player can join
+    continue_join.blur()
+    join_form.classList.add("not-active")
+    character_info.classList.remove("not-active")
 })

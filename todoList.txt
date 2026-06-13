@@ -1,0 +1,40 @@
+hover functionality on actions in player screen
+add player info from characters sheet (temp hp, all skills, saving throws, passive perception, proficency bonus, ??inspiration??)
+add gold/silver/copper to equipment
+
+add new creature as DM logic and functionality (use api for new monster) 
+sessions and campaign codes
+pop ups for dm when new player wants to join the campaign
+sync with API to streamline character creation
+
+drag and drop tokens as dm from assets
+add text to tokens
+add option for image as/inside token
+delete sigle token
+custom token and tile sizes. tokens collisions and interactions
+not infinite map
+add logic for all dm buttons at the bottom (including round tracker auto update -- this may also affects active effects)
+add effect will open dialog (see how to choose the list of viable effects)
+
+chat to all or specific players (whisper button and logic)
+
+implement socket.io
+
+create new campaign dialog
+abandon capmaign button logic and functioanlity
+email verification?
+
+create backend server (render)
+
+shop logic for both players and dm (including api)
+
+create database (mongoDB?)
+
+manual add skills to players
+
+-- future --
+only map, other info is in a tab that you can open when you want
+
+---- very future and not now, homebrew -----
+characters
+monsters
