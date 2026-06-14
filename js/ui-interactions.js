@@ -10,6 +10,9 @@ export function setupUIInteractions() {
     // Active Effects Pop-up
     activeEffectsPopUp();
 
+    // Actions Hover Pop-up
+    actionsHoverPopUp();
+
     // Nav Footer Switch
     navFooterSwitch();
 }
@@ -161,6 +164,20 @@ function activeEffectsPopUp() {
         if (isOpen && clickedOutside) {
             activeEffectsWrapper.classList.remove("is-open");
         }
+    });
+}
+
+function actionsHoverPopUp() {
+    const actionWrappers = document.querySelectorAll(".action-wrapper");
+
+    actionWrappers.forEach((wrapper) => {
+        wrapper.addEventListener('mouseenter', () => {
+            wrapper.classList.add("is-open");
+        });
+
+        wrapper.addEventListener('mouseleave', () => {
+            wrapper.classList.remove("is-open");
+        });
     });
 }
 
