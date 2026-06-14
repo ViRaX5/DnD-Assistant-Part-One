@@ -318,7 +318,7 @@ nav {
 
 /* for dialog in create and join new session */
 
-#join-new-campaign-modal {
+#join-new-campaign-modal, #create-new-campaign-modal {
   margin: auto;
   padding: 20px 30px; 
   border: 2px solid var(--form-stroke);
@@ -331,7 +331,7 @@ nav {
   max-width: 100%;
 }
 
-#join-new-campaign-modal::backdrop {
+#join-new-campaign-modal::backdrop, #create-new-campaign-modal::backdrop {
   background-color: rgba(0, 0, 0, 0.6);
 }
 
@@ -421,6 +421,94 @@ nav {
   background-color: #d1d5db;
 }
 
+/* Layout specifically for the Create modal */
+#create-new-campaign-modal[open] {
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+  align-items: center;
+  overflow-x: hidden;
+}
+
+#create-new-campaign-modal h3 {
+  margin-bottom: 5px;
+}
+
+#create-new-campaign-modal p {
+  font-size: 0.85rem;
+  color: var(--text-color-alt);
+}
+
+/* The Code Input Box */
+.campaign-code {
+  box-sizing: border-box;
+  width: 100%;
+  padding: 10px 15px;
+  font: inherit;
+  font-weight: bold;
+  text-align: center;
+  letter-spacing: 2px; /* Spaces out the numbers */
+  border: 2px dashed var(--form-stroke); /* Dashed border implies it can be copied */
+  border-radius: 10px;
+  background-color: var(--input-color);
+  color: var(--text-color-base);
+}
+
+.campaign-code:focus {
+  outline: none;
+}
+
+/* Base style for buttons inside this specific modal */
+#create-new-campaign-modal button {
+  border: none;
+  border-radius: 1000px;
+  padding: 0.7em 2em;
+  font: inherit;
+  font-weight: 600;
+  text-transform: uppercase;
+  cursor: pointer;
+  transition: 200ms ease;
+  width: 100%; 
+}
+
+/* The Copy Button */
+#create-new-campaign-modal .copy-button {
+  background-color: var(--accent-color);
+  color: var(--text-color-base);
+  width: 50% ; /* Make it smaller so it doesn't overwhelm the code box */
+  padding: 0.5em 1em ;
+}
+
+#create-new-campaign-modal .copy-button:hover {
+  background-color: var(--form-stroke);
+}
+
+/* The Green Action Button */
+.finish-create {
+  background-color: #148640;
+  color: white;
+  margin-top: 10px; 
+}
+
+.finish-create:hover {
+  background-color: #23e26c;
+}
+
+#create-new-campaign-modal .copy-button.copied {
+  background-color: #23e26c;
+  color: var(--text-color-alt);
+}
+
+/* The Cancel Button */
+#cancel-create {
+  background-color: #e5e7eb;
+  color: var(--text-color-base);
+}
+
+#cancel-create:hover {
+  background-color: #d1d5db;
+}
+
 
 .not-active {
   display: none;
@@ -445,7 +533,7 @@ nav {
 /* Responsive adjustments for mobile screens */
 @media (max-width: 450px) {
   /* 1. Reclaim horizontal space */
-  #logout-modal, #join-new-campaign-modal {
+  #logout-modal, #join-new-campaign-modal, #create-new-campaign-modal {
     padding: 20px 15px; /* Shrink side padding from 30px to 15px */
     width: 95%; /* Let the modal expand slightly closer to the screen edges */
   }
