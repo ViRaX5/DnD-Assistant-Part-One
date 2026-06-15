@@ -7,6 +7,8 @@ sessions and campaign codes
 pop ups for dm when new player wants to join the campaign
 sync with API to streamline character creation
 
+add session in some way so the dm can send the code during a session
+
 drag and drop tokens as dm from assets
 add text to tokens
 add option for image as/inside token
@@ -20,8 +22,10 @@ chat to all or specific players (whisper button and logic)
 
 implement socket.io
 
-create new campaign dialog
-abandon capmaign button logic and functioanlity
+create new campaign dialog -- COMPLETE
+abandon capmaign button logic and functioanlity -- COMPLETE
+when abandoning as dm chech if the DM is the only participant and change dialog accordingly
+when abandoning as dm, dont display the DM as an option for successor
 email verification?
 
 create backend server (render)
@@ -34,7 +38,9 @@ manual add skills to players
 
 -- future --
 only map, other info is in a tab that you can open when you want
+option to create new character when your character dies without leaving and rejoining campaign
 
 ---- very future and not now, homebrew -----
 characters
 monsters
+option to export character data from one campaign to others and option to load character from a character file.

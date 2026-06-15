@@ -6,52 +6,38 @@ const player_button = document.getElementsByClassName("player")[0];
 const dm_button = document.getElementsByClassName("DM")[0];
 const logo = document.getElementsByClassName("logo")[0];
 const button_container = document.getElementsByClassName("buttons-placeholder")[0];
+const dmAbandonModal = document.getElementById("dm-abandon-modal");
+const dmModalCampaignName = document.getElementById("dm-modal-campaign-name");
+const dmModalPlayerList = document.getElementById("dm-modal-player-list");
+const cancelDmAbandonBtn = document.getElementById("cancel-dm-abandon");
+const confirmDmAbandonBtn = document.getElementById("confirm-dm-abandon");
+const dmErrorMessage = document.getElementById("dm-error-message");
+const playerAbandonModal = document.getElementById("player-abandon-modal");
+const playerModalCampaignName = document.getElementById("player-modal-campaign-name");
+const cancelPlayerAbandonBtn = document.getElementById("cancel-player-abandon");
+const confirmPlayerAbandonBtn = document.getElementById("confirm-player-abandon");
+
+const campaigns_info = [
+    {
+        "campaign_id": 1, "campaign_name": "test1", "participants": ["name1", "name2", "name3"], "participants_id": [1, 2, 3]
+    },
+    {
+        "campaign_id": 2, "campaign_name": "test1", "participants": ["name1", "name2", "name3", "name4", "name5"], "participants_id": [1, 2, 3, 4, 5]
+    },
+    {
+        "campaign_id": 3, "campaign_name": "test1", "participants": ["name1", "name2", "name3"], "participants_id": [1, 2, 3]
+    }
+]
 
 const campaigns1 = [
     {
-        "campaign_name": "test1", "status": "player", "character_name": "Steve Rogers"
+        "campaign_id": 1, "campaign_name": "test1", "status": "player", "character_name": "Steve Rogers"
     },
     {
-        "campaign_name": "test2", "status": "DM", "amout_of_players": "5"
+        "campaign_id": 2, "campaign_name": "test2", "status": "DM", "amout_of_players": "5"
     },
     {
-        "campaign_name": "test3", "status": "player", "character_name": "Crash Bandicot"
-    },
-    {
-        "campaign_name": "test1", "status": "player", "character_name": "Steve Rogers"
-    },
-    {
-        "campaign_name": "test2", "status": "DM", "amout_of_players": "5"
-    },
-    {
-        "campaign_name": "test3", "status": "player", "character_name": "Crash Bandicot"
-    },
-    {
-        "campaign_name": "test1", "status": "player", "character_name": "Steve Rogers"
-    },
-    {
-        "campaign_name": "test2", "status": "DM", "amout_of_players": "5"
-    },
-    {
-        "campaign_name": "test3", "status": "player", "character_name": "Crash Bandicot"
-    },
-    {
-        "campaign_name": "test1", "status": "player", "character_name": "Steve Rogers"
-    },
-    {
-        "campaign_name": "test2", "status": "DM", "amout_of_players": "5"
-    },
-    {
-        "campaign_name": "test3", "status": "player", "character_name": "Crash Bandicot"
-    },
-    {
-        "campaign_name": "test1", "status": "player", "character_name": "Steve Rogers"
-    },
-    {
-        "campaign_name": "test2", "status": "DM", "amout_of_players": "5"
-    },
-    {
-        "campaign_name": "test3", "status": "player", "character_name": "Crash Bandicot"
+        "campaign_id": 3, "campaign_name": "test3", "status": "player", "character_name": "Crash Bandicot"
     }
 ]
 const campaigns2 = []
@@ -86,6 +72,42 @@ campaignContainerSection.addEventListener('click', (e) => {
     }
     else if (e.target.classList.contains('start-session-button')) {
         window.location.href = "./DMScreen.html"
+    }
+    else if (e.target.classList.contains('abandon-button')) {
+        const relevantCampaign = e.target.closest('.campaign-instance')
+        const campaignId = relevantCampaign.dataset.id
+        const campaignName = relevantCampaign.dataset.name
+
+        if (relevantCampaign.classList.contains('dm-campaign')) {
+            // this should also have a backed part that selects relevant data
+            dmModalCampaignName.innerText = campaignName
+            dmModalPlayerList.innerHTML = ''
+            dmErrorMessage.innerText = ''
+
+            const matchedCampaign = campaigns_info.find(campaign => campaign.campaign_id === parseInt(campaignId))
+            const playersNames = matchedCampaign.participants
+            // in the future add check if dm is only person
+            playersNames.forEach(playerName => {
+                const li = document.createElement('li')
+                li.innerHTML = `
+                <label>
+                    <input type="radio" name="new-dm" value="${playerName}">
+                    ${playerName}
+                    </label>
+                `    
+                dmModalPlayerList.appendChild(li) 
+                
+                //future maintenance, make sure doesnt display the DM itself.
+
+            });
+
+            dmAbandonModal.showModal();
+            // add blur to buttons?
+        }
+        else if (relevantCampaign.classList.contains('player-campaign')) {
+            playerModalCampaignName.innerText = campaignName
+            playerAbandonModal.showModal()
+        }
     }
 })
 
@@ -188,6 +210,9 @@ function displayDMSessions(campaign) {
     const startSessionButton = document.createElement('button')
     const abandonButton = document.createElement('button')
 
+    campaignInstance.dataset.id = campaign.campaign_id
+    campaignInstance.dataset.name = campaignName
+
     campaignInstance.classList.add('campaign-instance', 'dm-campaign')
     buttonsContainer.classList.add("instance-buttons-container")
     startSessionButton.classList.add('start-session-button')
@@ -221,6 +246,9 @@ function displayPlayerSessions(campaign) {
     const nameSpan = document.createElement('span')
     const joinButton = document.createElement('button')
     const abandonButton = document.createElement('button')
+
+    campaignInstance.dataset.id = campaign.campaign_id
+    campaignInstance.dataset.name = campaignName
 
     campaignInstance.classList.add('campaign-instance', 'player-campaign')
     buttonsContainer.classList.add("instance-buttons-container")
@@ -354,17 +382,17 @@ cancel_create_new_campaign.addEventListener('click', () => {
 copy_button.addEventListener('click', () => {
     const codeToCopy = code_value.value;
     navigator.clipboard.writeText(codeToCopy)
-    .then(() => {
-        copy_button.innerText = "Copied!"
-        copy_button.classList.add("copied")
-        setTimeout(() => {
-            copy_button.innerText = "Copy!"
-            copy_button.classList.remove("copied")
-        }, 2000)
-    })
-    .catch(err => {
-        console.error("Failed to copy code: ", err)
-    })
+        .then(() => {
+            copy_button.innerText = "Copied!"
+            copy_button.classList.add("copied")
+            setTimeout(() => {
+                copy_button.innerText = "Copy!"
+                copy_button.classList.remove("copied")
+            }, 2000)
+        })
+        .catch(err => {
+            console.error("Failed to copy code: ", err)
+        })
 })
 
 finish_creating.addEventListener('click', () => {
@@ -372,3 +400,39 @@ finish_creating.addEventListener('click', () => {
     create_new_campaign.blur()
     /* some backend logic to create the actual campaign, maybe load the page aswell */
 })
+
+dmModalPlayerList.addEventListener('change', (e) => {
+    if (e.target.name === 'new-dm') {
+        dmErrorMessage.innerText = "";
+    }
+})
+
+cancelDmAbandonBtn.addEventListener('click', () => {
+    dmErrorMessage.innerText = ""
+    dmAbandonModal.close()
+});
+
+confirmDmAbandonBtn.addEventListener('click', () => {
+    const selectedPlayer = document.querySelector('input[name="new-dm"]:checked');
+
+    if (selectedPlayer) {
+        const newDmName = selectedPlayer.value
+        
+        // TODO: In the future, add backend call here to update the database
+        // TODO: Remove the campaign from the screen
+        dmErrorMessage.innerText = ""
+        dmAbandonModal.close();
+    } else {
+        dmErrorMessage.innerText = "Please select a player to take over before leaving."
+    }
+});
+
+cancelPlayerAbandonBtn.addEventListener('click', () => {
+    playerAbandonModal.close()
+});
+
+confirmPlayerAbandonBtn.addEventListener('click', () => {
+        // TODO: In the future, add backend call here to update the database
+        // TODO: Remove the campaign from the screen
+        playerAbandonModal.close();
+});
