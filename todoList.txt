@@ -1,4 +1,4 @@
-hover functionality on actions in player screen
+hover functionality on actions in player screen - DONE
 add player info from characters sheet (temp hp, all skills, saving throws, passive perception, proficency bonus, ??inspiration??)
 add gold/silver/copper to equipment
 
@@ -12,7 +12,7 @@ add text to tokens
 add option for image as/inside token
 delete sigle token
 custom token and tile sizes. tokens collisions and interactions
-not infinite map
+not infinite map - DONE
 add logic for all dm buttons at the bottom (including round tracker auto update -- this may also affects active effects)
 add effect will open dialog (see how to choose the list of viable effects)
 

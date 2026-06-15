@@ -15,14 +15,16 @@ const ctx = canvas.getContext("2d");
 
 const state = {
   scale: 1,
-  offsetX: 0,
-  offsetY: 0,
+  offsetX: 50, // Let's start with a slight 50px offset so it isn't pushed into the top-left corner
+  offsetY: 50,
   minScale: 0.2,
   maxScale: 8,
   baseGrid: 60,
+  gridCols: 50,
+  gridRows: 50,
   tokens: [
-    { id: "gamur", gridX: 2, gridY: 3, color: "#e74c3c", radius: 25 },
-    { id: "goblin-1", gridX: 5, gridY: 4, color: "#2ecc71", radius: 25 }
+    { id: "gamur", gridX: 15, gridY: 30, color: "#e74c3c", radius: 25 },
+    { id: "goblin-1", gridX: 20, gridY: 34, color: "#2ecc71", radius: 25 }
   ]
 };
 
@@ -44,25 +46,32 @@ function draw() {
   const h = canvas.clientHeight;
 
   ctx.clearRect(0, 0, w, h);
-  ctx.fillStyle = "#f0f8ff";
+  ctx.fillStyle = "#2d3748";
   ctx.fillRect(0, 0, w, h);
 
   const step = state.baseGrid * state.scale;
-  const startX = ((state.offsetX % step) + step) % step;
-  const startY = ((state.offsetY % step) + step) % step;
+  const mapWidth = state.gridCols * step;
+  const mapHeight = state.gridRows * step;
+
+  ctx.fillStyle = "#f0f8ff";
+  ctx.fillRect(state.offsetX, state.offsetY, mapWidth, mapHeight);
 
   ctx.strokeStyle = "#000000";
   ctx.lineWidth = 1;
   ctx.beginPath();
 
-  for (let x = startX; x <= w; x += step) {
-    ctx.moveTo(x, 0);
-    ctx.lineTo(x, h);
+  // Vertical lines
+  for (let col = 0; col <= state.gridCols; col++) {
+    const x = state.offsetX + (col * step);
+    ctx.moveTo(x, state.offsetY);
+    ctx.lineTo(x, state.offsetY + mapHeight);
   }
 
-  for (let y = startY; y <= h; y += step) {
-    ctx.moveTo(0, y);
-    ctx.lineTo(w, y);
+  // Horizontal lines
+  for (let row = 0; row <= state.gridRows; row++) {
+    const y = state.offsetY + (row * step);
+    ctx.moveTo(state.offsetX, y);
+    ctx.lineTo(state.offsetX + mapWidth, y);
   }
 
   ctx.stroke();
@@ -118,6 +127,32 @@ function getGridCoords(clientX, clientY) {
   return { x: floatX, y: floatY };
 }
 
+// --- AUTO-FOCUS LOGIC ---
+function focusOnFirstToken() {
+  if (state.tokens.length === 0) return;
+
+  const w = canvas.clientWidth;
+  const h = canvas.clientHeight;
+  const token = state.tokens[0]; // Grab the first token in the array
+
+  const step = state.baseGrid * state.scale;
+
+  // 1. Calculate the exact pixel center of the token relative to the grid
+  const tokenCenterX = (token.gridX * step) + (step / 2);
+  const tokenCenterY = (token.gridY * step) + (step / 2);
+
+  // 2. Adjust the map offsets so the token's center perfectly aligns with the screen's center
+  state.offsetX = (w / 2) - tokenCenterX;
+  state.offsetY = (h / 2) - tokenCenterY;
+
+  draw();
+}
+
+// 3. Fire this function exactly once after the iframe and CSS have fully loaded
+window.addEventListener("load", () => {
+  focusOnFirstToken();
+});
+
 canvas.addEventListener("mousedown", (event) => {
   document.getElementById("hint").classList.add("hidden-ui");
 
@@ -132,6 +167,9 @@ canvas.addEventListener("mousedown", (event) => {
   if (clickedToken) {
     // 2a. A token was clicked! Lock onto it.
     draggingTokenId = clickedToken.id;
+
+    clickedToken.originalGridX = clickedToken.gridX;
+    clickedToken.originalGridY = clickedToken.gridY;
   } else {
     // 2b. Empty space was clicked. Pan the map.
     isDraggingMap = true;
@@ -167,20 +205,51 @@ window.addEventListener("mousemove", (event) => {
 
 window.addEventListener("mouseup", () => {
   if (draggingTokenId) {
-    // --- TOKEN SNAPPING LOGIC ---
     const token = state.tokens.find(t => t.id === draggingTokenId);
     if (token) {
-      // Math.round pulls the floating coordinate (e.g. 4.25) to the nearest whole cell (4)
-      token.gridX = Math.round(token.gridX);
-      token.gridY = Math.round(token.gridY);
+      // 1. Calculate the exact integer square we are hovering over
+      let droppedX = Math.round(token.gridX);
+      let droppedY = Math.round(token.gridY);
+
+      // 2. Check if that square is outside the white map boundaries
+      const isOutsideX = droppedX < 0 || droppedX >= state.gridCols;
+      const isOutsideY = droppedY < 0 || droppedY >= state.gridRows;
+
+      if (isOutsideX || isOutsideY) {
+        // REJECT: Teleport back to the original integer square
+        token.gridX = token.originalGridX;
+        token.gridY = token.originalGridY;
+      } else {
+        // ACCEPT: Snap to the new integer square
+        token.gridX = droppedX;
+        token.gridY = droppedY;
+      }
+
       draw();
     }
-    draggingTokenId = null; // Release the token
+    draggingTokenId = null; // Successfully drop the token!
   }
 
   isDraggingMap = false;
   canvas.classList.remove("dragging");
+});
 
+document.addEventListener("mouseleave", () => {
+  if (draggingTokenId) {
+    const token = state.tokens.find(t => t.id === draggingTokenId);
+
+    // If we lose track of the mouse, revert the token to its original safe spot
+    if (token && token.originalGridX !== undefined) {
+      token.gridX = token.originalGridX;
+      token.gridY = token.originalGridY;
+      draw();
+    }
+
+    draggingTokenId = null; // Let go of the token
+  }
+
+  isDraggingMap = false;
+  canvas.classList.remove("dragging");
 });
 
 canvas.addEventListener(
@@ -195,28 +264,29 @@ canvas.addEventListener(
   { passive: false }
 );
 
-canvas.addEventListener("touchstart", (event) => {
-  if (event.touches.length === 1) {
-    document.getElementById("hint").classList.add("hidden-ui");
+canvas.addEventListener("touchend", () => {
+  if (draggingTokenId) {
+    const token = state.tokens.find(t => t.id === draggingTokenId);
+    if (token) {
+      let droppedX = Math.round(token.gridX);
+      let droppedY = Math.round(token.gridY);
 
-    const touch = event.touches[0];
-    const { x, y } = getGridCoords(touch.clientX, touch.clientY);
+      const isOutsideX = droppedX < 0 || droppedX >= state.gridCols;
+      const isOutsideY = droppedY < 0 || droppedY >= state.gridRows;
 
-    // Hit detection for tokens on mobile
-    const clickedToken = state.tokens.find(t =>
-      Math.floor(x) === Math.floor(t.gridX) &&
-      Math.floor(y) === Math.floor(t.gridY)
-    );
-
-    if (clickedToken) {
-      draggingTokenId = clickedToken.id;
-    } else {
-      isDraggingMap = true;
+      if (isOutsideX || isOutsideY) {
+        token.gridX = token.originalGridX;
+        token.gridY = token.originalGridY;
+      } else {
+        token.gridX = droppedX;
+        token.gridY = droppedY;
+      }
+      draw();
     }
-
-    lastX = touch.clientX;
-    lastY = touch.clientY;
+    draggingTokenId = null;
   }
+
+  isDraggingMap = false;
 });
 
 canvas.addEventListener("touchmove", (event) => {
@@ -240,10 +310,6 @@ canvas.addEventListener("touchmove", (event) => {
       draw();
     }
   }
-});
-
-canvas.addEventListener("touchend", () => {
-  isDraggingMap = false;
 });
 
 document.addEventListener('click', () => {
