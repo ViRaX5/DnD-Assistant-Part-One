@@ -1,55 +1,84 @@
 <!doctype html>
 <html lang="en">
 
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>DnD Assistant - Campaigns</title>
-    <link rel="stylesheet" href="./css/campaignListStyle.css" />
-    <script type="text/javascript" src="./js/campgain-list.js" defer></script>
-  </head>
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>DnD Assistant - Campaigns</title>
+  <link rel="stylesheet" href="./css/campaignListStyle.css" />
+  <script type="text/javascript" src="./js/campgain-list.js" defer></script>
+</head>
 
-  <body>
-    <div id="wrapper">
-      <header>
-        <div class="image-container">
-          <a href="campaignList.html">
-            <img class="logo" src="./images/D&DLogoTransparent.png" alt="Home" />
-          </a>
-        </div>
-        <nav>
-          <div class="filters">
-            <button type="button" class="DM not-clicked">DM</button>
-            <button type="button" class="player not-clicked">Player</button>
-            <button type="button" class="log-out">Log Out</button>
-            <dialog id="logout-modal">
-              <div class="modal-content">
-                <h2>Ending the Adventure</h2>
-                <p>Are you sure you want to log out?</p>
-                <div class="modal-buttons">
-                  <button type="button" id="cancel-logout" class="cancel-button">
-                    Cancel
-                  </button>
-                  <button type="button" id="confirm-logout" class="confirm-button">
-                    Yes, Log Out
-                  </button>
-                </div>
+<body>
+  <div id="wrapper">
+    <header>
+      <div class="image-container">
+        <a href="campaignList.html">
+          <img class="logo" src="./images/D&DLogoTransparent.png" alt="Home" />
+        </a>
+      </div>
+      <nav>
+        <div class="filters">
+          <button type="button" class="DM not-clicked">DM</button>
+          <button type="button" class="player not-clicked">Player</button>
+          <button type="button" class="log-out">Log Out</button>
+          <dialog id="logout-modal">
+            <div class="modal-content">
+              <h2>Ending the Adventure</h2>
+              <p>Are you sure you want to log out?</p>
+              <div class="modal-buttons">
+                <button type="button" id="cancel-logout" class="cancel-button">
+                  Cancel
+                </button>
+                <button type="button" id="confirm-logout" class="confirm-button">
+                  Yes, Log Out
+                </button>
               </div>
-            </dialog>
-          </div>
-        </nav>
-      </header>
-      <div class="main-section">
-        <h2>Your Campaigns</h2>
-        <div class="campaigns-section">
-          <div class="no-campaigns-container"></div>
-          <div class="campaigns-container"></div>
-          <div class="buttons-placeholder">
-            
-          </div>
+            </div>
+          </dialog>
         </div>
+      </nav>
+    </header>
+    <div class="main-section">
+      <h2>Your Campaigns</h2>
+      <div class="campaigns-section">
+        <div class="no-campaigns-container"></div>
+        <div class="campaigns-container"></div>
+
+      </div>
+      <div class="buttons-placeholder">
+        <dialog id="dm-abandon-modal">
+          <div class="modal-content">
+            <h2>Abandoning: <span id="dm-modal-campaign-name"></span></h2>
+
+            <p>As the DM, you must appoint a successor before leaving.</p>
+            <p>Select a player to become the new DM:</p>
+            
+            <p id="dm-error-message"></p>
+
+            <ul id="dm-modal-player-list" class="player-selection-list">
+            </ul>
+            
+            <div class="modal-buttons">
+              <button type="button" id="cancel-dm-abandon" class="cancel-button">Cancel</button>
+              <button type="button" id="confirm-dm-abandon" class="confirm-button">Appoint DM & Leave</button>
+            </div>
+          </div>
+        </dialog>
+        <dialog id="player-abandon-modal">
+          <h2>Abandoning: <span id="player-modal-campaign-name"></span></h2>
+
+            <p>Abandoning the campaign will delete your character and it's data</p>
+            <p>Are you sure you want to proceed?</p>
+            
+            <div class="modal-buttons">
+              <button type="button" id="cancel-player-abandon" class="cancel-button">Cancel</button>
+              <button type="button" id="confirm-player-abandon" class="confirm-button">Yes. Abandon campaign</button>
+            </div>
+        </dialog>
       </div>
     </div>
-  </body>
+  </div>
+</body>
 
 </html>
