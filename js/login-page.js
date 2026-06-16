@@ -17,9 +17,22 @@ const login_submit = document.getElementsByClassName("login-submit")[0];
 
 const allInputs = [firstname_input, lastname_input, email_input, email_input_login, password_input, password_input_login, repeat_password_input]
 
+const BASE_URL = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1'
+    ? 'http://localhost:8081'  
+    : 'https://virax5.github.io/DnD-Assistant-Part-One/'
+
+const fieldToInputMap = {
+    'firstname': firstname_input,
+    'lastname': lastname_input,
+    'email': email_input,
+    'password': password_input,
+    'repeatPassword': repeat_password_input,
+    'emailLogin': email_input_login,
+    'passwordLogin': password_input_login
+}
 
 
-const json = {"firstname": "Amit", "lastname": "Lachmann", "email": "amit505r@gmail.com", "password": "HelloWorld"};
+// const json = {"firstname": "Amit", "lastname": "Lachmann", "email": "amit505r@gmail.com", "password": "HelloWorld"};
 // const parsed = JSON.parse(jsonPreParse)
 
 signup_button.addEventListener('click', () => {
@@ -59,39 +72,115 @@ login_button.addEventListener('click', () => {
     }
 })
 
-sign_up_form.addEventListener('submit', (e) => {
+// sign_up_form.addEventListener('submit', (e) => {         //MOVING THIS FUNCTION TO BACKEND
+//     e.preventDefault()
+
+//     let errors = []
+//     errors = getSignupFormErrors(firstname_input.value, lastname_input.value, email_input.value, password_input.value, repeat_password_input.value)
+
+//     if (errors.length > 0) {
+//         errors.push("")
+//         error_message.innerText = errors.join(". \n")
+//     }
+//     else
+//     {
+//         /* logic for adding data to json and data base */
+//         window.location.href = "./campaignList.html";
+//     }
+//     signup_submit.blur()
+// })
+
+// login_form.addEventListener('submit', (e) => {           //MOVING THIS FUNCTION TO BACKEND
+//     e.preventDefault()
+
+//     let errors = []
+//     errors = getLoginFormErrors(email_input_login.value, password_input_login.value)
+
+//     if (errors.length > 0) {
+//         errors.push("")
+//         error_message.innerText = errors.join(". \n")
+//     }
+//     else
+//     {
+//         window.location.href = "./campaignList.html";
+//     }
+//     login_submit.blur()
+// })
+
+
+sign_up_form.addEventListener('submit', async (e) => {
     e.preventDefault()
 
-    let errors = []
-    errors = getSignupFormErrors(firstname_input.value, lastname_input.value, email_input.value, password_input.value, repeat_password_input.value)
-
-    if (errors.length > 0) {
-        errors.push("")
-        error_message.innerText = errors.join(". \n")
+    const userData = {
+        firstname: firstname_input.value,
+        lastname: lastname_input.value,
+        email: email_input.value,
+        password: password_input.value,
+        repeatPassword: repeat_password_input.value
     }
-    else
-    {
-        /* logic for adding data to json and data base */
-        window.location.href = "./campaignList.html";
+
+    try {
+        const response = await fetch(`${BASE_URL}/api/signup`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json'},
+            body: JSON.stringify(userData)
+        })
+
+        const data = await response.json()
+
+        if (!data.success) {
+            let errorMessages = []
+            data.errors.forEach(err => {
+                errorMessages.push(err.msg);
+                if (fieldToInputMap[err.field]) {
+                    fieldToInputMap[err.field].parentElement.classList.add('incorrect');
+                }
+            });
+            error_message.innerText = errorMessages.join(". \n")
+        }
+        else {
+            window.location.href = data.redirect
+        }
+    }
+    catch (error) {
+        console.error("Error communicationg with backend:", error)
     }
     signup_submit.blur()
 })
 
-login_form.addEventListener('submit', (e) => {
-    e.preventDefault()
+login_form.addEventListener('submit', async (e) => {
+    e.preventDefault();
 
-    let errors = []
-    errors = getLoginFormErrors(email_input_login.value, password_input_login.value)
+    const loginData = {
+        email: email_input_login.value,
+        password: password_input_login.value
+    };
 
-    if (errors.length > 0) {
-        errors.push("")
-        error_message.innerText = errors.join(". \n")
+    try {
+        const response = await fetch(`${BASE_URL}/api/login`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(loginData)
+        });
+
+        const data = await response.json();
+
+        if (!data.success) {
+            let errorMessages = [];
+            data.errors.forEach(err => {
+                errorMessages.push(err.msg);
+                if (fieldToInputMap[err.field]) {
+                    fieldToInputMap[err.field].parentElement.classList.add('incorrect');
+                }
+            });
+            error_message.innerText = errorMessages.join(". \n");
+        } else {
+            window.location.href = data.redirect;
+        }
+    } catch (error) {
+        console.error("Error communicating with backend:", error);
     }
-    else
-    {
-        window.location.href = "./campaignList.html";
-    }
-    login_submit.blur()
+    login_submit.blur();
 })
 
 function getSignupFormErrors(firstname, lastname, email, password, repeatPassword) {
