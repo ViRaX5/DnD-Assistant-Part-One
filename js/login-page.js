@@ -18,7 +18,7 @@ const login_submit = document.getElementsByClassName("login-submit")[0];
 const allInputs = [firstname_input, lastname_input, email_input, email_input_login, password_input, password_input_login, repeat_password_input]
 
 const BASE_URL = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1'
-    ? 'http://localhost:8081'  
+    ? 'http://localhost:8080'
     : 'https://virax5.github.io/DnD-Assistant-Part-One/'
 
 const fieldToInputMap = {
@@ -122,7 +122,7 @@ sign_up_form.addEventListener('submit', async (e) => {
     try {
         const response = await fetch(`${BASE_URL}/api/signup`, {
             method: 'POST',
-            headers: { 'Content-Type': 'application/json'},
+            headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify(userData)
         })
 
@@ -198,8 +198,7 @@ function getSignupFormErrors(firstname, lastname, email, password, repeatPasswor
         errors.push('Email is required')
         email_input.parentElement.classList.add('incorrect')
     }
-    if(json.email === email)
-    {
+    if (json.email === email) {
         errors.push('This email already has an account')
         email_input.parentElement.classList.add('incorrect')
     }
@@ -228,13 +227,11 @@ function getLoginFormErrors(email, password) {
         errors.push('Email is required')
         email_input_login.parentElement.classList.add('incorrect')
     }
-    if(email !== json.email)
-    {
+    if (email !== json.email) {
         errors.push("Wrong email")
         email_input_login.parentElement.classList.add('incorrect')
     }
-    else if(password !== json.password && password !== '')
-    {
+    else if (password !== json.password && password !== '') {
         errors.push("Wrong password")
         password_input_login.parentElement.classList.add('incorrect')
     }

@@ -2,7 +2,18 @@ import { renderPlayerInfo } from './player-info.js';
 import { renderEquipmentAndTraits } from './equipment-and-traits.js';
 import { setupUIInteractions } from './ui-interactions.js';
 import { renderChat } from './chat.js';
+import io from 'https://cdn.socket.io/4.8.3/socket.io.esm.min.js';
 
+const backendUrl = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1'
+    ? 'http://localhost:8080'
+    : 'https://onrender.com'; // Temporary
+
+
+const socket = io(backendUrl);
+
+socket.on('connection', (socket) => {
+    console.log("Frontend Connected", socket.id)
+})
 
 async function initializeApp() {
     const currentPath = window.location.pathname;

@@ -15,7 +15,7 @@ const ctx = canvas.getContext("2d");
 
 const state = {
   scale: 1,
-  offsetX: 50, // Let's start with a slight 50px offset so it isn't pushed into the top-left corner
+  offsetX: 50,
   offsetY: 50,
   minScale: 0.2,
   maxScale: 8,
