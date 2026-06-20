@@ -129,7 +129,7 @@ sign_up_form.addEventListener('submit', async (e) => {
         const data = await response.json()
 
         if (!data.success) {
-            if (response.status == 400) {
+            if (response.status === 400) {
                 let errorMessages = []
                 data.errors.forEach(err => {
                     errorMessages.push(err.msg);
@@ -139,9 +139,9 @@ sign_up_form.addEventListener('submit', async (e) => {
                 });
                 error_message.innerText = errorMessages.join(". \n")
             }
-            else if (data.status() == 500)
-            {
+            else if (response.status === 500) {
                 console.error("Error creating the account: ", data.err)
+                error_message.innerText = "A server error occurred. Please try again later."
             }
         }
         else {
@@ -171,16 +171,26 @@ login_form.addEventListener('submit', async (e) => {
 
         const data = await response.json();
 
-        if (!data.success) {
-            let errorMessages = [];
-            data.errors.forEach(err => {
-                errorMessages.push(err.msg);
-                if (fieldToInputMap[err.field]) {
-                    fieldToInputMap[err.field].parentElement.classList.add('incorrect');
-                }
-            });
-            error_message.innerText = errorMessages.join(". \n");
-        } else {
+        if(!data.success)
+        {
+            if (data.errors) {
+                let errorMessages = [];
+                data.errors.forEach(err => {
+                    errorMessages.push(err.msg);
+                    if (fieldToInputMap[err.field]) {
+                        fieldToInputMap[err.field].parentElement.classList.add('incorrect');
+                    }
+                });
+                error_message.innerText = errorMessages.join(". \n");
+            }
+            else if (data.error) {
+                email_input_login.parentElement.classList.add('incorrect')
+                password_input_login.parentElement.classList.add('incorrect')
+
+                error_message.innerText = data.error
+            }
+        }
+        else {
             window.location.href = data.redirect;
         }
     } catch (error) {
