@@ -18,7 +18,7 @@ const login_submit = document.getElementsByClassName("login-submit")[0];
 const allInputs = [firstname_input, lastname_input, email_input, email_input_login, password_input, password_input_login, repeat_password_input]
 
 const BASE_URL = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1'
-    ? 'http://localhost:8080'
+    ? 'http://localhost:8081'
     : 'https://virax5.github.io/DnD-Assistant-Part-One/'
 
 const fieldToInputMap = {
@@ -129,14 +129,20 @@ sign_up_form.addEventListener('submit', async (e) => {
         const data = await response.json()
 
         if (!data.success) {
-            let errorMessages = []
-            data.errors.forEach(err => {
-                errorMessages.push(err.msg);
-                if (fieldToInputMap[err.field]) {
-                    fieldToInputMap[err.field].parentElement.classList.add('incorrect');
-                }
-            });
-            error_message.innerText = errorMessages.join(". \n")
+            if (response.status == 400) {
+                let errorMessages = []
+                data.errors.forEach(err => {
+                    errorMessages.push(err.msg);
+                    if (fieldToInputMap[err.field]) {
+                        fieldToInputMap[err.field].parentElement.classList.add('incorrect');
+                    }
+                });
+                error_message.innerText = errorMessages.join(". \n")
+            }
+            else if (data.status() == 500)
+            {
+                console.error("Error creating the account: ", data.err)
+            }
         }
         else {
             window.location.href = data.redirect
