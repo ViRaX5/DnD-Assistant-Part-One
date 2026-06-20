@@ -223,6 +223,14 @@ window.addEventListener("mouseup", () => {
         // ACCEPT: Snap to the new integer square
         token.gridX = droppedX;
         token.gridY = droppedY;
+
+        if (window.parent !== window && window.parent.broadcastTokenMove) {
+          window.parent.broadcastTokenMove({
+            tokenId: token.id,
+            newX: token.gridX,
+            newY: token.gridY
+          });
+        }
       }
 
       draw();
@@ -280,6 +288,14 @@ canvas.addEventListener("touchend", () => {
       } else {
         token.gridX = droppedX;
         token.gridY = droppedY;
+
+        if (window.parent !== window && window.parent.broadcastTokenMove) {
+          window.parent.broadcastTokenMove({
+            tokenId: token.id,
+            newX: token.gridX,
+            newY: token.gridY
+          });
+        }
       }
       draw();
     }
@@ -322,6 +338,15 @@ document.addEventListener('click', () => {
     }
   }
 });
+
+window.updateRemoteToken = (tokenId, newX, newY) => {
+  const token = state.tokens.find(t => t.id === tokenId);
+  if (token) {
+    token.gridX = newX;
+    token.gridY = newY;
+    draw();
+  }
+};
 
 // Creates an observer that calls your resize() function 
 // whenever the canvas's physical layout dimensions change.
