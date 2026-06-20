@@ -5,13 +5,13 @@ import { renderChat } from './chat.js';
 import io from 'https://cdn.socket.io/4.8.3/socket.io.esm.min.js';
 
 const backendUrl = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1'
-    ? 'http://localhost:8080'
+    ? 'http://localhost:8081'
     : 'https://onrender.com'; // Temporary
 
 
 const socket = io(backendUrl);
 
-socket.on('connection', (socket) => {
+socket.on('connect', () => {
     console.log("Frontend Connected", socket.id)
 })
 
