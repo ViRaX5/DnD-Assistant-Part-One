@@ -15,6 +15,21 @@ socket.on('connect', () => {
     console.log("Frontend Connected", socket.id)
 })
 
+window.broadcastTokenMove = (data) => {
+    // Emit the custom event to the Node.js backend
+    socket.emit('map:moveToken', data);
+};
+
+socket.on('map:updateToken', (data) => {
+    const mapIframe = document.getElementById('main-map');
+
+    // Safety check: ensure the iframe exists and has fully loaded its content
+    if (mapIframe && mapIframe.contentWindow && mapIframe.contentWindow.updateRemoteToken) {
+        // Pass the data down through the iframe boundary
+        mapIframe.contentWindow.updateRemoteToken(data.tokenId, data.newX, data.newY);
+    }
+});
+
 async function initializeApp() {
     const currentPath = window.location.pathname;
 
