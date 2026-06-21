@@ -4,9 +4,11 @@ import { setupUIInteractions } from './ui-interactions.js';
 import { renderChat } from './chat.js';
 import io from 'https://cdn.socket.io/4.8.3/socket.io.esm.min.js';
 
-const backendUrl = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1'
-    ? 'http://localhost:8081'
-    : 'https://dndassistantbackend.onrender.com';
+// const backendUrl = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1'
+//     ? 'http://localhost:8081'
+//     : 'https://dndassistantbackend.onrender.com'; // For production
+
+const backendUrl = 'https://dndassistantbackend.onrender.com'; // For dev
 
 
 const socket = io(backendUrl);
