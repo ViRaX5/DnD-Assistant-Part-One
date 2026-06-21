@@ -148,8 +148,8 @@ sign_up_form.addEventListener('submit', async (e) => {
             window.location.href = data.redirect
         }
     }
-    catch (error) {
-        console.error("Error communicationg with backend:", error)
+    catch (err) {
+        console.error("Error communicationg with backend:", err)
     }
     signup_submit.blur()
 })

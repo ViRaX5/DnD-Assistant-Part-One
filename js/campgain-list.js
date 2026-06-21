@@ -17,6 +17,12 @@ const playerModalCampaignName = document.getElementById("player-modal-campaign-n
 const cancelPlayerAbandonBtn = document.getElementById("cancel-player-abandon");
 const confirmPlayerAbandonBtn = document.getElementById("confirm-player-abandon");
 
+const tempID = 1 // in the future will be replaced with tokens probably
+
+const BASE_URL = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1'
+    ? 'http://localhost:8081'
+    : 'https://virax5.github.io/DnD-Assistant-Part-One/'
+
 const campaigns_info = [
     {
         "campaign_id": 1, "campaign_name": "test1", "participants": ["name1", "name2", "name3"], "participants_id": [1, 2, 3]
@@ -40,31 +46,52 @@ const campaigns1 = [
         "campaign_id": 3, "campaign_name": "test3", "status": "player", "character_name": "Crash Bandicot"
     }
 ]
-const campaigns2 = []
+//const campaigns2 = []
 
-const campaigns = campaigns1
-
+let campaigns = [];
 const campaignContainerSection = document.querySelector('.campaigns-container')
 const noCampaignContainerSection = document.querySelector('.no-campaigns-container')
-/* no campaigns */
-if (campaigns.length === 0) {
-    noSessions()
-}
-else {
-    noCampaignContainerSection.style.display = 'none'
-    campaigns.forEach(campaign => {
-        if (campaign.status === "player") {
-            displayPlayerSessions(campaign)
-        }
-        else if (campaign.status === "DM") {
-            displayDMSessions(campaign)
+async function loadPage() {
+    try {
+        const response = await fetch(`${BASE_URL}/api/campaignList?id=${tempID}`,{
+            method: 'GET',
+            headers: { 'Content-Type': 'application/json'},
+        })
+        const data = await response.json()
+        if(response.ok && data.success) {
+            campaigns = data.campaigns
         }
         else {
-            console.log("NOT A PLAYER OR A DM!!!")
+            console.error("Backend sent an error: ", data.error)
         }
-    });
-    addButtons(campaignContainerSection)
+    }
+    catch(err) {
+        console.error("Error communicationg with backend:", err)
+    }
+
+    /* no campaigns */
+    if (campaigns.length === 0) {
+        noSessions()
+    }
+    else {
+        noCampaignContainerSection.style.display = 'none'
+        campaigns.forEach(campaign => {
+            if (campaign.status === "player") {
+                displayPlayerSessions(campaign)
+            }
+            else if (campaign.status === "DM") {
+                displayDMSessions(campaign)
+            }
+            else {
+                console.log("NOT A PLAYER OR A DM!!!")
+            }
+        });
+        addButtons(campaignContainerSection)
+    }
+    
 }
+
+loadPage()
 
 campaignContainerSection.addEventListener('click', (e) => {
     if (e.target.classList.contains('join-button')) {
