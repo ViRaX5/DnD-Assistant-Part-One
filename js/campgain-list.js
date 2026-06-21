@@ -76,10 +76,11 @@ async function loadPage() {
     else {
         noCampaignContainerSection.style.display = 'none'
         campaigns.forEach(campaign => {
-            if (campaign.status === "player") {
+            console.log(campaign)
+            if (campaign.users_role === "player") {
                 displayPlayerSessions(campaign)
             }
-            else if (campaign.status === "DM") {
+            else if (campaign.users_role === "DM") {
                 displayDMSessions(campaign)
             }
             else {
@@ -147,7 +148,9 @@ function addButtons() {
     let htmlCreate = `<dialog id="create-new-campaign-modal">
                 <h3>Create a new campaign!</h3>
             <p>By creating the campaign, you will become the campaign DM</p>
-            <input type="text" class="campaign-code" value="123123123" readonly>
+            <p>Enter the campaign name!</p>
+            <input type="text" id="new-campaign-name" placeholder="Enter campaign name here">
+            <input type="text" class="campaign-code" value="Generating..." readonly>
             <button class="copy-button">Copy!</button>
             <p>Send the code above to your party so they can join the campaign</p>
             <p>The adventure awaits!</p>
@@ -225,9 +228,9 @@ function noSessions() {
 }
 
 function displayDMSessions(campaign) {
-    const campaignName = campaign.campaign_name
-    const status = campaign.status
-    const playerCount = campaign.amout_of_players
+    const campaignName = campaign.campaign_name;
+    const status = campaign.users_role      
+    const playerCount = campaign.amount_of_players
 
     const campaignInstance = document.createElement('div')
     const buttonsContainer = document.createElement('div')
@@ -263,7 +266,7 @@ function displayDMSessions(campaign) {
 
 function displayPlayerSessions(campaign) {
     const campaignName = campaign.campaign_name
-    const status = campaign.status
+    const status = campaign.users_role
     const characterName = campaign.character_name
 
     const campaignInstance = document.createElement('div')
@@ -364,69 +367,134 @@ confirm_logout_button.addEventListener('click', () => {
     window.location.href = "index.html"
 })
 
-const join_new_campaign = document.getElementsByClassName("join-new-button")[0];
-const join_new_campaign_modal = document.getElementById("join-new-campaign-modal");
-const cancel_join_new_campaign = document.getElementById("cancel-join");
-const continue_join = document.getElementsByClassName("continue-join")[0];
-const join_form = document.getElementsByClassName("join-new-campaign-form")[0];
-const character_info = document.getElementsByClassName("character-info")[0];
-const create_new_campaign = document.getElementsByClassName("create-button")[0];
-const create_new_campaign_modal = document.getElementById("create-new-campaign-modal");
-const cancel_create_new_campaign = document.getElementById("cancel-create");
-const copy_button = document.getElementsByClassName("copy-button")[0];
-const code_value = document.getElementsByClassName("campaign-code")[0];
-const finish_creating = document.getElementsByClassName("finish-create")[0];
 
+button_container.addEventListener('click', async (e) => {
+    const join_new_campaign = document.getElementsByClassName("join-new-button")[0];
+    const join_new_campaign_modal = document.getElementById("join-new-campaign-modal");
+    const cancel_join_new_campaign = document.getElementById("cancel-join");
+    const continue_join = document.getElementsByClassName("continue-join")[0];
+    const join_form = document.getElementsByClassName("join-new-campaign-form")[0];
+    const character_info = document.getElementsByClassName("character-info")[0];
+    const create_new_campaign = document.getElementsByClassName("create-button")[0];
+    const create_new_campaign_modal = document.getElementById("create-new-campaign-modal");
+    const cancel_create_new_campaign = document.getElementById("cancel-create");
+    const copy_button = document.getElementsByClassName("copy-button")[0];
+    const code_value = document.getElementsByClassName("campaign-code")[0];
+    const finish_creating = document.getElementsByClassName("finish-create")[0];
+    
+    if (e.target.classList.contains('join-new-button')) {
+        join_new_campaign_modal.showModal()
+        cancel_join_new_campaign.blur()
+    }
+    else if (e.target.classList.contains('create-button')) {
+        create_new_campaign_modal.showModal()
+        cancel_create_new_campaign.blur()
 
-join_new_campaign.addEventListener('click', () => {
-    join_new_campaign_modal.showModal()
-    cancel_join_new_campaign.blur()
-})
+        let dotCount = 0
+        code_value.value = "Generating"
 
-cancel_join_new_campaign.addEventListener('click', () => {
-    join_new_campaign_modal.close()
-    join_new_campaign.blur()
-})
+        const loadingInterval = setInterval(() => {
+            dotCount++;
+            if (dotCount > 3) dotCount = 0;
+            
+            const dots = ".".repeat(dotCount);
+            code_value.value = `Generating${dots}`;
+        }, 500)
 
-join_form.addEventListener('submit', (e) => {
-    e.preventDefault()
-    // send message to dm to confirm the player can join
-    continue_join.blur()
-    join_form.classList.add("not-active")
-    character_info.classList.remove("not-active")
-})
+        try {
+            const response = await fetch(`${BASE_URL}/api/generateCode`, {
+                method: 'GET',
+                headers: { 'Content-Type': 'application/json' }
+            });
+            const data = await response.json();
 
-create_new_campaign.addEventListener('click', () => {
-    create_new_campaign_modal.showModal()
-    cancel_create_new_campaign.blur()
-})
-
-cancel_create_new_campaign.addEventListener('click', () => {
-    create_new_campaign_modal.close()
-    create_new_campaign.blur()
-})
-
-copy_button.addEventListener('click', () => {
-    const codeToCopy = code_value.value;
-    navigator.clipboard.writeText(codeToCopy)
-        .then(() => {
-            copy_button.innerText = "Copied!"
-            copy_button.classList.add("copied")
-            setTimeout(() => {
-                copy_button.innerText = "Copy!"
-                copy_button.classList.remove("copied")
-            }, 2000)
+            if (response.ok && data.success) {
+                code_value.value = data.join_code;
+            } else {
+                code_value.value = "Error generating code";
+            }
+        } 
+        catch (err) {
+            console.error("Failed to fetch campaign code:", err);
+            code_value.value = "Connection Error";
+        }
+        finally {
+            clearInterval(loadingInterval)
+        }
+    }
+    else if (e.target.id === 'cancel-join') {
+        join_new_campaign_modal.close()
+        join_new_campaign.blur()
+    }
+    else if (e.target.classList.contains('join-new-campaign-form')) {
+        e.preventDefault()
+        // send message to dm to confirm the player can join
+        continue_join.blur()
+        join_form.classList.add("not-active")
+        character_info.classList.remove("not-active")
+    }
+    else if (e.target.id === 'cancel-create') {
+        create_new_campaign_modal.close()
+        create_new_campaign.blur()
+    }
+    else if (e.target.classList.contains('copy-button')) {
+        const codeToCopy = code_value.value;
+        navigator.clipboard.writeText(codeToCopy)
+            .then(() => {
+                copy_button.innerText = "Copied!"
+                copy_button.classList.add("copied")
+                setTimeout(() => {
+                    copy_button.innerText = "Copy!"
+                    copy_button.classList.remove("copied")
+                }, 2000)
+            })
+            .catch(err => {
+                console.error("Failed to copy code: ", err)
+            })
+    }
+    else if (e.target.classList.contains('finish-create')) {
+        const finalJoinCode = code_value.value
+        const campaignName = document.getElementById('new-campaign-name').value
+        if (campaignName.length === 0) {
+            
+        }
+        const response = await fetch(`${BASE_URL}/api/createNewCampaign`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+                joinCode: finalJoinCode,
+                campaignName: campaignName,
+                hostID: tempID
+            })
         })
-        .catch(err => {
-            console.error("Failed to copy code: ", err)
-        })
+
+        create_new_campaign_modal.close()
+        create_new_campaign.blur()
+
+        /* some backend logic to create the actual campaign, maybe load the page aswell */
+    }
 })
 
-finish_creating.addEventListener('click', () => {
-    create_new_campaign_modal.close()
-    create_new_campaign.blur()
-    /* some backend logic to create the actual campaign, maybe load the page aswell */
-})
+// join_new_campaign.addEventListener('click', () => {
+// })
+
+// cancel_join_new_campaign.addEventListener('click', () => {
+// })
+
+// join_form.addEventListener('submit', (e) => {
+// })
+
+// create_new_campaign.addEventListener('click', () => {
+// })
+
+// cancel_create_new_campaign.addEventListener('click', () => {
+// })
+
+// copy_button.addEventListener('click', () => {
+// })
+
+// finish_creating.addEventListener('click', () => {
+// })
 
 dmModalPlayerList.addEventListener('change', (e) => {
     if (e.target.name === 'new-dm') {

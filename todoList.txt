@@ -29,7 +29,7 @@ when abandoning as dm chech if the DM is the only participant and change dialog 
 when abandoning as dm, dont display the DM as an option for successor
 email verification?
 
-create backend server (render)
+create backend server (render) -- COMPLETE
 
 shop logic for both players and dm (including api)
 

@@ -333,7 +333,7 @@ nav {
   color: var(--text-color-base);
   text-align: center;
   box-sizing: border-box; 
-  width: min(400px, 95vw); 
+  width: min(500px, 95vw); 
   max-width: 100%;
 }
 
@@ -439,7 +439,7 @@ nav {
   color: var(--text-color-alt);
 }
 
-.campaign-code {
+.campaign-code, #new-campaign-name {
   box-sizing: border-box;
   width: 100%;
   padding: 10px 15px;
@@ -453,7 +453,11 @@ nav {
   color: var(--text-color-base);
 }
 
-.campaign-code:focus {
+#new-campaign-name {
+  border: 2px solid var(--form-stroke); 
+}
+
+.campaign-code:focus, #new-campaign-name:focus {
   outline: none;
 }
 
