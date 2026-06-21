@@ -6,7 +6,7 @@ import io from 'https://cdn.socket.io/4.8.3/socket.io.esm.min.js';
 
 const backendUrl = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1'
     ? 'http://localhost:8081'
-    : 'https://onrender.com'; // Temporary
+    : 'https://dndassistantbackend.onrender.com';
 
 
 const socket = io(backendUrl);
