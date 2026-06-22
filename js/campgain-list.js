@@ -53,19 +53,19 @@ const campaignContainerSection = document.querySelector('.campaigns-container')
 const noCampaignContainerSection = document.querySelector('.no-campaigns-container')
 async function loadPage() {
     try {
-        const response = await fetch(`${BASE_URL}/api/campaignList?id=${tempID}`,{
+        const response = await fetch(`${BASE_URL}/api/campaignList?id=${tempID}`, {
             method: 'GET',
-            headers: { 'Content-Type': 'application/json'},
+            headers: { 'Content-Type': 'application/json' },
         })
         const data = await response.json()
-        if(response.ok && data.success) {
+        if (response.ok && data.success) {
             campaigns = data.campaigns
         }
         else {
             console.error("Backend sent an error: ", data.error)
         }
     }
-    catch(err) {
+    catch (err) {
         console.error("Error communicationg with backend:", err)
     }
 
@@ -89,7 +89,7 @@ async function loadPage() {
         });
         addButtons(campaignContainerSection)
     }
-    
+
 }
 
 loadPage()
@@ -122,9 +122,9 @@ campaignContainerSection.addEventListener('click', (e) => {
                     <input type="radio" name="new-dm" value="${playerName}">
                     ${playerName}
                     </label>
-                `    
-                dmModalPlayerList.appendChild(li) 
-                
+                `
+                dmModalPlayerList.appendChild(li)
+
                 //future maintenance, make sure doesnt display the DM itself.
 
             });
@@ -178,15 +178,37 @@ function addButtons() {
                 </div>
               </form>
               <form action="" class="character-info not-active">
-                <input type="text" name="characters-class" id="characters-class" placeholder="Character's Class">
-                <input type="text" name="characters-race" id="characters-race" placeholder="Character's Race">
+                <select name="characters-class" id="characters-class">
+                    <option value="">Loading classes...</option>
+                </select>
+                <select name="characters-race" id="characters-race">
+                    <option value="">Loading races...</option>
+                </select>
                 <div class="stats">
-                  <input type="number" name="characters-str" id="characters-str" placeholder="Strength">
-                  <input type="number" name="characters-dex" id="characters-dex" placeholder="Dexterity">
-                  <input type="number" name="characters-con" id="characters-con" placeholder="Constitution">
-                  <input type="number" name="characters-int" id="characters-int" placeholder="Inteligence">
-                  <input type="number" name="characters-wis" id="characters-wis" placeholder="Wisdom">
-                  <input type="number" name="characters-cha" id="characters-cha" placeholder="Charisma">
+                    <div class="stat-group">
+                        <input type="number" name="characters-str" id="characters-str" placeholder="Strength">
+                        <span id="mod-str" class="race-mod"></span>
+                    </div>
+                    <div class="stat-group">
+                        <input type="number" name="characters-dex" id="characters-dex" placeholder="Dexterity">
+                        <span id="mod-dex" class="race-mod"></span>
+                    </div>
+                    <div class="stat-group">
+                        <input type="number" name="characters-con" id="characters-con" placeholder="Constitution">
+                        <span id="mod-con" class="race-mod"></span>
+                    </div>
+                    <div class="stat-group">
+                        <input type="number" name="characters-int" id="characters-int" placeholder="Inteligence">
+                        <span id="mod-int" class="race-mod"></span>
+                    </div>
+                    <div class="stat-group">
+                        <input type="number" name="characters-wis" id="characters-wis" placeholder="Wisdom">
+                        <span id="mod-wis" class="race-mod"></span>
+                    </div>
+                    <div class="stat-group">
+                        <input type="number" name="characters-cha" id="characters-cha" placeholder="Charisma">
+                        <span id="mod-cha" class="race-mod"></span>
+                    </div>
                 </div>
                 <div class="final-submit">
                   <button type="submit" class="finish-join">Join the Adventure</button>
@@ -229,7 +251,7 @@ function noSessions() {
 
 function displayDMSessions(campaign) {
     const campaignName = campaign.campaign_name;
-    const status = campaign.users_role      
+    const status = campaign.users_role
     const playerCount = campaign.amount_of_players
 
     const campaignInstance = document.createElement('div')
@@ -374,6 +396,7 @@ button_container.addEventListener('click', async (e) => {
     const cancel_join_new_campaign = document.getElementById("cancel-join");
     const continue_join = document.getElementsByClassName("continue-join")[0];
     const join_form = document.getElementsByClassName("join-new-campaign-form")[0];
+    const finish_join = document.getElementsByClassName("finish-join")[0];
     const character_info = document.getElementsByClassName("character-info")[0];
     const create_new_campaign = document.getElementsByClassName("create-button")[0];
     const create_new_campaign_modal = document.getElementById("create-new-campaign-modal");
@@ -381,7 +404,7 @@ button_container.addEventListener('click', async (e) => {
     const copy_button = document.getElementsByClassName("copy-button")[0];
     const code_value = document.getElementsByClassName("campaign-code")[0];
     const finish_creating = document.getElementsByClassName("finish-create")[0];
-    
+
     if (e.target.classList.contains('join-new-button')) {
         join_new_campaign_modal.showModal()
         cancel_join_new_campaign.blur()
@@ -396,7 +419,7 @@ button_container.addEventListener('click', async (e) => {
         const loadingInterval = setInterval(() => {
             dotCount++;
             if (dotCount > 3) dotCount = 0;
-            
+
             const dots = ".".repeat(dotCount);
             code_value.value = `Generating${dots}`;
         }, 500)
@@ -413,7 +436,7 @@ button_container.addEventListener('click', async (e) => {
             } else {
                 code_value.value = "Error generating code";
             }
-        } 
+        }
         catch (err) {
             console.error("Failed to fetch campaign code:", err);
             code_value.value = "Connection Error";
@@ -426,12 +449,19 @@ button_container.addEventListener('click', async (e) => {
         join_new_campaign_modal.close()
         join_new_campaign.blur()
     }
-    else if (e.target.classList.contains('join-new-campaign-form')) {
+    else if (e.target.classList.contains('continue-join')) {
         e.preventDefault()
         // send message to dm to confirm the player can join
         continue_join.blur()
         join_form.classList.add("not-active")
+        setUpCharacterCreation()
         character_info.classList.remove("not-active")
+    }
+    else if (e.target.classList.contains('finish-join')) {
+        // e.preventDefault()
+        // send message to dm to confirm the player can join
+        join_new_campaign.blur()
+        // character_info.classList.add("not-active")
     }
     else if (e.target.id === 'cancel-create') {
         create_new_campaign_modal.close()
@@ -456,7 +486,7 @@ button_container.addEventListener('click', async (e) => {
         const finalJoinCode = code_value.value
         const campaignName = document.getElementById('new-campaign-name').value
         if (campaignName.length === 0) {
-            
+
         }
         const response = await fetch(`${BASE_URL}/api/createNewCampaign`, {
             method: 'POST',
@@ -512,7 +542,7 @@ confirmDmAbandonBtn.addEventListener('click', () => {
 
     if (selectedPlayer) {
         const newDmName = selectedPlayer.value
-        
+
         // TODO: In the future, add backend call here to update the database
         // TODO: Remove the campaign from the screen
         dmErrorMessage.innerText = ""
@@ -527,7 +557,163 @@ cancelPlayerAbandonBtn.addEventListener('click', () => {
 });
 
 confirmPlayerAbandonBtn.addEventListener('click', () => {
-        // TODO: In the future, add backend call here to update the database
-        // TODO: Remove the campaign from the screen
-        playerAbandonModal.close();
+    // TODO: In the future, add backend call here to update the database
+    // TODO: Remove the campaign from the screen
+    playerAbandonModal.close();
 });
+
+async function setUpCharacterCreation() {
+    const classDropdown = document.getElementById('characters-class')
+    const raceDropdown = document.getElementById('characters-race')
+
+    try {
+        const [classRes, raceRes] = await Promise.all([
+            fetch('https://www.dnd5eapi.co/api/classes'),
+            fetch('https://www.dnd5eapi.co/api/races')
+        ])
+
+        const classData = await classRes.json()
+        const raceData = await raceRes.json()
+
+        classDropdown.innerHTML = '<option value="">Select a Class</option>'
+        raceDropdown.innerHTML = '<option value="">Select a Race</option>'
+
+        classData.results.forEach(c => {
+            const option = document.createElement('option')
+            option.value = c.index
+            option.innerText = c.name
+            classDropdown.appendChild(option)
+        });
+
+        raceData.results.forEach(r => {
+            const option = document.createElement('option')
+            option.value = r.index
+            option.innerText = r.name
+            raceDropdown.appendChild(option)
+        });
+
+    } catch (err) {
+        console.error("Failed to load D&D 5e API data: ", err)
+        classDropdown.innerHTML = '<option value="">Error loading classes</option>'
+        raceDropdown.innerHTML = '<option value="">Error loading races</option>'
+    }
+    raceDropdown.addEventListener('change', async (e) => {
+        if (e.target.value !== "") {
+            const selectedRace = e.target.value
+
+            const allModSpans = document.querySelectorAll('.race-mod')
+            allModSpans.forEach(span => span.innerText = '')
+
+            if (!selectedRace) return
+
+            try {
+                const response = await fetch(`https://www.dnd5eapi.co/api/races/${selectedRace}`);
+                const raceDetails = await response.json();
+
+                raceDetails.ability_bonuses.forEach(bonusObj => {
+                    const statIndex = bonusObj.ability_score.index;
+                    const bonusValue = bonusObj.bonus;
+
+                    const targetSpan = document.getElementById(`mod-${statIndex}`)
+                    if (targetSpan) {
+                        targetSpan.innerText = `+${bonusValue} Race Bonus`
+                        targetSpan.style.color = "green"
+                    }
+                });
+
+            } catch (err) {
+                console.error("Failed to fetch race bonuses: ", err)
+            }
+        }
+
+    })
+}
+
+// async function setUpCharacterCreation() {
+//     const myHeaders = new Headers()
+//     myHeaders.append("Accept", "application/json")
+
+
+//     const requestOptions = {
+//         method: "GET",
+//         headers: myHeaders,
+//         redirect: "follow"
+//     }
+//     //part of the dnd api and how they said to use it
+
+//     const classDropdown = document.getElementById('characters-class')
+//     const raceDropdown = document.getElementById('characters-race')
+
+//     // const possibleClasses = ["barbarian", "bard", "cleric", "druid", "fighter", "monk", "paladin", "ranger", "rogue",
+//     // "sorcerer", "warlock", "wizard"]
+
+//     const possibleRaces = ["dragonborn", "dwarf", "elf", "gnome", "half-elf", "half-orc", "halfling", "human", "tiefling"]
+
+//     const possibleClassesFromFetch = await Promise(fetch("https://www.dnd5eapi.co/api/2014/races/", requestOptions)
+//         .then((response) => response.text())
+//         .then((result) => console.log(result))
+//         .catch((error) => console.error(error)))
+
+//     const classData = await possibleClassesFromFetch.json()
+
+//     classData.results.forEach(c => {
+//         const option = document.createElement('option');
+//         option.value = c.index;
+//         option.innerText = c.name;
+//         classDropdown.appendChild(option)
+//     })
+
+//     classDropdown.innerHTML = '<option value="">Select a Class</option>';
+//     raceDropdown.innerHTML = '<option value="">Select a Race</option>';
+
+//     // possibleClasses.forEach(c => {
+//     //     const option = document.createElement('option')
+//     //     option.value = c
+//     //     option.innerHTML = c
+//     //     classDropdown.appendChild(option)
+//     // })
+
+//     possibleRaces.forEach(r => {
+//         const option = document.createElement('option')
+//         option.value = r
+//         option.innerHTML = r
+//         raceDropdown.appendChild(option)
+//     })
+
+//     let classJson
+//     let raceJson
+
+//     classDropdown.addEventListener('change', (e) => {
+//         if (e.target.value !== "") {
+//             const requestedClass = e.target.value
+//             // console.log(e.target.value)
+//             const classRes = fetch(`https://www.dnd5eapi.co/api/2014/classes/${requestedClass}`, requestOptions)
+//                 .then((response) => response.text())
+//                 .then((result) => console.log(result))
+//                 .catch((error) => console.error(error));
+//             // this is the dnd api, this is how they said to use it
+
+//             if (classRes) {
+//                 classJson = classRes
+//             }
+//         }
+//     })
+
+//     raceDropdown.addEventListener('change', (e) => {
+//         if (e.target.value !== "") {
+//             const requestedRace = e.target.value
+//             // console.log(e.target.value)
+//             const raceRes = fetch(`https://www.dnd5eapi.co/api/2014/races/${requestedRace}`, requestOptions)
+//                 .then((response) => response.text())
+//                 .then((result) => console.log(result))
+//                 .catch((error) => console.error(error))
+//             if (raceRes) {
+//                 raceJson = raceRes
+//                 // const abilityBonuses = raceJson.
+//             }
+//         }
+
+//     })
+
+
+// }

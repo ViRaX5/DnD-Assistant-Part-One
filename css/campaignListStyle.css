@@ -595,6 +595,19 @@ nav {
   white-space: nowrap;
 }
 
+.stat-group {
+    display: flex;
+    flex-direction: row; /* Stacks the input and the text */
+    margin-bottom: 10px;
+    align-items: center;
+}
+
+.race-mod {
+    font-size: 0.4rem;
+    font-weight: bold;
+    min-height: 1.2em; /* Keeps the spacing from jumping when text appears */
+}
+
 
 
 .not-active {
