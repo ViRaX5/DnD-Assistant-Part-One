@@ -324,7 +324,7 @@ nav {
 /* for dialog in create and join new session aswell as the abandon modal */
 
 /* JOIN */
-#join-new-campaign-modal, #create-new-campaign-modal, #dm-abandon-modal, #player-abandon-modal {
+#join-new-campaign-modal, #create-new-campaign-modal, #dm-abandon-modal, #player-abandon-modal, #sub-equipment-modal {
   margin: auto;
   padding: 20px 30px; 
   border: 2px solid var(--form-stroke);
@@ -335,6 +335,8 @@ nav {
   box-sizing: border-box; 
   width: min(500px, 95vw); 
   max-width: 100%;
+  max-height: 85vh; 
+  overflow-y: auto;
 }
 
 #join-new-campaign-modal::backdrop, #create-new-campaign-modal::backdrop, #dm-abandon-modal::backdrop, #player-abandon-modal::backdrop {
@@ -608,7 +610,127 @@ nav {
     min-height: 1.2em; /* Keeps the spacing from jumping when text appears */
 }
 
+/* equipment modal */
 
+.equip-group {
+    border: 1px solid var(--form-stroke);
+    padding: 10px;
+    margin-bottom: 10px;
+    border-radius: 8px;
+    background: var(--form-background);
+    text-align: left;
+}
+
+.equip-group h4 {
+    margin-bottom: 8px;
+    font-size: 0.9rem;
+}
+
+.equip-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(130px, 1fr));
+    gap: 10px;
+}
+
+.equip-card {
+    padding: 10px;
+    border: 2px solid var(--form-stroke);
+    border-radius: 8px;
+    background: var(--input-color);
+    cursor: pointer;
+    font-size: 0.75rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    transition: all 0.2s ease;
+    user-select: none;
+    min-height: 50px;
+}
+
+.equip-card:hover {
+    border-color: var(--text-color-alt);
+}
+
+.equip-card.selected {
+    border-color: #148640;
+    background-color: #c6f6d5;
+    font-weight: bold;
+    color: #000;
+}
+
+.equip-card.needs-sub-choice {
+    border-style: dashed;
+}
+
+.sub-modal-desc {
+    font-size: 0.8rem; 
+    margin-bottom: 15px;
+}
+
+.sub-modal-cancel {
+    margin-top: 20px; 
+    width: 100%;
+}
+
+.guaranteed-items-list {
+    margin-bottom: 15px; 
+    padding-left: 20px;
+}
+
+/* Dropdown stuff */
+#characters-class, #characters-race {
+  box-sizing: border-box;
+  width: 100%;
+  padding: 10px 15px;
+  font: inherit;
+  border: 2px solid var(--form-stroke);
+  border-radius: 10px;
+  background-color: var(--input-color);
+  color: var(--text-color-base);
+  cursor: pointer;
+  appearance: none; 
+  background-image: url("data:image/svg+xml;charset=US-ASCII,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%22292.4%22%20height%3D%22292.4%22%3E%3Cpath%20fill%3D%22%2363748c%22%20d%3D%22M287%2069.4a17.6%2017.6%200%200%200-13-5.4H18.4c-5%200-9.3%201.8-12.9%205.4A17.6%2017.6%200%200%200%200%2082.2c0%205%201.8%209.3%205.4%2012.9l128%20127.9c3.6%203.6%207.8%205.4%2012.8%205.4s9.2-1.8%2012.8-5.4L287%2095c3.5-3.5%205.4-7.8%205.4-12.8%200-5-1.9-9.2-5.5-12.8z%22%2F%3E%3C%2Fsvg%3E");
+  background-repeat: no-repeat;
+  background-position: right 15px top 50%;
+  background-size: 12px auto;
+}
+
+#characters-class:focus, #characters-race:focus {
+  outline: none;
+  border-color: var(--text-color-alt);
+}
+
+#equipment-container {
+  font-size: 0.8rem; 
+  text-align: left; 
+  background: var(--input-color); 
+  padding: 10px; 
+  border-radius: 10px; 
+  display: none;
+}
+
+#sub-equip-grid {
+    margin-bottom: 10px;
+}
+
+#sub-equipment-modal[open] {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: flex-start;
+}
+
+/* misc */
+
+.form-error-message {
+    color: #ed253c; 
+    font-size: 0.85rem;
+    font-weight: bold;
+    margin-bottom: 10px;
+    min-height: 1.2em; /* Keeps the UI from jumping when text appears */
+    text-align: center;
+}
 
 .not-active {
   display: none;
