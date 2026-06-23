@@ -17,7 +17,7 @@ const playerModalCampaignName = document.getElementById("player-modal-campaign-n
 const cancelPlayerAbandonBtn = document.getElementById("cancel-player-abandon");
 const confirmPlayerAbandonBtn = document.getElementById("confirm-player-abandon");
 
-const tempID = 1 // in the future will be replaced with tokens probably
+const tempID = 2 // in the future will be replaced with tokens probably
 
 const BASE_URL = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1'
     ? 'http://localhost:8081'

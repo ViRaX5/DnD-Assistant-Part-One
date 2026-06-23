@@ -89,31 +89,78 @@
               </div>
             </div>
             <div id="player-info-main-right">
-              <div id="stats-top-container">
-                <div class="stat-container">
-                  <h4 class="attribute-name-title">AC</h4>
-                  <h3 id="armor-class-amount" class="modifier-amount">18</h3>
+              <button id="info-page-toggle-btn" class="menu-btn">
+                Skills & Saves
+              </button>
+
+              <div id="info-page-1">
+                <div id="stats-top-container">
+                  <div class="stat-container">
+                    <h4 class="attribute-name-title">AC</h4>
+                    <h3 id="armor-class-amount" class="modifier-amount">18</h3>
+                  </div>
+                  <div class="stat-container">
+                    <h4 class="attribute-name-title">INIT</h4>
+                    <h3 id="initiative-amount" class="modifier-amount">+1</h3>
+                  </div>
+                  <div class="stat-container">
+                    <h4 class="attribute-name-title">SPD</h4>
+                    <h3 id="speed-amount" class="modifier-amount">30</h3>
+                  </div>
                 </div>
-                <div class="stat-container">
-                  <h4 class="attribute-name-title">INIT</h4>
-                  <h3 id="initiative-amount" class="modifier-amount">+1</h3>
+                <div id="hit-points-container" class="hit-points-container">
+                  <div id="hit-points-container-top">
+                    <h4 id="hit-points-title" class="hit-points-title">
+                      CURRENT HIT POINTS
+                    </h4>
+                    <h4 id="hit-point-max">MAX: 28</h4>
+                  </div>
+                  <div id="hit-points-container-bottom">
+                    <h2 id="hit-points-amount" class="modifier-amount">22</h2>
+                  </div>
                 </div>
-                <div class="stat-container">
-                  <h4 class="attribute-name-title">SPD</h4>
-                  <h3 id="speed-amount" class="modifier-amount">30</h3>
+                <div id="temp-hit-points-and-proficiency-bonus-container">
+                  <div
+                    id="temp-hit-points-container"
+                    class="hit-points-subcontainer"
+                  >
+                    <h4 id="temp-hit-points-title-top" class="title-top">
+                      TEMPORARY
+                    </h4>
+                    <h2 id="temp-hit-points-amount" class="modifier-amount">
+                      22
+                    </h2>
+                    <h4 id="temp-hit-points-title-bottom" class="title-bottom">
+                      HIT POINTS
+                    </h4>
+                  </div>
+                  <div
+                    id="proficiency-bonus-container"
+                    class="hit-points-subcontainer"
+                  >
+                    <h4 id="proficiency-title-top" class="title-top">
+                      PROFICIENCY
+                    </h4>
+                    <h2 id="proficiency-amount" class="modifier-amount">22</h2>
+                    <h4 id="proficiency-title-bottom" class="title-bottom">
+                      BONUS
+                    </h4>
+                  </div>
                 </div>
               </div>
-              <div id="hit-points-container">
-                <div id="hit-points-container-top">
-                  <h4 id="hit-points-title">CURRENT HIT POINTS</h4>
-                  <h4 id="hit-point-max">MAX: 28</h4>
+
+              <div id="info-page-2" class="hidden-page">
+                <div id="saving-throws-wrapper">
+                  <h4 id="saving-throws-title">SAVING THROWS</h4>
+                  <fieldset
+                    id="saving-throws-list"
+                    class="skill-toggle"
+                  ></fieldset>
                 </div>
-                <div id="hit-points-container-bottom">
-                  <h2 id="hit-points-amount" class="modifier-amount">22</h2>
+                <div id="stats-bottom-container">
+                  <h4 id="skills-title">SKILLS</h4>
+                  <fieldset id="skill-list" class="skill-toggle"></fieldset>
                 </div>
-              </div>
-              <div id="stats-bottom-container">
-                <fieldset id="skill-list"></fieldset>
               </div>
             </div>
           </div>

@@ -22,9 +22,16 @@ export function renderPlayerInfo(data) {
     document.getElementById("initiative-amount").textContent = data.combat.initiative;
     document.getElementById("speed-amount").textContent = data.combat.speed;
 
-    // Health
+    // Health, Temp HP, and Proficiency
     document.getElementById("hit-points-amount").textContent = data.health.current;
-    document.getElementById("hit-point-max").textContent = data.health.max;
+    document.getElementById("hit-point-max").textContent = `MAX: ${data.health.max}`;
+    document.getElementById("temp-hit-points-amount").textContent = data.health.temp;
+    document.getElementById("proficiency-amount").textContent = data.proficiencyBonus;
+
+    // Saving Throws
+    if (data.savingThrows) {
+        renderSavingThrows(data.savingThrows);
+    }
 
     // Skills
     if (data.skills) {
@@ -35,6 +42,44 @@ export function renderPlayerInfo(data) {
     if (data.attacks) {
         renderAttacks(data.attacks);
     }
+}
+
+function renderSavingThrows(savesData) {
+    const savesList = document.getElementById("saving-throws-list");
+
+    savesList.innerHTML = '';
+
+    let htmlString = '';
+
+    savesData.forEach(save => {
+        if (save.proficient === true) {
+            htmlString +=
+                `<div class="skill-toggle">
+            <input
+              type="checkbox"
+              id="${save.id}"
+              name="saving-throws"
+              value="${save.id}"
+              checked
+            />
+            <label for="${save.id}">${save.modifier} ${save.name}</label>
+        </div>`;
+        }
+        else {
+            htmlString +=
+                `<div class="skill-toggle">
+            <input
+              type="checkbox"
+              id="${save.id}"
+              name="saving-throws"
+              value="${save.id}"
+            />
+            <label for="${save.id}">${save.modifier} ${save.name}</label>
+        </div>`;
+        }
+    });
+
+    savesList.innerHTML = htmlString;
 }
 
 function renderSkills(skillsData) {

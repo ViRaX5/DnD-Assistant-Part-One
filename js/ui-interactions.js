@@ -4,6 +4,9 @@ export function setupUIInteractions() {
     // Navbar Page Switch
     navbarPageSwitch();
 
+    // Player Info Page Toggle
+    playerInfoToggle();
+
     // Dice Tray Interaction
     diceTrayInteraction();
 
@@ -34,6 +37,29 @@ function navbarPageSwitch() {
             window.location.href = "DMScreen.html";
         }
     });
+}
+
+function playerInfoToggle() {
+    const toggleBtn = document.getElementById("info-page-toggle-btn");
+    const page1 = document.getElementById("info-page-1");
+    const page2 = document.getElementById("info-page-2");
+    const leftPanel = document.getElementById("player-info-main-left");
+    const playerInfoFooter = document.getElementById("player-info-footer");
+
+    if (toggleBtn) {
+        toggleBtn.addEventListener("click", () => {
+            page1.classList.toggle("hidden-page");
+            page2.classList.toggle("hidden-page");
+            leftPanel.classList.toggle("hidden-page");
+            playerInfoFooter.classList.toggle("hidden-page");
+
+            if (page1.classList.contains("hidden-page")) {
+                toggleBtn.textContent = "Main Stats";
+            } else {
+                toggleBtn.textContent = "Skills & Saves";
+            }
+        });
+    }
 }
 
 function diceTrayInteraction() {

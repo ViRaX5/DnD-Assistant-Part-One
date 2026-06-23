@@ -4,6 +4,7 @@
   "class": "Wizard",
   "level": 9,
   "xp": "48,000",
+  "proficiencyBonus": "+4",
   "attributes": {
     "strength": {
       "score": 8,
@@ -37,9 +38,75 @@
   },
   "health": {
     "current": 42,
-    "max": 54
+    "max": 54,
+    "temp": 8
   },
+  "savingThrows": [
+    {
+      "id": "save-str",
+      "name": "Strength",
+      "modifier": "-1",
+      "attribute": "STR",
+      "proficient": false
+    },
+    {
+      "id": "save-dex",
+      "name": "Dexterity",
+      "modifier": "+3",
+      "attribute": "DEX",
+      "proficient": false
+    },
+    {
+      "id": "save-con",
+      "name": "Constitution",
+      "modifier": "0",
+      "attribute": "CON",
+      "proficient": false
+    },
+    {
+      "id": "save-int",
+      "name": "Intelligence",
+      "modifier": "+9",
+      "attribute": "INT",
+      "proficient": true
+    },
+    {
+      "id": "save-wis",
+      "name": "Wisdom",
+      "modifier": "+6",
+      "attribute": "WIS",
+      "proficient": true
+    },
+    {
+      "id": "save-cha",
+      "name": "Charisma",
+      "modifier": "+1",
+      "attribute": "CHA",
+      "proficient": false
+    }
+  ],
   "skills": [
+    {
+      "id": "acrobatics",
+      "name": "Acrobatics",
+      "modifier": "+3",
+      "attribute": "DEX",
+      "proficient": false
+    },
+    {
+      "id": "animal-handling",
+      "name": "Animal Handling",
+      "modifier": "+2",
+      "attribute": "WIS",
+      "proficient": false
+    },
+    {
+      "id": "arcana",
+      "name": "Arcana",
+      "modifier": "+5",
+      "attribute": "INT",
+      "proficient": false
+    },
     {
       "id": "athletics",
       "name": "Athletics",
@@ -48,45 +115,101 @@
       "proficient": true
     },
     {
-      "id": "acrobatics",
-      "name": "Acrobatics",
+      "id": "deception",
+      "name": "Deception",
       "modifier": "+1",
-      "attribute": "DEX",
-      "proficient": false
-    },
-    {
-      "id": "arcana",
-      "name": "Arcana",
-      "modifier": "0",
-      "attribute": "INT",
+      "attribute": "CHA",
       "proficient": false
     },
     {
       "id": "history",
       "name": "History",
-      "modifier": "+1",
+      "modifier": "+9",
       "attribute": "INT",
       "proficient": true
     },
     {
+      "id": "insight",
+      "name": "Insight",
+      "modifier": "+2",
+      "attribute": "WIS",
+      "proficient": false
+    },
+    {
+      "id": "intimidation",
+      "name": "Intimidation",
+      "modifier": "+1",
+      "attribute": "CHA",
+      "proficient": false
+    },
+    {
+      "id": "investigation",
+      "name": "Investigation",
+      "modifier": "+5",
+      "attribute": "INT",
+      "proficient": false
+    },
+    {
+      "id": "medicine",
+      "name": "Medicine",
+      "modifier": "+2",
+      "attribute": "WIS",
+      "proficient": false
+    },
+    {
+      "id": "nature",
+      "name": "Nature",
+      "modifier": "+5",
+      "attribute": "INT",
+      "proficient": false
+    },
+    {
       "id": "perception",
       "name": "Perception",
-      "modifier": "+3",
+      "modifier": "+6",
       "attribute": "WIS",
+      "proficient": true
+    },
+    {
+      "id": "performance",
+      "name": "Performance",
+      "modifier": "+1",
+      "attribute": "CHA",
       "proficient": false
     },
     {
       "id": "persuasion",
       "name": "Persuasion",
-      "modifier": "-1",
+      "modifier": "+1",
       "attribute": "CHA",
-      "proficient": true
+      "proficient": false
+    },
+    {
+      "id": "religion",
+      "name": "Religion",
+      "modifier": "+5",
+      "attribute": "INT",
+      "proficient": false
+    },
+    {
+      "id": "sleight-of-hand",
+      "name": "Sleight of Hand",
+      "modifier": "+3",
+      "attribute": "DEX",
+      "proficient": false
     },
     {
       "id": "stealth",
       "name": "Stealth",
-      "modifier": "+1",
+      "modifier": "+3",
       "attribute": "DEX",
+      "proficient": false
+    },
+    {
+      "id": "survival",
+      "name": "Survival",
+      "modifier": "+2",
+      "attribute": "WIS",
       "proficient": false
     }
   ],
@@ -104,28 +227,10 @@
       "damage": "2d8"
     },
     {
-      "id": "scorching-ray-attack",
-      "name": "Scorching Ray",
-      "bonus": "+9",
-      "damage": "2d6"
-    },
-    {
       "id": "magic-missile-attack",
       "name": "Magic Missile",
       "bonus": "N/A",
       "damage": "3d4+3"
-    },
-    {
-      "id": "shatter-attack",
-      "name": "Shatter (CON Save)",
-      "bonus": "17",
-      "damage": "3d8"
-    },
-    {
-      "id": "silver-dagger-attack",
-      "name": "Silvered Dagger",
-      "bonus": "+7",
-      "damage": "1d4+3"
     }
   ]
 }

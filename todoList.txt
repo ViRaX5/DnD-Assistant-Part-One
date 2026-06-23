@@ -20,7 +20,7 @@ add effect will open dialog (see how to choose the list of viable effects)
 
 chat to all or specific players (whisper button and logic)
 
-implement socket.io
+implement socket.io - DONE
 campaign specific chat
 
 create new campaign dialog -- COMPLETE

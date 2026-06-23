@@ -47,7 +47,7 @@ h6 {
 
   display: grid;
 
-  grid-template-columns: 19vw 1fr 19.2vw;
+  grid-template-columns: 22vw 1fr 22vw;
   gap: 16px;
 
   overflow: hidden;
@@ -78,7 +78,8 @@ h6 {
 #player-info-footer,
 #equipment-and-traits-bottom,
 #equipment-and-traits-middle,
-#active-effects-popup {
+#active-effects-popup,
+#info-page-2 {
   scrollbar-width: thin;
   scrollbar-color: #8e9eb5 transparent;
 }
@@ -90,7 +91,8 @@ h6 {
 #player-info-footer::-webkit-scrollbar-track,
 #equipment-and-traits-bottom::-webkit-scrollbar-track,
 #equipment-and-traits-middle::-webkit-scrollbar-track,
-#active-effects-popup::-webkit-scrollbar-track {
+#active-effects-popup::-webkit-scrollbar-track,
+#info-page-2::-webkit-scrollbar-track {
   background: transparent;
   margin-top: 15px;
   margin-bottom: 15px;
@@ -103,7 +105,8 @@ h6 {
 #player-info-footer::-webkit-scrollbar-thumb,
 #equipment-and-traits-bottom::-webkit-scrollbar-thumb,
 #equipment-and-traits-middle::-webkit-scrollbar-thumb,
-#active-effects-popup::-webkit-scrollbar-thumb {
+#active-effects-popup::-webkit-scrollbar-thumb,
+#info-page-2::-webkit-scrollbar-thumb {
   background-color: #8e9eb5;
   border-radius: 10px;
 }
@@ -115,7 +118,8 @@ h6 {
 #player-info-footer::-webkit-scrollbar-thumb:hover,
 #equipment-and-traits-bottom::-webkit-scrollbar-thumb:hover,
 #equipment-and-traits-middle::-webkit-scrollbar-thumb:hover,
-#active-effects-popup::-webkit-scrollbar-thumb:hover {
+#active-effects-popup::-webkit-scrollbar-thumb:hover,
+#info-page-2::-webkit-scrollbar-thumb:hover {
   background-color: #63748c;
 }
 
@@ -138,6 +142,7 @@ h6 {
   display: flex;
   flex-direction: column;
   gap: 6px;
+  padding: 0 15px 0 0;
   flex: 0 0 65px;
 }
 
@@ -159,15 +164,44 @@ h6 {
   display: flex;
   flex-direction: column;
   gap: 8px;
-  padding: 0 0 0 15px;
   flex: 1;
   min-width: 0;
+}
+
+#info-page-1 {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+#info-page-2 h4 {
+  font-size: 15px;
+  color: #a5b1c2;
 }
 
 #stats-top-container {
   display: flex;
   flex-direction: row;
   gap: 8px;
+}
+
+#stats-bottom-container {
+  margin-top: 10px;
+}
+
+#saving-throws-list,
+#skill-list {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  row-gap: 6px;
+  column-gap: 4px;
+}
+
+#info-page-1.hidden-page,
+#info-page-2.hidden-page,
+#player-info-main-left.hidden-page,
+#player-info-footer.hidden-page {
+  display: none;
 }
 
 .stat-container {
@@ -183,12 +217,22 @@ h6 {
   align-items: center;
 }
 
-#hit-points-container {
+.hit-points-container {
   background-color: #ffffff;
   border: 2px solid #c9d3e0;
   border-radius: 11px;
 
   width: 100%;
+  padding: 7px;
+  box-sizing: border-box;
+}
+
+.hit-points-subcontainer {
+  background-color: #ffffff;
+  border: 2px solid #c9d3e0;
+  border-radius: 11px;
+
+  width: 47%;
   padding: 7px;
   box-sizing: border-box;
 }
@@ -254,7 +298,6 @@ h6 {
 /*          Player Info Main */
 #player-info-main {
   border-top: 2px solid #c7d2df;
-  border-bottom: 2px solid #c7d2df;
 
   display: flex;
   flex-direction: row;
@@ -277,6 +320,23 @@ h6 {
   color: #000000;
 }
 
+/* #info-page-toggle-btn {
+  margin-bottom: 8px;
+} */
+
+#temp-hit-points-and-proficiency-bonus-container {
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+  gap: 10px;
+}
+
+.hit-points-subcontainer {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
 #hit-points-container-top {
   display: flex;
   flex-direction: row;
@@ -288,6 +348,22 @@ h6 {
 
 #hit-points-container-top > h4 {
   font-size: 13px;
+  color: #a5b1c2;
+}
+
+.title-top {
+  border-bottom: 1px solid #c7d2df;
+  padding-bottom: 6px;
+
+  font-size: 10px;
+  color: #a5b1c2;
+}
+
+.title-bottom {
+  border-top: 1px solid #c7d2df;
+  padding-top: 6px;
+
+  font-size: 10px;
   color: #a5b1c2;
 }
 
@@ -312,9 +388,9 @@ h6 {
 .skill-toggle label {
   display: flex;
   align-items: center;
-  gap: 10px;
+  gap: 4px;
   color: #63748c;
-  font-size: 14px;
+  font-size: clamp(11px, 1.4vmin, 16px);
   cursor: pointer;
   user-select: none;
 }
@@ -349,11 +425,10 @@ h6 {
   gap: 10px;
 
   max-height: 140px;
-  /* Locks the height so it doesn't crush the equipment box */
   overflow-y: auto;
-  /* Enables the vertical scrollbar */
   overflow-x: hidden;
 
+  border-top: 2px solid #c7d2df;
   padding: 4px 0px;
   padding-right: 8px;
 }
@@ -1456,6 +1531,18 @@ nav {
 }
 
 /* media for all */
+
+@media (max-width: 1500px) {
+  #info-page-2 {
+    overflow-y: auto;
+  }
+
+  #skill-list {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
+}
 
 @media (max-width: 1200px) {
   #wrapper {
