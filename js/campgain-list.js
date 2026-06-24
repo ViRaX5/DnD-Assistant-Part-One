@@ -17,7 +17,7 @@ const playerModalCampaignName = document.getElementById("player-modal-campaign-n
 const cancelPlayerAbandonBtn = document.getElementById("cancel-player-abandon");
 const confirmPlayerAbandonBtn = document.getElementById("confirm-player-abandon");
 
-const tempID = 2 // in the future will be replaced with tokens probably
+const tempID = 3 // in the future will be replaced with tokens probably
 
 const BASE_URL = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1'
     ? 'http://localhost:8081'
@@ -53,7 +53,7 @@ const campaignContainerSection = document.querySelector('.campaigns-container')
 const noCampaignContainerSection = document.querySelector('.no-campaigns-container')
 async function loadPage() {
     try {
-        const response = await fetch(`${BASE_URL}/api/campaignList?id=${tempID}`, {
+        const response = await fetch(`${BASE_URL}/api/campaignListID?id=${tempID}`, {
             method: 'GET',
             headers: { 'Content-Type': 'application/json' },
         })
@@ -76,7 +76,6 @@ async function loadPage() {
     else {
         noCampaignContainerSection.style.display = 'none'
         campaigns.forEach(campaign => {
-            console.log(campaign)
             if (campaign.users_role === "player") {
                 displayPlayerSessions(campaign)
             }
@@ -296,7 +295,7 @@ function noSessions() {
 }
 
 function displayDMSessions(campaign) {
-    const campaignName = campaign.campaign_name;
+    const campaignName = campaign.campaign_name
     const status = campaign.users_role
     const playerCount = campaign.amount_of_players
 
@@ -512,19 +511,50 @@ button_container.addEventListener('click', async (e) => {
         const codeInput = document.getElementById('campaign-code').value.trim();
         const nameInput = document.getElementById('character-name').value.trim();
         const stage1Error = document.getElementById('stage-1-error');
-
         // 2. The Validation Check
         if (!codeInput || !nameInput) {
-            stage1Error.innerText = "Please enter both a Campaign Code and Character Name!";
+            stage1Error.innerText = "Please enter both a Campaign Code and Character Name!\n";
             return; // Stops the modal from advancing!
+        }
+        // check database
+
+        try {
+            const response = await fetch(`${BASE_URL}/api/campaignListCode?code=${codeInput}`, {
+                method: 'GET',
+                headers: { 'Content-Type': 'application/json' },
+            })
+            const data = await response.json()
+            if (response.ok && data.success) {
+                if (data.campaign.length === 0) {
+                    stage1Error.innerText = "Invalid join code.\nMake sure you have the currect join code"
+                    return
+                }
+                let alreadyInCampaign = false
+                data.campaign.forEach(instance => {
+                    if (instance.user_id === tempID) {
+                        alreadyInCampaign = true
+                    }
+                })
+                if (alreadyInCampaign) {
+                    stage1Error.innerText = "You are already in this campaign!\nPlease insert a code to a campaign you are not part of"
+                    return
+                }
+                campaigns = data.campaigns
+            }
+            else {
+                console.error("Backend sent an error: ", data.error)
+            }
+        }
+        catch (err) {
+            console.error("Error communicationg with backend:", err)
         }
 
         // 3. If everything is good, clear the error and advance!
         stage1Error.innerText = "";
-        
+
         join_form.classList.add("not-active");
         setUpCharacterCreation();
-        
+
         character_info.classList.remove("not-active");
         document.getElementById('stage-2-stats').classList.remove("not-active");
     }
@@ -558,11 +588,11 @@ button_container.addEventListener('click', async (e) => {
 
         if (!campaignCode || !characterName || !characterClass || !characterRace) {
             errorMessage.innerText = "Please complete all previous steps!";
-            return; 
+            return;
         }
 
         const allChoiceGroups = document.querySelectorAll('.equip-group');
-        
+
         for (let group of allChoiceGroups) {
             const allowed = parseInt(group.dataset.allowed);
             const selected = parseInt(group.dataset.selectedCount);
@@ -570,8 +600,49 @@ button_container.addEventListener('click', async (e) => {
             // If any group has fewer selections than allowed, stop the submission!
             if (selected < allowed) {
                 errorMessage.innerText = `You have unfinished choices! Please select ${allowed} option(s) in all categories.`;
-                return; 
+                return;
             }
+        }
+
+        const calculateFinalStat = (inputId) => {
+            const inputEl = document.getElementById(inputId)
+            const baseScore = parseInt(inputEl.value) || 0
+            const raceBonus = parseInt(inputEl.dataset.raceBonus) || 0
+            return baseScore + raceBonus
+        }
+
+        const stats = {
+            str: calculateFinalStat('characters-str'),
+            dex: calculateFinalStat('characters-dex'),
+            con: calculateFinalStat('characters-con'),
+            int: calculateFinalStat('characters-int'),
+            wis: calculateFinalStat('characters-wis'),
+            cha: calculateFinalStat('characters-cha')
+        }
+        const selectedEquip = Array.from(document.querySelectorAll('#equipment-container .equip-card.selected')).map(card => card.innerText)
+        const guaranteedEquipRaw = document.getElementById('characters-class').dataset.guaranteedEquipment
+        const guaranteedEquip = guaranteedEquipRaw ? JSON.parse(guaranteedEquipRaw) : []
+        const equipment = [...guaranteedEquip, ...selectedEquip]
+
+        const skills = Array.from(document.querySelectorAll('#stage-3-proficiencies .equip-group[data-category="skill"] .equip-card.selected')).map(card => card.innerText)
+        const tools = Array.from(document.querySelectorAll('#stage-3-proficiencies .equip-group[data-category="tool"] .equip-card.selected')).map(card => card.innerText)
+        
+        const selectedLangs = Array.from(document.querySelectorAll('#stage-3-proficiencies .equip-group[data-category="language"] .equip-card.selected')).map(card => card.innerText)
+        const guaranteedLangsRaw = document.getElementById('characters-race').dataset.guaranteedLanguages
+        const guaranteedLangs = guaranteedLangsRaw ? JSON.parse(guaranteedLangsRaw) : []
+        const languages = [...guaranteedLangs, ...selectedLangs]
+
+        const payload = {
+            userId: tempID, 
+            campaignCode: campaignCode,
+            characterName: characterName,
+            className: characterClass, 
+            race: characterRace,
+            stats: stats,
+            equipment: equipment,
+            skills: skills,
+            languages: languages,
+            tools: tools
         }
 
         // ... collect stats and prepare the payload ...
@@ -584,8 +655,17 @@ button_container.addEventListener('click', async (e) => {
             .then(response => response.json())
             .then(data => {
                 if (data.success) {
+                    resetJoinModal();
                     join_new_campaign_modal.close();
-                } else {
+
+                    // Add the new campaign to the UI dynamically
+                    displayPlayerSessions({
+                        campaign_name: data.campaignName,
+                        users_role: "player",
+                        character_name: characterName
+                    })
+                }
+                else {
                     // If the backend says the code is invalid, show it on the UI
                     errorMessage.innerText = data.error;
                 }
@@ -635,16 +715,14 @@ button_container.addEventListener('click', async (e) => {
 
         create_new_campaign_modal.close()
         create_new_campaign.blur()
+        displayDMSessions({ campaign_name: campaignName, users_role: "DM", amount_of_players: 0 })
 
-        /* some backend logic to create the actual campaign, maybe load the page aswell */
     }
-    // Moves from Stage 2 to Stage 3
     else if (e.target.id === 'continue-to-proficiencies') {
         const errorMsg = document.getElementById('stage-2-error');
-        
+
         let warningList = [];
 
-        // 2. Check Class & Race
         const charClass = document.getElementById('characters-class').value;
         const charRace = document.getElementById('characters-race').value;
 
@@ -652,7 +730,6 @@ button_container.addEventListener('click', async (e) => {
             warningList.push("• Please select a Class and Race.");
         }
 
-        // 3. Check all 6 Stat Boxes
         const statInputs = document.querySelectorAll('.stats input');
         let statsComplete = true;
         statInputs.forEach(input => {
@@ -665,7 +742,6 @@ button_container.addEventListener('click', async (e) => {
             warningList.push("• Please fill out all 6 ability scores.");
         }
 
-        // 4. Check Dynamic Equipment Choices
         const equipmentGroups = document.querySelectorAll('#equipment-container .equip-group');
         let equipComplete = true;
         for (let group of equipmentGroups) {
@@ -681,12 +757,9 @@ button_container.addEventListener('click', async (e) => {
             warningList.push("• Please finish selecting your starting equipment.");
         }
 
-        // 5. The Final Decision
-        // If our warning list has anything inside it, print them all and STOP!
         if (warningList.length > 0) {
-            // .join('\n') connects all the warnings with a line break!
             errorMsg.innerText = warningList.join('\n');
-            return; 
+            return;
         }
 
         errorMsg.innerText = "";
@@ -696,33 +769,11 @@ button_container.addEventListener('click', async (e) => {
         // Optional: Scroll back to the top of the modal for the new stage!
         document.getElementById('join-new-campaign-modal').scrollTo(0, 0);
     }
-    // Moves from Stage 3 back to Stage 2
     else if (e.target.id === 'back-to-stats') {
         document.getElementById('stage-3-proficiencies').classList.add('not-active');
         document.getElementById('stage-2-stats').classList.remove('not-active');
     }
 })
-
-// join_new_campaign.addEventListener('click', () => {
-// })
-
-// cancel_join_new_campaign.addEventListener('click', () => {
-// })
-
-// join_form.addEventListener('submit', (e) => {
-// })
-
-// create_new_campaign.addEventListener('click', () => {
-// })
-
-// cancel_create_new_campaign.addEventListener('click', () => {
-// })
-
-// copy_button.addEventListener('click', () => {
-// })
-
-// finish_creating.addEventListener('click', () => {
-// })
 
 dmModalPlayerList.addEventListener('change', (e) => {
     if (e.target.name === 'new-dm') {
@@ -834,6 +885,8 @@ async function setUpCharacterCreation() {
         }
 
         try {
+            document.getElementById('class-proficiencies-container').innerHTML = ''
+
             equipmentContainer.style.display = 'block';
             equipmentContainer.innerHTML = "<p><em>Drafting equipment armory...</em></p>";
 
@@ -844,15 +897,36 @@ async function setUpCharacterCreation() {
 
             const equipData = await equipRes.json();
             const classData = await classRes.json();
+            const skillChoices = []
+            const toolChoices = []
 
-            renderProficiencyChoices(classData.proficiency_choices, 'class-proficiencies-container', 'Class Skills')
+            if (classData.proficiency_choices) {
+                classData.proficiency_choices.forEach(choiceGroup => {
+                    const desc = (choiceGroup.desc || "").toLowerCase()
+                    if (desc.includes('tool') || desc.includes('instrument')) {
+                        toolChoices.push(choiceGroup)
+                    } else {
+                        skillChoices.push(choiceGroup)
+                    }
+                })
+            }
+
+            renderProficiencyChoices(skillChoices, 'class-proficiencies-container', 'Class Skills', 'skill')
+            renderProficiencyChoices(toolChoices, 'class-proficiencies-container', 'Tool Proficiencies', 'tool')
 
             // 1. Render Guaranteed Starting Equipment (Using our CSS class, no inline styles!)
-            let equipHtml = "<strong>Guaranteed Items:</strong><ul class='guaranteed-items-list'>";
+            let equipHtml = "<strong>Guaranteed Items:</strong><ul class='guaranteed-items-list'>"
+            const guaranteedItemsArray = []
+
             equipData.starting_equipment.forEach(item => {
-                equipHtml += `<li>${item.equipment.name} (x${item.quantity})</li>`;
+                const itemString = `${item.equipment.name} (x${item.quantity})`;
+                equipHtml += `<li>${itemString}</li>`;
+                guaranteedItemsArray.push(itemString); // Push to holding array
             });
-            equipHtml += "</ul><div id='equip-choices-container'></div>";
+
+            classDropdown.dataset.guaranteedEquipment = JSON.stringify(guaranteedItemsArray)
+
+            equipHtml += "</ul><div id='equip-choices-container'></div>"
 
             equipmentContainer.innerHTML = equipHtml;
             const choicesContainer = document.getElementById('equip-choices-container');
@@ -932,7 +1006,6 @@ async function setUpCharacterCreation() {
     });
     raceDropdown.addEventListener('change', async (e) => {
         if (e.target.value !== "" && e.target.value !== "Select a Race") {
-            console.log("Not empty and not Select a Race")
             const selectedRace = e.target.value
 
             const allModSpans = document.querySelectorAll('.race-mod')
@@ -941,12 +1014,59 @@ async function setUpCharacterCreation() {
             if (!selectedRace) return
 
             try {
-                const response = await fetch(`https://www.dnd5eapi.co/api/races/${selectedRace}`);
-                const raceDetails = await response.json();
+                document.getElementById('race-proficiencies-container').innerHTML = ''
 
-                renderProficiencyChoices(raceDetails.starting_proficiency_options, 'race-proficiencies-container', 'Race Skills');
-                renderProficiencyChoices(raceDetails.language_options, 'race-proficiencies-container', 'Bonus Languages');
+                const response = await fetch(`https://www.dnd5eapi.co/api/races/${selectedRace}`)
+                const raceDetails = await response.json()
 
+                // 1. Sort the Race Proficiencies (Skills vs Tools)
+                const raceSkillChoices = []
+                const raceToolChoices = []
+
+                if (raceDetails.starting_proficiency_options) {
+                    // Safety check: The API sometimes returns a single object instead of an array for races!
+                    const optionsArray = Array.isArray(raceDetails.starting_proficiency_options) 
+                        ? raceDetails.starting_proficiency_options 
+                        : [raceDetails.starting_proficiency_options]
+
+                    optionsArray.forEach(choiceGroup => {
+                        if (!choiceGroup) return
+                        const desc = (choiceGroup.desc || "").toLowerCase()
+                        // Dwarves use 'Artisan', others use 'Tool' or 'Instrument'
+                        if (desc.includes('tool') || desc.includes('instrument') || desc.includes('artisan')) {
+                            raceToolChoices.push(choiceGroup)
+                        } else {
+                            raceSkillChoices.push(choiceGroup)
+                        }
+                    })
+                }
+
+                // 2. Render everything with strict tags!
+                if (raceDetails.languages && raceDetails.languages.length > 0) {
+                    const langContainer = document.getElementById('race-proficiencies-container')
+                    const langNames = raceDetails.languages.map(l => l.name)
+                    
+                    raceDropdown.dataset.guaranteedLanguages = JSON.stringify(langNames)
+
+                    const guaranteedLangs = document.createElement('p')
+                    guaranteedLangs.className = 'sub-modal-desc'
+                    guaranteedLangs.innerHTML = `<strong>Known Languages:</strong> ${langNames}`
+                    
+                    langContainer.appendChild(guaranteedLangs);
+                }
+                renderProficiencyChoices(raceSkillChoices, 'race-proficiencies-container', 'Race Skills', 'skill')
+                renderProficiencyChoices(raceToolChoices, 'race-proficiencies-container', 'Race Tools', 'tool')
+                
+                // Languages usually come as a single choice object, so we wrap it safely too
+                if (raceDetails.language_options) {
+                    const langChoices = Array.isArray(raceDetails.language_options) 
+                        ? raceDetails.language_options 
+                        : [raceDetails.language_options]
+                    
+                    renderProficiencyChoices(langChoices, 'race-proficiencies-container', 'Bonus Languages', 'language')
+                }
+
+                // 3. Existing stat bonus logic
                 raceDetails.ability_bonuses.forEach(bonusObj => {
                     const statIndex = bonusObj.ability_score.index
                     const bonusValue = bonusObj.bonus
@@ -962,41 +1082,39 @@ async function setUpCharacterCreation() {
 
                         updateModifierDisplay(targetInput, targetSpan)
                     }
-                })
+                });
             } catch (err) {
                 console.error("Failed to fetch race bonuses: ", err)
             }
         }
         else if (e.target.value === "") {
             const raceMods = document.querySelectorAll(".race-mod")
-            console.log(raceMods)
             if (raceMods) {
                 raceMods.forEach(m => {
                     m.innerHTML = ""
                 })
             }
         }
-
     })
 }
 
 function updateModifierDisplay(inputEl, spanEl) {
-    const baseValue = parseInt(inputEl.value);
-    const raceBonus = parseInt(inputEl.dataset.raceBonus) || 0;
+    const baseValue = parseInt(inputEl.value)
+    const raceBonus = parseInt(inputEl.dataset.raceBonus) || 0
 
     if (isNaN(baseValue)) {
-        spanEl.innerText = raceBonus > 0 ? `+${raceBonus} Race` : "";
-        spanEl.style.color = raceBonus > 0 ? "green" : "inherit";
-        return;
+        spanEl.innerText = raceBonus > 0 ? `+${raceBonus} Race` : ""
+        spanEl.style.color = raceBonus > 0 ? "green" : "inherit"
+        return
     }
 
-    const totalScore = baseValue + raceBonus;
-    const modifier = Math.floor((totalScore - 10) / 2);
+    const totalScore = baseValue + raceBonus
+    const modifier = Math.floor((totalScore - 10) / 2)
 
-    const modString = modifier >= 0 ? `+${modifier}` : `${modifier}`;
+    const modString = modifier >= 0 ? `+${modifier}` : `${modifier}`
 
-    spanEl.innerText = `Total: ${totalScore} (Mod: ${modString})`;
-    spanEl.style.color = "var(--text-color-base)"; // Change back to standard color
+    spanEl.innerText = `Total: ${totalScore} (Mod: ${modString})`
+    spanEl.style.color = "var(--text-color-base)" // Change back to standard color
 }
 
 // Handles standard clicks and limits
@@ -1004,160 +1122,165 @@ function applySelection(card, groupDiv, allowedCount) {
     // 1. If we are at the limit, we must SWAP
     if (parseInt(groupDiv.dataset.selectedCount) >= allowedCount) {
         // Find the oldest selected card in this specific group
-        const oldestSelection = groupDiv.querySelector('.selected');
+        const oldestSelection = groupDiv.querySelector('.selected')
         if (oldestSelection) {
-            oldestSelection.classList.remove('selected');
-            groupDiv.dataset.selectedCount = parseInt(groupDiv.dataset.selectedCount) - 1;
+            oldestSelection.classList.remove('selected')
+            groupDiv.dataset.selectedCount = parseInt(groupDiv.dataset.selectedCount) - 1
 
             // If we are un-selecting a category, revert its text back to the generic prompt
             if (oldestSelection.dataset.isCategory === "true") {
-                oldestSelection.innerText = oldestSelection.dataset.rawText;
+                oldestSelection.innerText = oldestSelection.dataset.rawText
             }
         }
     }
 
     // 2. Safely apply the new selection
-    card.classList.add('selected');
-    groupDiv.dataset.selectedCount = parseInt(groupDiv.dataset.selectedCount) + 1;
+    card.classList.add('selected')
+    groupDiv.dataset.selectedCount = parseInt(groupDiv.dataset.selectedCount) + 1
 }
 
 // Handles the logic when a user clicks a card
 async function handleEquipClick(card, groupDiv, allowedCount) {
-    const isSelected = card.classList.contains('selected');
+    const isSelected = card.classList.contains('selected')
 
     // Scenario A: User is explicitly un-selecting an item they already picked
     if (isSelected) {
-        card.classList.remove('selected');
-        groupDiv.dataset.selectedCount = parseInt(groupDiv.dataset.selectedCount) - 1;
-        if (card.dataset.isCategory === "true") card.innerText = card.dataset.rawText;
-        return;
+        card.classList.remove('selected')
+        groupDiv.dataset.selectedCount = parseInt(groupDiv.dataset.selectedCount) - 1
+        if (card.dataset.isCategory === "true") card.innerText = card.dataset.rawText
+        return
     }
 
     // Scenario B: User clicks a category -> Open Modal first, apply selection later!
     if (card.dataset.isCategory === "true") {
-        await openSubEquipmentModal(card.dataset.categoryUrl, card, groupDiv, allowedCount);
+        await openSubEquipmentModal(card.dataset.categoryUrl, card, groupDiv, allowedCount)
     }
     // Scenario C: Standard item click -> Apply immediately
     else {
-        applySelection(card, groupDiv, allowedCount);
+        applySelection(card, groupDiv, allowedCount)
     }
 }
 
 // Handles fetching and displaying a specific category (like "Simple Weapons")
 async function openSubEquipmentModal(categoryIndex, parentCard, groupDiv, allowedCount) {
-    const subModal = document.getElementById('sub-equipment-modal');
-    const grid = document.getElementById('sub-equip-grid');
-    const title = document.getElementById('sub-equip-title');
+    const subModal = document.getElementById('sub-equipment-modal')
+    const grid = document.getElementById('sub-equip-grid')
+    const title = document.getElementById('sub-equip-title')
 
-    grid.innerHTML = '<p>Opening the armory...</p>';
-    subModal.showModal();
+    grid.innerHTML = '<p>Opening the armory...</p>'
+    subModal.showModal()
 
-    const cancelBtn = document.getElementById('cancel-sub-equip');
-    cancelBtn.onclick = () => subModal.close();
+    const cancelBtn = document.getElementById('cancel-sub-equip')
+    cancelBtn.onclick = () => subModal.close()
 
     try {
-        const res = await fetch(`https://www.dnd5eapi.co/api/equipment-categories/${categoryIndex}`);
-        const data = await res.json();
+        const res = await fetch(`https://www.dnd5eapi.co/api/equipment-categories/${categoryIndex}`)
+        const data = await res.json()
 
-        title.innerText = `Choose: ${data.name}`;
-        grid.innerHTML = '';
+        title.innerText = `Choose: ${data.name}`
+        grid.innerHTML = ''
 
         data.equipment.forEach(item => {
-            const subCard = document.createElement('div');
-            subCard.className = 'equip-card';
-            subCard.innerText = item.name;
+            const subCard = document.createElement('div')
+            subCard.className = 'equip-card'
+            subCard.innerText = item.name
 
             // When a specific item is picked from the sub-modal:
             subCard.addEventListener('click', () => {
                 // Use the auto-swap helper!
-                applySelection(parentCard, groupDiv, allowedCount);
+                applySelection(parentCard, groupDiv, allowedCount)
 
                 // Update the original card's text to show what they picked
-                parentCard.innerText = item.name;
-                subModal.close();
+                parentCard.innerText = item.name
+                subModal.close()
             });
 
-            grid.appendChild(subCard);
+            grid.appendChild(subCard)
         });
     } catch (err) {
-        console.error("Failed to load category:", err);
-        grid.innerHTML = '<p class="form-error-message">Error loading category items.</p>';
+        console.error("Failed to load category:", err)
+        grid.innerHTML = '<p class="form-error-message">Error loading category items.</p>'
     }
 }
 
-function renderProficiencyChoices(choicesArray, containerId, titlePrefix) {
-    const container = document.getElementById(containerId);
-    container.innerHTML = ''; // Clear previous choices if they change their race/class
+function renderProficiencyChoices(choicesArray, containerId, titlePrefix, categoryType) {
+    const container = document.getElementById(containerId)
 
-    if (!choicesArray || choicesArray.length === 0) return;
+    if (!choicesArray || choicesArray.length === 0) return
 
     choicesArray.forEach((choiceGroup) => {
-        const allowed = choiceGroup.choose;
-        const groupDiv = document.createElement('div');
+        const allowed = choiceGroup.choose
+        const groupDiv = document.createElement('div')
         // We reuse the equipment CSS classes here to keep styling perfectly consistent!
-        groupDiv.className = 'equip-group';
-        groupDiv.dataset.allowed = allowed;
-        groupDiv.dataset.selectedCount = 0;
-        groupDiv.innerHTML = `<h4>${titlePrefix}: Choose ${allowed}</h4><div class="equip-grid"></div>`;
+        groupDiv.className = 'equip-group'
+        groupDiv.dataset.allowed = allowed
+        groupDiv.dataset.selectedCount = 0
+        groupDiv.dataset.category = categoryType
+        groupDiv.innerHTML = `<h4>${titlePrefix}: Choose ${allowed}</h4><div class="equip-grid"></div>`
 
-        const grid = groupDiv.querySelector('.equip-grid');
+        const grid = groupDiv.querySelector('.equip-grid')
 
         if (choiceGroup.from && choiceGroup.from.options) {
             choiceGroup.from.options.forEach(opt => {
-                const card = document.createElement('div');
-                card.className = 'equip-card';
+                const card = document.createElement('div')
+                card.className = 'equip-card'
 
                 // Clean up the text (e.g., changing "Skill: Acrobatics" to just "Acrobatics")
-                let text = opt.item ? opt.item.name : (opt.choice ? opt.choice.desc : "Option");
-                card.innerText = text.replace("Skill: ", "");
+                let text = opt.item ? opt.item.name : (opt.choice ? opt.choice.desc : "Option")
+                card.innerText = text.replace("Skill: ", "")
 
                 // Reuse our auto-swapping selection logic from the equipment phase!
-                card.addEventListener('click', () => handleEquipClick(card, groupDiv, allowed));
-                grid.appendChild(card);
-            });
+                card.addEventListener('click', () => handleEquipClick(card, groupDiv, allowed))
+                grid.appendChild(card)
+            })
         }
-        container.appendChild(groupDiv);
-    });
+        container.appendChild(groupDiv)
+    })
 }
 
 // Completely wipes the Join Modal clean and returns to Stage 1
 function resetJoinModal() {
     // 1. Clear Stage 1 (Basic Info)
-    document.getElementById('campaign-code').value = '';
-    document.getElementById('character-name').value = '';
+    document.getElementById('campaign-code').value = ''
+    document.getElementById('character-name').value = ''
+    document.getElementById('stage-1-error').innerText = ""
 
     // 2. Clear Stage 2 (Dropdowns & Stats)
-    document.getElementById('characters-class').value = '';
-    document.getElementById('characters-race').value = '';
+    document.getElementById('characters-class').value = ''
+    document.getElementById('characters-race').value = ''
 
-    const statInputs = document.querySelectorAll('.stats input');
+    const statInputs = document.querySelectorAll('.stats input')
     statInputs.forEach(input => {
-        input.value = '';
-        input.dataset.raceBonus = 0; // Wipe the hidden bonus data
-    });
+        input.value = ''
+        input.dataset.raceBonus = 0 // Wipe the hidden bonus data
+    })
 
-    const statMods = document.querySelectorAll('.race-mod');
-    statMods.forEach(mod => mod.innerText = '');
+    const statMods = document.querySelectorAll('.race-mod')
+    statMods.forEach(mod => mod.innerText = '')
 
     // 3. Clear Dynamic Containers
-    document.getElementById('equipment-container').style.display = 'none';
-    document.getElementById('equipment-container').innerHTML = '';
-    document.getElementById('class-proficiencies-container').innerHTML = '';
-    document.getElementById('race-proficiencies-container').innerHTML = '';
+    document.getElementById('equipment-container').style.display = 'none'
+    document.getElementById('equipment-container').innerHTML = ''
+    document.getElementById('class-proficiencies-container').innerHTML = ''
+    document.getElementById('race-proficiencies-container').innerHTML = ''
 
     // 4. Clear all error messages
-    document.getElementById('stage-2-error').innerText = '';
-    document.getElementById('join-error-message').innerText = '';
+    document.getElementById('stage-2-error').innerText = ''
+    document.getElementById('join-error-message').innerText = ''
 
     // 5. Reset the UI back to Stage 1
-    document.getElementsByClassName("join-new-campaign-form")[0].classList.remove("not-active");
-    document.getElementById('stage-2-stats').classList.add("not-active");
-    document.getElementById('stage-3-proficiencies').classList.add("not-active");
+    document.getElementsByClassName("join-new-campaign-form")[0].classList.remove("not-active")
+    document.getElementById('stage-2-stats').classList.add("not-active")
+    document.getElementById('stage-3-proficiencies').classList.add("not-active")
+
+    // 6. Reset cache
+    document.getElementById('characters-class').dataset.guaranteedEquipment = "[]"
+    document.getElementById('characters-race').dataset.guaranteedLanguages = "[]"
 }
 
 // Clears the Create Modal
 function resetCreateModal() {
-    document.getElementById('new-campaign-name').value = '';
+    document.getElementById('new-campaign-name').value = ''
     // The code input will automatically overwrite itself with "Generating..." next time it opens!
 }
 
