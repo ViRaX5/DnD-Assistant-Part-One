@@ -19,7 +19,7 @@ const allInputs = [firstname_input, lastname_input, email_input, email_input_log
 
 const BASE_URL = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1'
     ? 'http://localhost:8081'
-    : 'https://virax5.github.io/DnD-Assistant-Part-One/'
+    : 'https://dndassistantbackend.onrender.com'
 
 const fieldToInputMap = {
     'firstname': firstname_input,
