@@ -7,7 +7,6 @@
       rel="stylesheet"
       href="node_modules/bootstrap/dist/css/bootstrap.min.css"
     />
-    <!-- <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.8.3/socket.io.min.js"></script> -->
     <script type="module" src="./js/app.js"></script>
     <script
       src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.8/dist/umd/popper.min.js"
@@ -169,6 +168,10 @@
         <div id="equipment-and-traits">
           <div id="equipment-and-traits-top">
             <span>EQUIPMENT & TRAITS</span>
+            <span id="currency"
+              ><span id="gold-amount">G</span><span id="silver-amount">S</span
+              ><span id="copper-amount">C</span></span
+            >
           </div>
           <div id="equipment-and-traits-middle"></div>
           <div id="equipment-and-traits-bottom"></div>
@@ -186,28 +189,28 @@
             </a>
           </div>
           <nav>
-            <div class="filters">
+            <div class="nav-container">
               <button type="button" class="DM not-clicked">DM</button>
               <button type="button" class="player not-clicked">Player</button>
-              <button type="button" class="log-out">Log Out</button>
-              <dialog id="logout-modal">
+              <button type="button" class="end-session">Exit Session</button>
+              <dialog id="end-session-modal">
                 <div class="modal-content">
                   <h2>Ending the Adventure</h2>
-                  <p>Are you sure you want to log out?</p>
+                  <p>Are you sure you want to exit the session?</p>
                   <div class="modal-buttons">
                     <button
                       type="button"
-                      id="cancel-logout"
+                      id="cancel-end-session"
                       class="cancel-button"
                     >
                       Cancel
                     </button>
                     <button
                       type="button"
-                      id="confirm-logout"
+                      id="confirm-end-session"
                       class="confirm-button"
                     >
-                      Yes, Log Out
+                      Yes, Exit Session
                     </button>
                   </div>
                 </div>
@@ -314,7 +317,6 @@
                 <img src="./images/d10.png" alt="d10" />
                 <span>d10</span>
               </button>
-
               <button data-die="d12" class="die-button">
                 <img src="./images/d12.png" alt="d12" />
                 <span>d12</span>
@@ -323,15 +325,6 @@
                 <img src="./images/d20.png" alt="d20" />
                 <span>d20</span>
               </button>
-
-              <div id="dice-quantity-container">
-                <div id="quantity-pill">
-                  <button id="minus-quantity" class="quantity-button">-</button>
-                  <span id="quantity-amount">1</span>
-                  <button id="plus-quantity" class="quantity-button">+</button>
-                </div>
-                <span class="quantity-label">Quantity</span>
-              </div>
             </div>
             <div id="dice-tray-area"></div>
             <button id="roll-button">Roll</button>
