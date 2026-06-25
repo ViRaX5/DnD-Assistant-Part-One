@@ -17,7 +17,7 @@ const playerModalCampaignName = document.getElementById("player-modal-campaign-n
 const cancelPlayerAbandonBtn = document.getElementById("cancel-player-abandon");
 const confirmPlayerAbandonBtn = document.getElementById("confirm-player-abandon");
 
-const tempID = 3 // in the future will be replaced with tokens probably
+const tempID = 1 // in the future will be replaced with tokens probably
 
 const BASE_URL = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1'
     ? 'http://localhost:8081'
@@ -368,10 +368,15 @@ function displayPlayerSessions(campaign) {
     campaignContainerSection.appendChild(campaignInstance)
 }
 
-const dmCampaigns = document.querySelectorAll('.dm-campaign')
-const playerCampaigns = document.querySelectorAll('.player-campaign')
+// const dmCampaigns = document.querySelectorAll('.dm-campaign')
+// const playerCampaigns = document.querySelectorAll('.player-campaign')
 
 player_button.addEventListener('click', () => {
+
+    const dmCampaigns = document.querySelectorAll('.dm-campaign')
+    const playerCampaigns = document.querySelectorAll('.player-campaign')
+
+    console.log("Clicked Player")
 
     if (player_button.classList.contains('not-clicked')) {
         if (dm_button.classList.contains('clicked')) {
@@ -380,8 +385,11 @@ player_button.addEventListener('click', () => {
         }
         player_button.classList.remove('not-clicked')
         player_button.classList.add('clicked')
-
-        dmCampaigns.forEach(campaign => campaign.style.display = 'none')
+        console.log("displaying sessions")
+        dmCampaigns.forEach(campaign => {
+            campaign.style.display = 'none'
+            console.log(campaign)
+        })
         playerCampaigns.forEach(campaign => campaign.style.display = '')
     }
     else {
@@ -394,6 +402,9 @@ player_button.addEventListener('click', () => {
 })
 
 dm_button.addEventListener('click', () => {
+
+    const dmCampaigns = document.querySelectorAll('.dm-campaign')
+    const playerCampaigns = document.querySelectorAll('.player-campaign')
 
     if (dm_button.classList.contains('not-clicked')) {
         if (player_button.classList.contains('clicked')) {
@@ -626,17 +637,17 @@ button_container.addEventListener('click', async (e) => {
 
         const skills = Array.from(document.querySelectorAll('#stage-3-proficiencies .equip-group[data-category="skill"] .equip-card.selected')).map(card => card.innerText)
         const tools = Array.from(document.querySelectorAll('#stage-3-proficiencies .equip-group[data-category="tool"] .equip-card.selected')).map(card => card.innerText)
-        
+
         const selectedLangs = Array.from(document.querySelectorAll('#stage-3-proficiencies .equip-group[data-category="language"] .equip-card.selected')).map(card => card.innerText)
         const guaranteedLangsRaw = document.getElementById('characters-race').dataset.guaranteedLanguages
         const guaranteedLangs = guaranteedLangsRaw ? JSON.parse(guaranteedLangsRaw) : []
         const languages = [...guaranteedLangs, ...selectedLangs]
 
         const payload = {
-            userId: tempID, 
+            userId: tempID,
             campaignCode: campaignCode,
             characterName: characterName,
-            className: characterClass, 
+            className: characterClass,
             race: characterRace,
             stats: stats,
             equipment: equipment,
@@ -1025,8 +1036,8 @@ async function setUpCharacterCreation() {
 
                 if (raceDetails.starting_proficiency_options) {
                     // Safety check: The API sometimes returns a single object instead of an array for races!
-                    const optionsArray = Array.isArray(raceDetails.starting_proficiency_options) 
-                        ? raceDetails.starting_proficiency_options 
+                    const optionsArray = Array.isArray(raceDetails.starting_proficiency_options)
+                        ? raceDetails.starting_proficiency_options
                         : [raceDetails.starting_proficiency_options]
 
                     optionsArray.forEach(choiceGroup => {
@@ -1045,24 +1056,24 @@ async function setUpCharacterCreation() {
                 if (raceDetails.languages && raceDetails.languages.length > 0) {
                     const langContainer = document.getElementById('race-proficiencies-container')
                     const langNames = raceDetails.languages.map(l => l.name)
-                    
+
                     raceDropdown.dataset.guaranteedLanguages = JSON.stringify(langNames)
 
                     const guaranteedLangs = document.createElement('p')
                     guaranteedLangs.className = 'sub-modal-desc'
                     guaranteedLangs.innerHTML = `<strong>Known Languages:</strong> ${langNames}`
-                    
+
                     langContainer.appendChild(guaranteedLangs);
                 }
                 renderProficiencyChoices(raceSkillChoices, 'race-proficiencies-container', 'Race Skills', 'skill')
                 renderProficiencyChoices(raceToolChoices, 'race-proficiencies-container', 'Race Tools', 'tool')
-                
+
                 // Languages usually come as a single choice object, so we wrap it safely too
                 if (raceDetails.language_options) {
-                    const langChoices = Array.isArray(raceDetails.language_options) 
-                        ? raceDetails.language_options 
+                    const langChoices = Array.isArray(raceDetails.language_options)
+                        ? raceDetails.language_options
                         : [raceDetails.language_options]
-                    
+
                     renderProficiencyChoices(langChoices, 'race-proficiencies-container', 'Bonus Languages', 'language')
                 }
 
