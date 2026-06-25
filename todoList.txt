@@ -33,7 +33,7 @@ create backend server (render) -- COMPLETE
 
 shop logic for both players and dm (including api)
 
-create database (mongoDB?)
+create database (mongoDB?) -- COMPLETE
 
 manual add skills to players
 
