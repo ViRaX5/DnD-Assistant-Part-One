@@ -4,6 +4,9 @@ export function setupUIInteractions() {
     // Navbar Page Switch
     navbarPageSwitch();
 
+    // Navbar End / Exit Session
+    navbarExitSession();
+
     // Player Info Page Toggle
     playerInfoToggle();
 
@@ -39,6 +42,28 @@ function navbarPageSwitch() {
     });
 }
 
+function navbarExitSession() {
+    const endSession = document.getElementsByClassName("end-session")[0];
+    const endSessionModal = document.getElementById("end-session-modal");
+    const cancelEndSessionButton = document.getElementById("cancel-end-session");
+    const confirmEndSessionButton = document.getElementById("confirm-end-session");
+
+    endSession.addEventListener('click', () => {
+        endSessionModal.showModal()
+        cancelEndSessionButton.blur()
+    });
+
+    cancelEndSessionButton.addEventListener('click', () => {
+        endSessionModal.close()
+        endSession.blur()
+    })
+
+    confirmEndSessionButton.addEventListener('click', () => {
+        /* some save to database logic that needs to come in the future */
+        window.location.href = "campaignList.html"
+    })
+} // Copied Logic from campaignList - need to change to more meaningful class and id names
+
 function playerInfoToggle() {
     const toggleBtn = document.getElementById("info-page-toggle-btn");
     const page1 = document.getElementById("info-page-1");
@@ -63,47 +88,94 @@ function playerInfoToggle() {
 }
 
 function diceTrayInteraction() {
-    let selectedDie = null;
-    let diceAmount = 1;
+    let selectedDice = [];
 
     const diceGrid = document.getElementById("dice-grid");
     const diceTray = document.getElementById("dice-tray-area");
-    const diceQuantityAmount = document.getElementById("quantity-amount");
+    const rollButton = document.getElementById("roll-button");
 
-    const plusBtn = document.getElementById("plus-quantity");
-    const minusBtn = document.getElementById("minus-quantity");
-    diceQuantityAmount.textContent = diceAmount;
-
-    function renderTray() {
-        diceQuantityAmount.textContent = diceAmount;
-
-        diceTray.innerHTML = '';
-
-        if (!selectedDie) {
-            return;
+    function setElementVisible(element, visible, displayValue) {
+        // Clear out any not-yet-fired hide listener from a previous call, so it
+        // can't fire later and stomp on a transition it was never meant to see.
+        if (element._pendingHideHandler) {
+            element.removeEventListener('transitionend', element._pendingHideHandler);
+            element._pendingHideHandler = null;
         }
 
-        let htmlString = '';
-        for (let i = 0; i < diceAmount; i++) {
-            htmlString += `<img class="die-tray-img" src="./images/${selectedDie}.png" alt="${selectedDie}" />`;
+        if (visible) {
+            element.style.display = displayValue;
+            requestAnimationFrame(() => {
+                element.classList.add("fade-visible");
+            });
         }
+        else {
+            element.classList.remove("fade-visible");
 
-        diceTray.innerHTML = htmlString;
+            const handleTransitionEnd = (e) => {
+                if (e.propertyName === 'opacity') {
+                    element.style.display = 'none';
+                    element.removeEventListener('transitionend', handleTransitionEnd);
+                    element._pendingHideHandler = null;
+                }
+            };
+
+            element._pendingHideHandler = handleTransitionEnd;
+            element.addEventListener('transitionend', handleTransitionEnd);
+        }
     }
 
-    function rollDice(dieType, quantity) {
-        const maxNumber = parseInt(dieType.substring(1));
+    function groupDiceByType(diceList) {
+        const order = [...new Set(diceList)];
+        const counts = {};
+        diceList.forEach((die) => {
+            counts[die] = (counts[die] || 0) + 1;
+        });
 
-        let rolls = [];
+        return { order, counts };
+    }
+
+    function renderTray() {
+        diceTray.innerHTML = '';
+
+        const { order, counts } = groupDiceByType(selectedDice);
+
+        let htmlString = '';
+        order.forEach((die) => {
+            const quantity = counts[die];
+            const countBadge = quantity > 1 ? `<span class="die-tray-count">x${quantity}</span>` : '';
+
+            htmlString += `<div class="die-tray-entry" data-die="${die}">
+                <img class="die-tray-img" src="./images/${die}.png" alt="${die}" />
+                ${countBadge}
+            </div>`;
+        });
+        diceTray.innerHTML = htmlString;
+
+        const hasDice = selectedDice.length > 0;
+
+        setElementVisible(diceTray, hasDice, 'flex');
+        setElementVisible(rollButton, hasDice, 'block');
+    }
+
+    function rollSelectedDice(diceList) {
+        const { order, counts } = groupDiceByType(diceList);
+
         let total = 0;
+        const segments = order.map((dieType) => {
+            const quantity = counts[dieType];
+            const maxNumber = parseInt(dieType.substring(1));
 
-        for (let i = 0; i < quantity; i++) {
-            const result = Math.floor(Math.random() * maxNumber) + 1;
-            rolls.push(result);
-            total += result;
-        }
+            const rolls = [];
+            for (let i = 0; i < quantity; i++) {
+                const result = Math.floor(Math.random() * maxNumber) + 1;
+                rolls.push(result);
+                total += result;
+            }
 
-        return { rolls, total };
+            return `${rolls.join(", ")} (${quantity}${dieType})`;
+        });
+
+        return { rollString: segments.join(" and "), total };
     }
 
     diceGrid.addEventListener('click', (e) => {
@@ -113,64 +185,54 @@ function diceTrayInteraction() {
 
         const clickedDie = dieButton.getAttribute('data-die');
 
-        if (selectedDie !== clickedDie) {
-            selectedDie = clickedDie;
-            diceAmount = 1;
-            renderTray();
-        }
-        else {
-            diceAmount = 0;
-            selectedDie = null;
-            renderTray();
-        }
+        selectedDice.push(clickedDie);
+        renderTray();
     });
 
-    minusBtn.addEventListener('click', () => {
-        if (selectedDie && diceAmount > 1) {
-            diceAmount--;
-            renderTray();
-        }
-    });
+    diceTray.addEventListener('click', (e) => {
+        const trayEntry = e.target.closest('.die-tray-entry');
 
-    plusBtn.addEventListener('click', () => {
-        if (selectedDie) {
-            diceAmount++;
-            renderTray();
+        if (!trayEntry) return;
+
+        const dieType = trayEntry.getAttribute('data-die');
+        const index = selectedDice.indexOf(dieType);
+
+        if (index !== -1) {
+            selectedDice.splice(index, 1);
         }
+
+        renderTray();
     });
 
     renderTray();
 
-    const rollButton = document.getElementById("roll-button");
-
     rollButton.addEventListener('click', () => {
-        if (!selectedDie) {
+        if (selectedDice.length === 0) {
             addChatMessage("Please select a die first!", "system-msg");
             return;
         }
 
-        const rollData = rollDice(selectedDie, diceAmount);
-
-        const rollString = rollData.rolls.join(" and ");
+        const rollData = rollSelectedDice(selectedDice);
 
         let message = '';
 
         if (window.location.pathname.endsWith("playerScreen.html")) {
             const playerName = document.getElementById("player-name").textContent || "Unknown Hero";
 
-            message = `${playerName} rolled: ${rollString} on ${diceAmount}${selectedDie}.`;
+            message = `${playerName} rolled: ${rollData.rollString}.`;
         }
         else {
-            message = `DM rolled: ${rollString} on ${diceAmount}${selectedDie}.`;
+            message = `DM rolled: ${rollData.rollString}.`;
         }
 
-
-
-        if (diceAmount > 1) {
+        if (selectedDice.length > 1) {
             message += ` (Total: ${rollData.total})`;
         }
 
         addChatMessage(message, "system-msg");
+
+        selectedDice = [];
+        renderTray();
     });
 }
 

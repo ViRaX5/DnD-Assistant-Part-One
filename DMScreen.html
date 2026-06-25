@@ -100,28 +100,28 @@
           </div>
           <nav>
             <!-- <span>Filter by:</span> -->
-            <div class="filters">
+            <div class="nav-container">
               <button type="button" class="DM not-clicked">DM</button>
               <button type="button" class="player not-clicked">Player</button>
-              <button type="button" class="log-out">Log Out</button>
-              <dialog id="logout-modal">
+              <button type="button" class="end-session">End Session</button>
+              <dialog id="end-session-modal">
                 <div class="modal-content">
                   <h2>Ending the Adventure</h2>
-                  <p>Are you sure you want to log out?</p>
+                  <p>Are you sure you want to end the session?</p>
                   <div class="modal-buttons">
                     <button
                       type="button"
-                      id="cancel-logout"
+                      id="cancel-end-session"
                       class="cancel-button"
                     >
                       Cancel
                     </button>
                     <button
                       type="button"
-                      id="confirm-logout"
+                      id="confirm-end-session"
                       class="confirm-button"
                     >
-                      Yes, Log Out
+                      Yes, End Session
                     </button>
                   </div>
                 </div>
@@ -217,15 +217,6 @@
                 <img src="./images/d20.png" alt="d20" />
                 <span>d20</span>
               </button>
-
-              <div id="dice-quantity-container">
-                <div id="quantity-pill">
-                  <button id="minus-quantity" class="quantity-button">-</button>
-                  <span id="quantity-amount">1</span>
-                  <button id="plus-quantity" class="quantity-button">+</button>
-                </div>
-                <span class="quantity-label">Quantity</span>
-              </div>
             </div>
             <div id="dice-tray-area"></div>
             <button id="roll-button">Roll</button>
