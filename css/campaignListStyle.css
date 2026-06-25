@@ -324,7 +324,7 @@ nav {
 /* for dialog in create and join new session aswell as the abandon modal */
 
 /* JOIN */
-#join-new-campaign-modal, #create-new-campaign-modal, #dm-abandon-modal, #player-abandon-modal, #sub-equipment-modal {
+#join-new-campaign-modal, #create-new-campaign-modal, #dm-abandon-modal, #player-abandon-modal, #sub-equipment-modal, #delete-campaign-modal {
   margin: auto;
   padding: 20px 30px; 
   border: 2px solid var(--form-stroke);
@@ -339,7 +339,7 @@ nav {
   overflow-y: auto;
 }
 
-#join-new-campaign-modal::backdrop, #create-new-campaign-modal::backdrop, #dm-abandon-modal::backdrop, #player-abandon-modal::backdrop {
+#join-new-campaign-modal::backdrop, #create-new-campaign-modal::backdrop, #dm-abandon-modal::backdrop, #player-abandon-modal::backdrop, #delete-campaign-modal::backdrop {
   background-color: rgba(0, 0, 0, 0.6);
 }
 
@@ -730,6 +730,12 @@ nav {
     margin-bottom: 10px;
     min-height: 1.2em; /* Keeps the UI from jumping when text appears */
     text-align: center;
+}
+
+.danger-warning-text {
+    color: #ed253c; 
+    font-weight: bold; 
+    margin-top: 10px;
 }
 
 .not-active {

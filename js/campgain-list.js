@@ -16,6 +16,9 @@ const playerAbandonModal = document.getElementById("player-abandon-modal");
 const playerModalCampaignName = document.getElementById("player-modal-campaign-name");
 const cancelPlayerAbandonBtn = document.getElementById("cancel-player-abandon");
 const confirmPlayerAbandonBtn = document.getElementById("confirm-player-abandon");
+const deleteCampaignModal = document.getElementById("delete-campaign-modal");
+const cancelDeleteBtn = document.getElementById("cancel-delete-campaign");
+const confirmDeleteBtn = document.getElementById("confirm-delete-campaign");
 
 const tempID = 1 // in the future will be replaced with tokens probably
 
@@ -93,7 +96,7 @@ async function loadPage() {
 
 loadPage()
 
-campaignContainerSection.addEventListener('click', (e) => {
+campaignContainerSection.addEventListener('click', async (e) => {
     if (e.target.classList.contains('join-button')) {
         window.location.href = "./playerScreen.html"
     }
@@ -111,28 +114,58 @@ campaignContainerSection.addEventListener('click', (e) => {
             dmModalPlayerList.innerHTML = ''
             dmErrorMessage.innerText = ''
 
-            const matchedCampaign = campaigns_info.find(campaign => campaign.campaign_id === parseInt(campaignId))
-            const playersNames = matchedCampaign.participants
-            // in the future add check if dm is only person
-            playersNames.forEach(playerName => {
-                const li = document.createElement('li')
-                li.innerHTML = `
-                <label>
-                    <input type="radio" name="new-dm" value="${playerName}">
-                    ${playerName}
-                    </label>
-                `
-                dmModalPlayerList.appendChild(li)
+            confirmDmAbandonBtn.dataset.campaignId = campaignId
 
-                //future maintenance, make sure doesnt display the DM itself.
+            try {
+                // const matchedCampaign = campaigns_info.find(campaign => campaign.campaign_id === parseInt(campaignId))
+                // const playersNames = matchedCampaign.participants
+                const response = await fetch(`${BASE_URL}/api/campaignListCampaignAndDM?id=${campaignId}&DM=${tempID}`, {
+                    method: "GET",
+                    headers: { 'Content-Type': 'application/json' }
+                })
+                const data = await response.json()
+                const matchedCampaign = data.campaign
+                if (matchedCampaign.length === 0) {
+                    confirmDeleteBtn.dataset.campaignId = campaignId
+                    deleteCampaignModal.showModal()
+                }
+                else {
+                    matchedCampaign.forEach(user => {
+                        const li = document.createElement('li')
+                        li.innerHTML = `
+                        <label>
+                        <input type="radio" name="new-dm" value="${user.user_id}">
+                        ${user.first_name} ${user.last_name}
+                        </label>
+                        `
+                        dmModalPlayerList.appendChild(li)
+                    })
+                    // in the future add check if dm is only person
+                    // playersNames.forEach(playerName => {
+                    //     const li = document.createElement('li')
+                    //     li.innerHTML = `
+                    //     <label>
+                    //         <input type="radio" name="new-dm" value="${playerName}">
+                    //         ${playerName}
+                    //         </label>
+                    //     `
+                    //     dmModalPlayerList.appendChild(li)
 
-            });
+                    //     //future maintenance, make sure doesnt display the DM itself.
 
-            dmAbandonModal.showModal();
-            // add blur to buttons?
+                    // })
+
+                    dmAbandonModal.showModal();
+                    // add blur to buttons?
+                }
+            }
+            catch (err) {
+                console.error("Failed to fetch campaign:", err)
+            }
         }
         else if (relevantCampaign.classList.contains('player-campaign')) {
             playerModalCampaignName.innerText = campaignName
+            confirmPlayerAbandonBtn.dataset.campaignId = campaignId
             playerAbandonModal.showModal()
         }
     }
@@ -153,6 +186,9 @@ function addButtons() {
             <button class="copy-button">Copy!</button>
             <p>Send the code above to your party so they can join the campaign</p>
             <p>The adventure awaits!</p>
+
+            <div id="create-error-message" class="form-error-message"></div>
+
             <button class="finish-create">Create Campaign!</button>
             <button type="button" id="cancel-create" class="cancel-button">
                 Cancel
@@ -376,7 +412,6 @@ player_button.addEventListener('click', () => {
     const dmCampaigns = document.querySelectorAll('.dm-campaign')
     const playerCampaigns = document.querySelectorAll('.player-campaign')
 
-    console.log("Clicked Player")
 
     if (player_button.classList.contains('not-clicked')) {
         if (dm_button.classList.contains('clicked')) {
@@ -385,10 +420,8 @@ player_button.addEventListener('click', () => {
         }
         player_button.classList.remove('not-clicked')
         player_button.classList.add('clicked')
-        console.log("displaying sessions")
         dmCampaigns.forEach(campaign => {
             campaign.style.display = 'none'
-            console.log(campaign)
         })
         playerCampaigns.forEach(campaign => campaign.style.display = '')
     }
@@ -473,40 +506,40 @@ button_container.addEventListener('click', async (e) => {
         code_value.value = "Generating"
 
         const loadingInterval = setInterval(() => {
-            dotCount++;
-            if (dotCount > 3) dotCount = 0;
+            dotCount++
+            if (dotCount > 3) dotCount = 0
 
-            const dots = ".".repeat(dotCount);
-            code_value.value = `Generating${dots}`;
+            const dots = ".".repeat(dotCount)
+            code_value.value = `Generating${dots}`
         }, 500)
 
         try {
             const response = await fetch(`${BASE_URL}/api/generateCode`, {
                 method: 'GET',
                 headers: { 'Content-Type': 'application/json' }
-            });
-            const data = await response.json();
+            })
+            const data = await response.json()
 
             if (response.ok && data.success) {
-                code_value.value = data.join_code;
+                code_value.value = data.join_code
             } else {
-                code_value.value = "Error generating code";
+                code_value.value = "Error generating code"
             }
         }
         catch (err) {
-            console.error("Failed to fetch campaign code:", err);
-            code_value.value = "Connection Error";
+            console.error("Failed to fetch campaign code:", err)
+            code_value.value = "Connection Error"
         }
         finally {
             clearInterval(loadingInterval)
         }
     }
     else if (e.target.id === 'cancel-join') {
-        join_new_campaign_modal.close();
-        e.target.blur(); // Drops the button focus
+        join_new_campaign_modal.close()
+        e.target.blur() // Drops the button focus
 
         // Trigger the reset!
-        resetJoinModal();
+        resetJoinModal()
     }
     // else if (e.target.classList.contains('continue-join')) {
     //     e.preventDefault()
@@ -711,22 +744,43 @@ button_container.addEventListener('click', async (e) => {
     else if (e.target.classList.contains('finish-create')) {
         const finalJoinCode = code_value.value
         const campaignName = document.getElementById('new-campaign-name').value
+        const errorMsgBox = document.getElementById('create-error-message')
         if (campaignName.length === 0) {
-
+            errorMsgBox.innerText = "Please enter a name for your campaign!"
+            return
         }
-        const response = await fetch(`${BASE_URL}/api/createNewCampaign`, {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({
-                joinCode: finalJoinCode,
-                campaignName: campaignName,
-                hostID: tempID
+        errorMsgBox.innerText = ""
+        try {
+            const response = await fetch(`${BASE_URL}/api/createNewCampaign`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    joinCode: finalJoinCode,
+                    campaignName: campaignName,
+                    hostID: tempID
+                })
             })
-        })
 
-        create_new_campaign_modal.close()
-        create_new_campaign.blur()
-        displayDMSessions({ campaign_name: campaignName, users_role: "DM", amount_of_players: 0 })
+            const data = await response.json()
+
+            if (response.ok && data.success) {
+                create_new_campaign_modal.close()
+                create_new_campaign.blur()
+
+                displayDMSessions({
+                    campaign_id: data.campaignID,
+                    campaign_name: campaignName,
+                    users_role: "DM",
+                    amount_of_players: 0
+                })
+            }
+            else {
+                console.error("Failed to create campaign:", data.error)
+            }
+        }
+        catch (err) {
+            console.error("Connection error creating campaign: ", err)
+        }
 
     }
     else if (e.target.id === 'continue-to-proficiencies') {
@@ -797,12 +851,28 @@ cancelDmAbandonBtn.addEventListener('click', () => {
     dmAbandonModal.close()
 });
 
-confirmDmAbandonBtn.addEventListener('click', () => {
-    const selectedPlayer = document.querySelector('input[name="new-dm"]:checked');
+confirmDmAbandonBtn.addEventListener('click', async (e) => {
+    const campaignId = e.target.dataset.campaignId
+    const selectedPlayerID = document.querySelector('input[name="new-dm"]:checked');
 
-    if (selectedPlayer) {
-        const newDmName = selectedPlayer.value
-
+    if (selectedPlayerID) {
+        const newDMID = selectedPlayerID.value
+        try {
+            const response = await fetch(`${BASE_URL}/api/campaignListNewDM?campaignID=${campaignId}&leavingUserID=${tempID}&newDMid=${newDMID}`, {
+                method: "DELETE",
+                headers: { 'Content-Type': 'application/json' }
+            })
+            const data = await response.json()
+            if (response.ok && data.success) {
+                const campaignBox = document.querySelector(`.campaign-instance[data-id="${campaignId}"]`)
+                if (campaignBox) {
+                    campaignBox.remove()
+                }
+            }
+        }
+        catch (err) {
+            console.error("Error communicationg with backend:", err)
+        }
         // TODO: In the future, add backend call here to update the database
         // TODO: Remove the campaign from the screen
         dmErrorMessage.innerText = ""
@@ -816,11 +886,57 @@ cancelPlayerAbandonBtn.addEventListener('click', () => {
     playerAbandonModal.close()
 });
 
-confirmPlayerAbandonBtn.addEventListener('click', () => {
+confirmPlayerAbandonBtn.addEventListener('click', async (e) => {
+    const campaignId = e.target.dataset.campaignId
+    try {
+        const response = await fetch(`${BASE_URL}/api/campaignListPlayerLeave?campaignID=${campaignId}&leavingUserID=${tempID}`, {
+            method: "DELETE",
+            headers: { 'Content-Type': 'application/json' }
+        })
+        const data = await response.json()
+        if (response.ok && data.success) {
+            const campaignBox = document.querySelector(`.campaign-instance[data-id="${campaignId}"]`)
+            if (campaignBox) {
+                campaignBox.remove()
+            }
+        }
+    }
+    catch (err) {
+        console.error("Error communicationg with backend:", err)
+    }
     // TODO: In the future, add backend call here to update the database
     // TODO: Remove the campaign from the screen
     playerAbandonModal.close();
+})
+
+cancelDeleteBtn.addEventListener('click', () => {
+    deleteCampaignModal.close()
 });
+
+confirmDeleteBtn.addEventListener('click', async (e) => {
+    const campaignId = e.target.dataset.campaignId
+
+    try {
+        const response = await fetch(`${BASE_URL}/api/deleteEntireCampaign?campaignID=${campaignId}`, {
+            method: "DELETE",
+            headers: { 'Content-Type': 'application/json' }
+        });
+        const data = await response.json()
+
+        if (response.ok && data.success) {
+            const campaignBox = document.querySelector(`.campaign-instance[data-id="${campaignId}"]`)
+            if (campaignBox) {
+                campaignBox.remove()
+            }
+            deleteCampaignModal.close()
+        } else {
+            document.getElementById("delete-error-message").innerText = "Failed to destroy campaign."
+        }
+    } catch (err) {
+        console.error("Error communicating with backend:", err)
+        document.getElementById("delete-error-message").innerText = "Connection error."
+    }
+})
 
 async function setUpCharacterCreation() {
     const classDropdown = document.getElementById('characters-class')
@@ -1292,6 +1408,10 @@ function resetJoinModal() {
 // Clears the Create Modal
 function resetCreateModal() {
     document.getElementById('new-campaign-name').value = ''
+    const errorMsgBox = document.getElementById('create-error-message');
+    if (errorMsgBox) {
+        errorMsgBox.innerText = '';
+    }
     // The code input will automatically overwrite itself with "Generating..." next time it opens!
 }
 
