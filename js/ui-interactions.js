@@ -1,5 +1,50 @@
 import { addChatMessage } from './chat.js';
 
+// Smoothly animates `element`'s height between its size before and after `applyChange`
+// runs, by measuring both states and transitioning a temporary inline height between
+// them (CSS can't transition to/from a content-based "auto" height directly). Any
+// flex sibling with flex:1 will appear to grow/shrink in lockstep for free, since the
+// browser recalculates the flex layout on every frame of the transition.
+function animateHeightChange(element, applyChange, onComplete) {
+    if (element._pendingHeightHandler) {
+        element.removeEventListener('transitionend', element._pendingHeightHandler);
+        element._pendingHeightHandler = null;
+    }
+
+    const startHeight = element.getBoundingClientRect().height;
+
+    applyChange();
+
+    const endHeight = element.getBoundingClientRect().height;
+
+    if (Math.abs(endHeight - startHeight) < 1) {
+        if (onComplete) onComplete();
+        return;
+    }
+
+    element.style.overflow = 'hidden';
+    element.style.height = `${startHeight}px`;
+
+    requestAnimationFrame(() => {
+        element.style.transition = 'height 0.25s ease';
+        element.style.height = `${endHeight}px`;
+    });
+
+    const handleTransitionEnd = (e) => {
+        if (e.propertyName === 'height') {
+            element.style.height = '';
+            element.style.overflow = '';
+            element.style.transition = '';
+            element.removeEventListener('transitionend', handleTransitionEnd);
+            element._pendingHeightHandler = null;
+            if (onComplete) onComplete();
+        }
+    };
+
+    element._pendingHeightHandler = handleTransitionEnd;
+    element.addEventListener('transitionend', handleTransitionEnd);
+}
+
 export function setupUIInteractions() {
     // Navbar Page Switch
     navbarPageSwitch();
@@ -62,7 +107,7 @@ function navbarExitSession() {
         /* some save to database logic that needs to come in the future */
         window.location.href = "campaignList.html"
     })
-} // Copied Logic from campaignList - need to change to more meaningful class and id names
+}
 
 function playerInfoToggle() {
     const toggleBtn = document.getElementById("info-page-toggle-btn");
@@ -70,28 +115,34 @@ function playerInfoToggle() {
     const page2 = document.getElementById("info-page-2");
     const leftPanel = document.getElementById("player-info-main-left");
     const playerInfoFooter = document.getElementById("player-info-footer");
+    const playerInfo = document.getElementById("player-info");
 
     if (toggleBtn) {
         toggleBtn.addEventListener("click", () => {
-            page1.classList.toggle("hidden-page");
-            page2.classList.toggle("hidden-page");
-            leftPanel.classList.toggle("hidden-page");
-            playerInfoFooter.classList.toggle("hidden-page");
+            animateHeightChange(playerInfo, () => {
+                page1.classList.toggle("hidden-page");
+                page2.classList.toggle("hidden-page");
+                leftPanel.classList.toggle("hidden-page");
+                playerInfoFooter.classList.toggle("hidden-page");
 
-            if (page1.classList.contains("hidden-page")) {
-                toggleBtn.textContent = "Main Stats";
-            } else {
-                toggleBtn.textContent = "Skills & Saves";
-            }
+                if (page1.classList.contains("hidden-page")) {
+                    toggleBtn.textContent = "Main Stats";
+
+                } else {
+                    toggleBtn.textContent = "Skills & Saves";
+                }
+            });
         });
     }
 }
 
 function diceTrayInteraction() {
     let selectedDice = [];
+    let trayContentVisible = false;
 
     const diceGrid = document.getElementById("dice-grid");
     const diceTray = document.getElementById("dice-tray-area");
+    const diceRollerOuter = document.getElementById("dice-roller-outer");
     const rollButton = document.getElementById("roll-button");
 
     function setElementVisible(element, visible, displayValue) {
@@ -134,9 +185,7 @@ function diceTrayInteraction() {
         return { order, counts };
     }
 
-    function renderTray() {
-        diceTray.innerHTML = '';
-
+    function buildTrayHtml() {
         const { order, counts } = groupDiceByType(selectedDice);
 
         let htmlString = '';
@@ -149,12 +198,54 @@ function diceTrayInteraction() {
                 ${countBadge}
             </div>`;
         });
-        diceTray.innerHTML = htmlString;
 
+        return htmlString;
+    }
+
+    function renderTray() {
         const hasDice = selectedDice.length > 0;
 
-        setElementVisible(diceTray, hasDice, 'flex');
-        setElementVisible(rollButton, hasDice, 'block');
+        if (hasDice && !trayContentVisible) {
+            // Box is currently collapsed: grow it first (with the tray/button laid out
+            // but invisible, just for correct measurement), then fade them in once
+            // there's actually room, to avoid overlapping the dice grid.
+            trayContentVisible = true;
+            animateHeightChange(diceRollerOuter, () => {
+                diceTray.innerHTML = buildTrayHtml();
+                diceTray.style.display = 'flex';
+                rollButton.style.display = 'block';
+            }, () => {
+                setElementVisible(diceTray, true, 'flex');
+                setElementVisible(rollButton, true, 'block');
+            });
+        }
+        else if (hasDice) {
+            // Already visible: just update the content, smoothly resizing if the
+            // tray's own height changed (e.g. wrapped to a second row).
+            animateHeightChange(diceRollerOuter, () => {
+                diceTray.innerHTML = buildTrayHtml();
+            });
+        }
+        else if (trayContentVisible) {
+            // No dice left: fade the tray/button out first, then shrink the box
+            // once they're gone, so the box doesn't squeeze them while still visible.
+            trayContentVisible = false;
+            setElementVisible(diceTray, false);
+            setElementVisible(rollButton, false);
+
+            const handleFadeOutDone = (e) => {
+                if (e.target !== diceTray || e.propertyName !== 'opacity') return;
+                diceTray.removeEventListener('transitionend', handleFadeOutDone);
+                animateHeightChange(diceRollerOuter, () => {
+                    diceTray.innerHTML = '';
+                });
+            };
+            diceTray.addEventListener('transitionend', handleFadeOutDone);
+        }
+        else {
+            // Already empty and already collapsed - nothing to animate.
+            diceTray.innerHTML = '';
+        }
     }
 
     function rollSelectedDice(diceList) {
