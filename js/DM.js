@@ -98,7 +98,8 @@ function renderCombatTracker(combatData) {
 function renderAssets(assetsData) {
     assetsGrid.innerHTML = '';
     if (!assetsData || assetsData.length === 0) {
-        assetsGrid.innerHTML = `<span style="grid-column: span 2; text-align: center; color: #63748c; padding-top: 20px;">No assets found</span>`;
+        assetsGrid.innerHTML += '<div id="add-asset-item" class="asset-item">Add Asset</div>';
+        assetsGrid.innerHTML += `<span class="no-assets-message">No assets found</span>`;
         return;
     }
     assetsData.forEach(asset => {
@@ -110,6 +111,7 @@ function renderAssets(assetsData) {
         token.appendChild(info);
         assetsGrid.appendChild(token);
     });
+    assetsGrid.innerHTML += '<div id="add-asset-item" class="asset-item">Add Asset</div>';
 }
 
 function handleNextTurn(clickedBtn) {
