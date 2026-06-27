@@ -896,6 +896,7 @@ h6 {
 .add-effect-btn {
   background-color: #b969d2;
   color: black;
+  font-family: inherit;
   border: none;
   padding: 12px;
   font-size: 18px;
@@ -907,6 +908,20 @@ h6 {
 
 .add-effect-btn:hover {
   filter: brightness(1.1);
+}
+
+#add-effect-modal {
+  background-color: #721f83;
+}
+
+#add-effect-modal > .modal-content {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+#add-effect-modal .menu-btn {
+  background-color: #b969d2;
 }
 
 #dice-roller-outer {
@@ -1424,6 +1439,19 @@ dialog::backdrop {
   transition: 200ms ease;
 }
 
+.menu-input {
+  display: block;
+  width: 100%;
+  background: #e5e7eb;
+  border: 1px solid #000;
+  border-radius: 8px;
+  padding: 10px;
+  margin-bottom: 10px;
+  font: inherit;
+  font-size: 1rem;
+  transition: 200ms ease;
+}
+
 .menu-btn:hover {
   background: #e2e8f0;
 }
@@ -1528,7 +1556,7 @@ dialog::backdrop {
 }
 
 #add-asset-item {
-  background-color: #e5e7eb;
+  background-color: #d8dfef;
 }
 
 .asset-item span {

@@ -155,23 +155,40 @@
             <div id="active-effects-popup-wrapper">
               <div class="effects-header">Name | Turns remaining</div>
               <div id="active-effects-popup">
-                <div class="effects-list">
-                  <div class="effect-item">Spirit Guardians: 5</div>
-                  <div class="effect-item">Cloud Kill: 2</div>
-                  <div class="effect-item">Spirit Guardians: 5</div>
-                  <div class="effect-item">Cloud Kill: 2</div>
-                  <div class="effect-item">Spirit Guardians: 5</div>
-                  <div class="effect-item">Cloud Kill: 2</div>
-                  <div class="effect-item">Spirit Guardians: 5</div>
-                  <div class="effect-item">Cloud Kill: 2</div>
-                  <div class="effect-item">Spirit Guardians: 5</div>
-                  <div class="effect-item">Cloud Kill: 2</div>
-                  <div class="effect-item">Spirit Guardians: 5</div>
-                  <div class="effect-item">Cloud Kill: 2</div>
-                </div>
+                <div class="effects-list"></div>
               </div>
               <button class="add-effect-btn">Add Effect</button>
             </div>
+
+            <dialog id="add-effect-modal">
+              <div class="modal-content">
+                <h2>Add Effect</h2>
+                <input
+                  id="effect-name-input"
+                  class="menu-input"
+                  type="text"
+                  placeholder="Effect Name"
+                />
+                <input
+                  id="effect-duration-input"
+                  class="menu-input"
+                  type="text"
+                  placeholder="Effect Duration"
+                />
+                <button id="add-effect-modal-button" class="menu-btn">
+                  Add
+                </button>
+                <div class="modal-buttons">
+                  <button
+                    type="button"
+                    id="close-add-effect-modal"
+                    class="cancel-button"
+                  >
+                    Close
+                  </button>
+                </div>
+              </div>
+            </dialog>
           </div>
         </div>
       </div>
