@@ -1,5 +1,4 @@
 import { sendMessage, fetchCampaignParticipants } from './chat.js';
-
 // Smoothly animates `element`'s height between its size before and after `applyChange`
 // runs, by measuring both states and transitioning a temporary inline height between
 // them (CSS can't transition to/from a content-based "auto" height directly). Any

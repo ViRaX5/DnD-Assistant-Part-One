@@ -83,6 +83,15 @@ const initModal = document.getElementById('add-initiative-modal');
 const closeInitModal = document.getElementById('close-initiative-modal');
 const assetTabs = document.querySelectorAll('.assets-tabs button');
 
+const addEffectBtn = document.getElementsByClassName('add-effect-btn')[0];
+const addEffectModal = document.getElementById('add-effect-modal');
+const closeAddEffectModal = document.getElementById('close-add-effect-modal');
+const addEffectModalBtn = document.getElementById('add-effect-modal-button');
+const activeEffectsBtn = document.getElementById("active-effects");
+const effectNameInput = document.getElementById('effect-name-input');
+const effectDurationInput = document.getElementById('effect-duration-input');
+const effectsListPopup = document.getElementsByClassName('effects-list')[0];
+
 function renderCombatTracker(combatData) {
     if (!combatData || (!combatData.currentTurn && combatData.upcoming.length === 0)) {
         currentPlayerContainer.innerHTML = `<span style="color: #63748c;">No active combat</span>`;
@@ -216,6 +225,37 @@ assetsGrid.addEventListener('click', (e) => {
         console.log(e.target);
     }
 });
+
+// Add Effects
+addEffectBtn.addEventListener('click', () => {
+    addEffectModal.showModal()
+    addEffectBtn.blur()
+});
+closeAddEffectModal.addEventListener('click', () => {
+    addEffectModal.close()
+    addEffectModal.blur()
+});
+
+const activeEffects = [];
+
+function renderEffects() {
+    effectsListPopup.innerHTML = '';
+    activeEffects.forEach(effect => {
+        effectsListPopup.innerHTML += `<div class="effect-item">${effect.name}: ${effect.duration}</div>`
+    })
+}
+
+addEffectModalBtn.addEventListener('click', () => {
+    activeEffects.push(
+        {
+            name: effectNameInput.value,
+            duration: effectDurationInput.value
+        }
+    )
+    effectNameInput.value = '';
+    effectDurationInput.value = '';
+    renderEffects();
+})
 
 renderCombatTracker(activeCombatTracker);
 loadAssets(activeAssetType).then(assets => renderAssets(assets, activeAssetType));
