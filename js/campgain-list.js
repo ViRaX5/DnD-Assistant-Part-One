@@ -20,8 +20,6 @@ const deleteCampaignModal = document.getElementById("delete-campaign-modal");
 const cancelDeleteBtn = document.getElementById("cancel-delete-campaign");
 const confirmDeleteBtn = document.getElementById("confirm-delete-campaign");
 
-const tempID = 1 // in the future will be replaced with tokens probably
-
 const BASE_URL = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1'
     ? 'http://localhost:8081'
     : 'https://dndassistantbackend.onrender.com'
@@ -50,6 +48,9 @@ const campaigns1 = [
     }
 ]
 //const campaigns2 = []
+
+const tempID = getUserIdFromToken()
+
 
 let campaigns = [];
 const campaignContainerSection = document.querySelector('.campaigns-container')
