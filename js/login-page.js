@@ -14,6 +14,7 @@ const repeat_password_input = document.getElementById("repeat-password-input");
 const error_message = document.getElementById("error-message")
 const signup_submit = document.getElementsByClassName("signup-submit")[0];
 const login_submit = document.getElementsByClassName("login-submit")[0];
+const loading_dialog = document.getElementById("loading-dialog");
 
 const allInputs = [firstname_input, lastname_input, email_input, email_input_login, password_input, password_input_login, repeat_password_input]
 
@@ -119,13 +120,21 @@ sign_up_form.addEventListener('submit', async (e) => {
         repeatPassword: repeat_password_input.value
     }
 
+    error_message.innerText = ''
+    loading_dialog.showModal()
+
+    const controller = new AbortController()
+    const timeoutId = setTimeout(() => controller.abort(), 8000)
+
     try {
         const response = await fetch(`${BASE_URL}/api/signup`, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify(userData)
+            body: JSON.stringify(userData),
+            signal: controller.signal
         })
 
+        clearTimeout(timeoutId)
         const data = await response.json()
 
         if (!data.success) {
@@ -149,9 +158,19 @@ sign_up_form.addEventListener('submit', async (e) => {
         }
     }
     catch (err) {
+        clearTimeout(timeoutId)
         console.error("Error communicationg with backend:", err)
+
+        if (err.name === 'AbortError') {
+            error_message.innerText = "Request timed out. The server took too long to respond."
+        } else {
+            error_message.innerText = "Could not connect to the server. Please try again later."
+        }
     }
-    signup_submit.blur()
+    finally {
+        loading_dialog.close()
+        signup_submit.blur()
+    }
 })
 
 login_form.addEventListener('submit', async (e) => {
@@ -160,28 +179,36 @@ login_form.addEventListener('submit', async (e) => {
     const loginData = {
         email: email_input_login.value,
         password: password_input_login.value
-    };
+    }
+
+    error_message.innerText = ''
+    loading_dialog.showModal()
+
+    const controller = new AbortController()
+    const timeoutId = setTimeout(() => controller.abort(), 8000)
 
     try {
         const response = await fetch(`${BASE_URL}/api/login`, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify(loginData)
+            body: JSON.stringify(loginData),
+            signal: controller.signal
         });
 
-        const data = await response.json();
+        clearTimeout(timeoutId)
+        const data = await response.json()
 
         if(!data.success)
         {
             if (data.errors) {
-                let errorMessages = [];
+                let errorMessages = []
                 data.errors.forEach(err => {
-                    errorMessages.push(err.msg);
+                    errorMessages.push(err.msg)
                     if (fieldToInputMap[err.field]) {
-                        fieldToInputMap[err.field].parentElement.classList.add('incorrect');
+                        fieldToInputMap[err.field].parentElement.classList.add('incorrect')
                     }
-                });
-                error_message.innerText = errorMessages.join(". \n");
+                })
+                error_message.innerText = errorMessages.join(". \n")
             }
             else if (data.error) {
                 email_input_login.parentElement.classList.add('incorrect')
@@ -191,12 +218,22 @@ login_form.addEventListener('submit', async (e) => {
             }
         }
         else {
-            window.location.href = data.redirect;
+            window.location.href = data.redirect
         }
-    } catch (error) {
-        console.error("Error communicating with backend:", error);
+    } catch (err) {
+        clearTimeout(timeoutId)
+        console.error("Error communicating with backend:", err)
+
+        if (err.name === 'AbortError') {
+            error_message.innerText = "Request timed out. The server took too long to respond."
+        } else {
+            error_message.innerText = "Could not connect to the server. Please try again later."
+        }
     }
-    login_submit.blur();
+    finally {
+        loading_dialog.close()
+        login_submit.blur()
+    }
 })
 
 function getSignupFormErrors(firstname, lastname, email, password, repeatPassword) {
