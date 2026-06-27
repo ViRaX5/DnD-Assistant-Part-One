@@ -1,4 +1,4 @@
-import { addChatMessage } from './chat.js';
+import { sendMessage, fetchCampaignParticipants } from './chat.js';
 
 // Smoothly animates `element`'s height between its size before and after `applyChange`
 // runs, by measuring both states and transitioning a temporary inline height between
@@ -45,6 +45,49 @@ function animateHeightChange(element, applyChange, onComplete) {
     element.addEventListener('transitionend', handleTransitionEnd);
 }
 
+function showTemporaryNotice(text) {
+    const notice = document.createElement('div');
+    notice.className = 'temporary-notice';
+    notice.textContent = text;
+
+    document.body.appendChild(notice);
+
+    setTimeout(() => {
+        notice.remove();
+    }, 2000);
+}
+
+function groupDiceByType(diceList) {
+    const order = [...new Set(diceList)];
+    const counts = {};
+    diceList.forEach((die) => {
+        counts[die] = (counts[die] || 0) + 1;
+    });
+
+    return { order, counts };
+}
+
+function rollSelectedDice(diceList) {
+    const { order, counts } = groupDiceByType(diceList);
+
+    let total = 0;
+    const segments = order.map((dieType) => {
+        const quantity = counts[dieType];
+        const maxNumber = parseInt(dieType.substring(1));
+
+        const rolls = [];
+        for (let i = 0; i < quantity; i++) {
+            const result = Math.floor(Math.random() * maxNumber) + 1;
+            rolls.push(result);
+            total += result;
+        }
+
+        return `${rolls.join(", ")} (${quantity}${dieType})`;
+    });
+
+    return { rollString: segments.join(" and "), total };
+}
+
 export function setupUIInteractions() {
     // Navbar Page Switch
     navbarPageSwitch();
@@ -56,13 +99,19 @@ export function setupUIInteractions() {
     playerInfoToggle();
 
     // Dice Tray Interaction
-    diceTrayInteraction();
+    const diceTray = diceTrayInteraction();
 
     // Active Effects Pop-up
     activeEffectsPopUp();
 
     // Actions Hover Pop-up
     actionsHoverPopUp();
+
+    // Action Bar Interaction
+    actionBarInteraction(diceTray);
+
+    // Chat Input Interaction
+    chatInputInteraction();
 
     // Nav Footer Switch
     navFooterSwitch();
@@ -139,6 +188,7 @@ function playerInfoToggle() {
 function diceTrayInteraction() {
     let selectedDice = [];
     let trayContentVisible = false;
+    let pendingAction = null; // { actionName, modifier } | null
 
     const diceGrid = document.getElementById("dice-grid");
     const diceTray = document.getElementById("dice-tray-area");
@@ -173,16 +223,6 @@ function diceTrayInteraction() {
             element._pendingHideHandler = handleTransitionEnd;
             element.addEventListener('transitionend', handleTransitionEnd);
         }
-    }
-
-    function groupDiceByType(diceList) {
-        const order = [...new Set(diceList)];
-        const counts = {};
-        diceList.forEach((die) => {
-            counts[die] = (counts[die] || 0) + 1;
-        });
-
-        return { order, counts };
     }
 
     function buildTrayHtml() {
@@ -248,27 +288,6 @@ function diceTrayInteraction() {
         }
     }
 
-    function rollSelectedDice(diceList) {
-        const { order, counts } = groupDiceByType(diceList);
-
-        let total = 0;
-        const segments = order.map((dieType) => {
-            const quantity = counts[dieType];
-            const maxNumber = parseInt(dieType.substring(1));
-
-            const rolls = [];
-            for (let i = 0; i < quantity; i++) {
-                const result = Math.floor(Math.random() * maxNumber) + 1;
-                rolls.push(result);
-                total += result;
-            }
-
-            return `${rolls.join(", ")} (${quantity}${dieType})`;
-        });
-
-        return { rollString: segments.join(" and "), total };
-    }
-
     diceGrid.addEventListener('click', (e) => {
         const dieButton = e.target.closest('.die-button');
 
@@ -276,6 +295,8 @@ function diceTrayInteraction() {
 
         const clickedDie = dieButton.getAttribute('data-die');
 
+        // Manually touching the grid breaks any action's claim on the tray's contents.
+        pendingAction = null;
         selectedDice.push(clickedDie);
         renderTray();
     });
@@ -292,6 +313,7 @@ function diceTrayInteraction() {
             selectedDice.splice(index, 1);
         }
 
+        pendingAction = null;
         renderTray();
     });
 
@@ -299,32 +321,57 @@ function diceTrayInteraction() {
 
     rollButton.addEventListener('click', () => {
         if (selectedDice.length === 0) {
-            addChatMessage("Please select a die first!", "system-msg");
+            showTemporaryNotice("Please select a die first!");
             return;
         }
 
         const rollData = rollSelectedDice(selectedDice);
 
-        let message = '';
+        const isPlayer = window.location.pathname.endsWith("playerScreen.html");
+        const senderName = isPlayer
+            ? (document.getElementById("player-name").textContent || "Unknown Hero")
+            : "DM";
 
-        if (window.location.pathname.endsWith("playerScreen.html")) {
-            const playerName = document.getElementById("player-name").textContent || "Unknown Hero";
+        let message;
+        let type;
+        let meta;
 
-            message = `${playerName} rolled: ${rollData.rollString}.`;
+        if (pendingAction) {
+            const total = rollData.total + pendingAction.modifier;
+
+            message = `${senderName} used ${pendingAction.actionName}: ${rollData.rollString}`;
+            if (pendingAction.modifier !== 0) {
+                message += ` ${pendingAction.modifier > 0 ? '+' : ''}${pendingAction.modifier}`;
+            }
+            message += ` (Total: ${total}).`;
+
+            type = 'action';
+            meta = { actionName: pendingAction.actionName, rollString: rollData.rollString, total };
         }
         else {
-            message = `DM rolled: ${rollData.rollString}.`;
+            message = `${senderName} rolled: ${rollData.rollString}.`;
+            if (selectedDice.length > 1) {
+                message += ` (Total: ${rollData.total})`;
+            }
+
+            type = 'roll';
+            meta = { rollString: rollData.rollString, total: rollData.total, dice: selectedDice };
         }
 
-        if (selectedDice.length > 1) {
-            message += ` (Total: ${rollData.total})`;
-        }
-
-        addChatMessage(message, "system-msg");
+        sendMessage({ type, text: message, senderName, meta });
 
         selectedDice = [];
+        pendingAction = null;
         renderTray();
     });
+
+    return {
+        queueActionDice({ actionName, diceList, modifier }) {
+            selectedDice = [...diceList];
+            pendingAction = { actionName, modifier };
+            renderTray();
+        }
+    };
 }
 
 function activeEffectsPopUp() {
@@ -356,6 +403,134 @@ function actionsHoverPopUp() {
 
         wrapper.addEventListener('mouseleave', () => {
             wrapper.classList.remove("is-open");
+        });
+    });
+}
+
+function actionBarInteraction(diceTray) {
+    const actionsList = document.getElementById("actions-list");
+
+    if (!actionsList) return;
+
+    actionsList.addEventListener('click', (e) => {
+        const button = e.target.closest('.action-container');
+
+        if (!button) return;
+
+        const wrapper = button.closest('.action-wrapper');
+        const nameSpan = wrapper.querySelector('.action-name');
+        const fullText = nameSpan.textContent.trim();
+
+        const [rawName, rawNotation] = fullText.split(':').map(s => s.trim());
+
+        const diceMatch = rawNotation && rawNotation.match(/^(\d+)d(\d+)([+-]\d+)?$/i);
+
+        if (diceMatch) {
+            const count = parseInt(diceMatch[1]);
+            const sides = parseInt(diceMatch[2]);
+            const modifier = diceMatch[3] ? parseInt(diceMatch[3]) : 0;
+
+            const diceList = Array(count).fill(`d${sides}`);
+
+            diceTray.queueActionDice({ actionName: rawName, diceList, modifier });
+            showTemporaryNotice(`Roll the dice to use ${rawName}!`);
+        }
+        else {
+            const playerName = document.getElementById("player-name").textContent || "Unknown Hero";
+
+            sendMessage({
+                type: 'action',
+                text: `${playerName} used ${rawName}.`,
+                senderName: playerName,
+                meta: { actionName: rawName }
+            });
+        }
+    });
+}
+
+async function openRecipientPicker(anchorBtn, onSelect) {
+    const existing = document.getElementById("recipient-dropdown");
+    if (existing) {
+        existing.remove();
+        return;
+    }
+
+    const participants = await fetchCampaignParticipants();
+
+    const dropdown = document.createElement('div');
+    dropdown.id = "recipient-dropdown";
+
+    const allOption = document.createElement('button');
+    allOption.textContent = "All";
+    allOption.addEventListener('click', () => {
+        onSelect(null, null);
+        dropdown.remove();
+    });
+    dropdown.appendChild(allOption);
+
+    participants.forEach((participant) => {
+        const option = document.createElement('button');
+        option.textContent = `${participant.first_name} ${participant.last_name}`;
+
+        option.addEventListener('click', () => {
+            onSelect(participant.user_id, `${participant.first_name} ${participant.last_name}`);
+            dropdown.remove();
+        });
+
+        dropdown.appendChild(option);
+    });
+
+    anchorBtn.insertAdjacentElement('afterend', dropdown);
+}
+
+function chatInputInteraction() {
+    const input = document.getElementById("chat-input");
+    const sendBtn = document.getElementById("send-btn");
+    const recipientBtn = document.getElementById("recipient-btn");
+
+    let whisperTargetId = null;
+    let whisperTargetName = null;
+
+    function doSend() {
+        const text = input.value.trim();
+        if (!text) return;
+
+        const isPlayer = window.location.pathname.endsWith("playerScreen.html");
+        const senderName = isPlayer
+            ? (document.getElementById("player-name").textContent || "Unknown Hero")
+            : "DM";
+
+        if (whisperTargetId) {
+            sendMessage({
+                type: 'whisper',
+                text,
+                targetId: whisperTargetId,
+                targetName: whisperTargetName,
+                senderName
+            });
+        }
+        else {
+            sendMessage({
+                type: 'chat',
+                text: `${senderName}: ${text}`,
+                senderName
+            });
+        }
+
+        input.value = '';
+    }
+
+    sendBtn.addEventListener('click', doSend);
+
+    input.addEventListener('keydown', (e) => {
+        if (e.key === 'Enter') doSend();
+    });
+
+    recipientBtn.addEventListener('click', () => {
+        openRecipientPicker(recipientBtn, (targetId, targetName) => {
+            whisperTargetId = targetId;
+            whisperTargetName = targetName;
+            recipientBtn.textContent = targetId ? `To: ${targetName}` : "To: All";
         });
     });
 }

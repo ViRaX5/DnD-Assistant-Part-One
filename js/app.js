@@ -1,21 +1,8 @@
 import { renderPlayerInfo } from './player-info.js';
 import { renderEquipmentAndTraits } from './equipment-and-traits.js';
 import { setupUIInteractions } from './ui-interactions.js';
-import { renderChat } from './chat.js';
-import io from 'https://cdn.socket.io/4.8.3/socket.io.esm.min.js';
-
-// const backendUrl = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1'
-//     ? 'http://localhost:8081'
-//     : 'https://dndassistantbackend.onrender.com'; // For production
-
-const backendUrl = 'https://dndassistantbackend.onrender.com'; // For dev
-
-
-const socket = io(backendUrl);
-
-socket.on('connect', () => {
-    console.log("Frontend Connected", socket.id)
-})
+import { loadChatHistory } from './chat.js';
+import { socket } from './socket.js';
 
 window.broadcastTokenMove = (data) => {
     // Emit the custom event to the Node.js backend
@@ -74,7 +61,7 @@ async function initializeApp() {
     }
 
     try {
-        renderChat();
+        loadChatHistory();
 
     } catch (error) {
         console.error("Failed to setup chat:", error);

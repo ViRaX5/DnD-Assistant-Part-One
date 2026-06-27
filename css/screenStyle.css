@@ -1,5 +1,21 @@
 @import url("https://fonts.googleapis.com/css2?family=MedievalSharp&display=swap");
 
+.temporary-notice {
+  position: fixed;
+  top: 40px;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 1000;
+  background-color: #1b4d3e;
+  color: #ffffff;
+  border: 2px solid #ffffff;
+  border-radius: 12px;
+  padding: 14px 28px;
+  font-size: 18px;
+  font-weight: 600;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+}
+
 :root {
   --accent-color: #e2e8f0;
   --base-color: #c9d3df;
@@ -1093,12 +1109,22 @@ h6 {
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
 }
 
-.system-msg {
+.chat-msg {
+  border-left: 6px solid #3b82f6;
+}
+
+.roll-msg {
   border-left: 6px solid #8b5cf6;
 }
 
 .action-msg {
   border-left: 6px solid #10b981;
+}
+
+.whisper-msg {
+  border-left: 6px solid #ec4899;
+  background-color: #fdf2f8;
+  font-style: italic;
 }
 
 #chat-controls {

@@ -98,10 +98,12 @@ loadPage()
 
 campaignContainerSection.addEventListener('click', async (e) => {
     if (e.target.classList.contains('join-button')) {
-        window.location.href = "./playerScreen.html"
+        const campaignId = e.target.closest('.campaign-instance').dataset.id
+        window.location.href = `./playerScreen.html?campaignId=${campaignId}&userId=${tempID}`
     }
     else if (e.target.classList.contains('start-session-button')) {
-        window.location.href = "./DMScreen.html"
+        const campaignId = e.target.closest('.campaign-instance').dataset.id
+        window.location.href = `./DMScreen.html?campaignId=${campaignId}&userId=${tempID}`
     }
     else if (e.target.classList.contains('abandon-button')) {
         const relevantCampaign = e.target.closest('.campaign-instance')
