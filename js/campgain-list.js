@@ -706,6 +706,7 @@ button_container.addEventListener('click', async (e) => {
 
                     // Add the new campaign to the UI dynamically
                     displayPlayerSessions({
+                        campaign_id: data.campaignId,
                         campaign_name: data.campaignName,
                         users_role: "player",
                         character_name: characterName
@@ -946,8 +947,8 @@ async function setUpCharacterCreation() {
 
     try {
         const [classRes, raceRes] = await Promise.all([
-            fetch('https://www.dnd5eapi.co/api/classes'),
-            fetch('https://www.dnd5eapi.co/api/races')
+            fetch(`${BASE_URL}/api/dndClasses`),
+            fetch(`${BASE_URL}/api/dndRaces`)
         ])
 
         const classData = await classRes.json()
@@ -1019,13 +1020,8 @@ async function setUpCharacterCreation() {
             equipmentContainer.style.display = 'block';
             equipmentContainer.innerHTML = "<p><em>Drafting equipment armory...</em></p>";
 
-            const [equipRes, classRes] = await Promise.all([
-                fetch(`https://www.dnd5eapi.co/api/classes/${selectedClass}/starting-equipment`),
-                fetch(`https://www.dnd5eapi.co/api/classes/${selectedClass}`)
-            ]);
-
-            const equipData = await equipRes.json();
-            const classData = await classRes.json();
+            const detailsRes = await fetch(`${BASE_URL}/api/dndClassDetails?class=${selectedClass}`);
+            const { classData, equipmentData: equipData } = await detailsRes.json();
             const skillChoices = []
             const toolChoices = []
 
@@ -1145,7 +1141,7 @@ async function setUpCharacterCreation() {
             try {
                 document.getElementById('race-proficiencies-container').innerHTML = ''
 
-                const response = await fetch(`https://www.dnd5eapi.co/api/races/${selectedRace}`)
+                const response = await fetch(`${BASE_URL}/api/dndRaceDetails?race=${selectedRace}`)
                 const raceDetails = await response.json()
 
                 // 1. Sort the Race Proficiencies (Skills vs Tools)
@@ -1303,7 +1299,7 @@ async function openSubEquipmentModal(categoryIndex, parentCard, groupDiv, allowe
     cancelBtn.onclick = () => subModal.close()
 
     try {
-        const res = await fetch(`https://www.dnd5eapi.co/api/equipment-categories/${categoryIndex}`)
+        const res = await fetch(`${BASE_URL}/api/dndEquipmentCategory?category=${categoryIndex}`)
         const data = await res.json()
 
         title.innerText = `Choose: ${data.name}`

@@ -1,4 +1,9 @@
 {
+    "currency": {
+        "gold": 15,
+        "silver": 8,
+        "copper": 23
+    },
     "traits": [
         {
             "name": "Second Wind",

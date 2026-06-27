@@ -1,4 +1,9 @@
 export function renderEquipmentAndTraits(data) {
+    // Currency
+    if (data.currency) {
+        renderCurrency(data.currency);
+    }
+
     // Traits
     if (data.traits) {
         renderTraits(data.traits);
@@ -9,6 +14,12 @@ export function renderEquipmentAndTraits(data) {
         renderEquipment(data.equipment);
     }
 
+}
+
+function renderCurrency(currencyData) {
+    document.getElementById("gold-amount").textContent = `${currencyData.gold}G`;
+    document.getElementById("silver-amount").textContent = `${currencyData.silver}S`;
+    document.getElementById("copper-amount").textContent = `${currencyData.copper}C`;
 }
 
 function renderTraits(traitsData) {

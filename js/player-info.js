@@ -8,8 +8,8 @@ export function renderPlayerInfo(data) {
     document.getElementById("strength-amount").textContent = data.attributes.strength.score;
     document.getElementById("dexterity-modifier").textContent = data.attributes.dexterity.modifier;
     document.getElementById("dexterity-amount").textContent = data.attributes.dexterity.score;
-    document.getElementById("constituition-modifier").textContent = data.attributes.constituition.modifier;
-    document.getElementById("constituition-amount").textContent = data.attributes.constituition.score;
+    document.getElementById("constitution-modifier").textContent = data.attributes.constitution.modifier;
+    document.getElementById("constitution-amount").textContent = data.attributes.constitution.score;
     document.getElementById("intelligence-modifier").textContent = data.attributes.intelligence.modifier;
     document.getElementById("intelligence-amount").textContent = data.attributes.intelligence.score;
     document.getElementById("wisdom-modifier").textContent = data.attributes.wisdom.modifier;

@@ -1128,10 +1128,17 @@ h6 {
 }
 
 #chat-controls {
-  flex: 0 0 45px;
+  flex: 0 0 auto;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+#chat-input-row {
   display: flex;
   flex-direction: row;
   gap: clamp(2px, 0.5vw, 4px);
+  height: 45px;
 }
 
 #chat-input {
@@ -1144,12 +1151,17 @@ h6 {
   outline: none;
 }
 
+#chat-recipient-row {
+  position: relative;
+  display: flex;
+}
+
 #recipient-btn {
   background-color: #8b5cf6;
   color: #ffffff;
   border: none;
   border-radius: 20px;
-  padding: 0 clamp(8px, 1vw, 20px);
+  padding: 6px clamp(8px, 1vw, 20px);
   font-size: 13px;
   cursor: pointer;
   transition: filter 0.2s ease;
@@ -1157,6 +1169,42 @@ h6 {
 
 #recipient-btn:hover {
   filter: brightness(1.1);
+}
+
+#recipient-dropdown {
+  position: absolute;
+  bottom: 100%;
+  left: 0;
+  margin-bottom: 8px;
+
+  display: flex;
+  flex-direction: column;
+
+  background-color: #ffffff;
+  border-radius: 12px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+  overflow: hidden;
+  min-width: 140px;
+  z-index: 10;
+}
+
+#recipient-dropdown button {
+  background-color: #ffffff;
+  border: none;
+  border-bottom: 1px solid #e2e8f0;
+  padding: 8px 14px;
+  font-size: 13px;
+  text-align: left;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+}
+
+#recipient-dropdown button:last-child {
+  border-bottom: none;
+}
+
+#recipient-dropdown button:hover {
+  background-color: #f1f5f9;
 }
 
 #send-btn {

@@ -3,6 +3,11 @@ import { renderEquipmentAndTraits } from './equipment-and-traits.js';
 import { setupUIInteractions } from './ui-interactions.js';
 import { loadChatHistory } from './chat.js';
 import { socket } from './socket.js';
+import { sessionContext } from './session-context.js';
+
+const BASE_URL = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1'
+    ? 'http://localhost:8081'
+    : 'https://dndassistantbackend.onrender.com';
 
 window.broadcastTokenMove = (data) => {
     // Emit the custom event to the Node.js backend
@@ -23,33 +28,24 @@ async function initializeApp() {
     const currentPath = window.location.pathname;
 
     if (currentPath.endsWith("playerScreen.html")) {
-        let playerState = null;
-        let equipmentAndTraitsState = null;
-
         try {
-            const playerInfoJSONresponse = await fetch('./JSONs/playerExample.json');
+            const response = await fetch(
+                `${BASE_URL}/api/getCharacter?campaignId=${sessionContext.campaignId}&userId=${sessionContext.userId}`
+            );
+            const data = await response.json();
 
-            playerState = await playerInfoJSONresponse.json();
+            if (response.ok && data.success) {
+                console.log("Character data loaded successfully!", data.character);
 
-            console.log("Data loaded successfully!", playerState);
+                renderPlayerInfo(data.character);
+                renderEquipmentAndTraits(data.character);
 
-            renderPlayerInfo(playerState);
+            } else {
+                console.error("Failed to load character data:", data.error);
+            }
 
         } catch (error) {
             console.error("Failed to load character data:", error);
-        }
-
-        try {
-            const equipmentAndTraitsResponse = await fetch('./JSONs/equipmentAndTraitsExample.json');
-
-            equipmentAndTraitsState = await equipmentAndTraitsResponse.json();
-
-            console.log("Data loaded successfully!", equipmentAndTraitsState);
-
-            renderEquipmentAndTraits(equipmentAndTraitsState);
-
-        } catch (error) {
-            console.error("Failed to load equipment and traits data:", error);
         }
     }
 
