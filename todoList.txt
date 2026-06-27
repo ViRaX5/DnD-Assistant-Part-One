@@ -1,7 +1,7 @@
 hover functionality on actions in player screen - DONE
 add player info from characters sheet (temp hp, all skills, saving throws, passive perception, proficency bonus, ??inspiration??) - DONE
 proficency bonus should be added to proficient skills
-add gold/silver/copper to equipment
+add gold/silver/copper to equipment - DONE
 
 add new creature as DM logic and functionality (use api for new monster) 
 sessions and campaign codes - DONE
@@ -19,10 +19,10 @@ not infinite map - DONE
 add logic for all dm buttons at the bottom (including round tracker auto update -- this may also affects active effects)
 add effect will open dialog (see how to choose the list of viable effects)
 
-chat to all or specific players (whisper button and logic)
+chat to all or specific players (whisper button and logic) - DONE
 
 implement socket.io - DONE
-campaign specific chat
+campaign specific chat - DONE
 
 create new campaign dialog -- COMPLETE
 abandon capmaign button logic and functioanlity -- COMPLETE

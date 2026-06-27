@@ -21,6 +21,36 @@ const audioDB1 = [
 ];
 const audioDB2 = [];
 
+// Canonical asset type per tab, matching the SQL campaign_assets.asset_type convention
+const TAB_TO_ASSET_TYPE = {
+    tokens: 'token',
+    maps: 'map',
+    audio: 'audio'
+};
+
+// handout/other aren't tabbed in the UI yet, but are valid asset_type values
+const ASSET_TYPE_LABELS = {
+    token: 'Add Token',
+    map: 'Add Map',
+    audio: 'Add Audio',
+    handout: 'Add Handout',
+    other: 'Add Asset'
+};
+
+const mockAssetsByType = {
+    token: assetsDB1,
+    map: mapsDB1,
+    audio: audioDB1
+};
+
+let activeAssetType = 'token';
+
+async function loadAssets(assetType) {
+    // TODO: replace with a real fetch to /api/DM/getAsset once the backend
+    // wiring for this panel is ready.
+    return mockAssetsByType[assetType] || [];
+}
+
 const combatTracker1 = {
     currentTurn: { id: 2, name: "Player 2", initiative: 10 },
     upcoming: [
@@ -40,10 +70,7 @@ const combatTracker1 = {
 };
 const combatTracker2 = {};
 
-const activeAssetts = assetsDB1;
 let activeCombatTracker = JSON.parse(JSON.stringify(combatTracker1));
-const activeMaps = mapsDB1;
-const activeAudio = audioDB1;
 
 const currentPlayerContainer = document.getElementById('current-player-container');
 const nextInitiativesContainer = document.getElementById('next-initiatives-container');
@@ -95,10 +122,12 @@ function renderCombatTracker(combatData) {
     });
 }
 
-function renderAssets(assetsData) {
+function renderAssets(assetsData, assetType) {
+    const addButtonHtml = `<div id="add-asset-item" class="asset-item">${ASSET_TYPE_LABELS[assetType] || 'Add Asset'}</div>`;
+
     assetsGrid.innerHTML = '';
     if (!assetsData || assetsData.length === 0) {
-        assetsGrid.innerHTML += '<div id="add-asset-item" class="asset-item">Add Asset</div>';
+        assetsGrid.innerHTML += addButtonHtml;
         assetsGrid.innerHTML += `<span class="no-assets-message">No assets found</span>`;
         return;
     }
@@ -111,7 +140,7 @@ function renderAssets(assetsData) {
         token.appendChild(info);
         assetsGrid.appendChild(token);
     });
-    assetsGrid.innerHTML += '<div id="add-asset-item" class="asset-item">Add Asset</div>';
+    assetsGrid.innerHTML += addButtonHtml;
 }
 
 function handleNextTurn(clickedBtn) {
@@ -157,7 +186,7 @@ closeInitModal.addEventListener('click', () => {
 });
 
 assetTabs.forEach(tab => {
-    tab.addEventListener('click', (e) => {
+    tab.addEventListener('click', async (e) => {
         assetTabs.forEach(t => {
             t.classList.remove('active')
             t.classList.add('not-active')
@@ -167,11 +196,26 @@ assetTabs.forEach(tab => {
         e.target.blur()
 
         const tabName = e.target.innerText.toLowerCase();
-        if (tabName === 'tokens') renderAssets(activeAssetts);
-        else if (tabName === 'maps') renderAssets(activeMaps);
-        else if (tabName === 'audio') renderAssets(activeAudio);
+        const assetType = TAB_TO_ASSET_TYPE[tabName];
+        if (!assetType) return;
+
+        activeAssetType = assetType;
+        const assets = await loadAssets(assetType);
+        renderAssets(assets, assetType);
     });
 });
 
+// #add-asset-item is recreated on every renderAssets() call, so this listener
+// is attached once to the grid itself rather than to the button directly.
+assetsGrid.addEventListener('click', (e) => {
+    const addButton = e.target.closest('#add-asset-item');
+    if (addButton) {
+        // TODO: open the add-asset popup for activeAssetType once it's built.
+        console.log(`TODO: open add-${activeAssetType} popup`);
+    } else {
+        console.log(e.target);
+    }
+});
+
 renderCombatTracker(activeCombatTracker);
-renderAssets(activeAssetts);
+loadAssets(activeAssetType).then(assets => renderAssets(assets, activeAssetType));
