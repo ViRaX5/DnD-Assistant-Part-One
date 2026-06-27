@@ -20,9 +20,9 @@ const deleteCampaignModal = document.getElementById("delete-campaign-modal");
 const cancelDeleteBtn = document.getElementById("cancel-delete-campaign");
 const confirmDeleteBtn = document.getElementById("confirm-delete-campaign");
 
-const BASE_URL = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1'
-    ? 'http://localhost:8081'
-    : 'https://dndassistantbackend.onrender.com'
+// const BASE_URL = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1'
+//     ? 'http://localhost:8081'
+//     : 'https://dndassistantbackend.onrender.com'
 
 const campaigns_info = [
     {

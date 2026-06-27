@@ -18,9 +18,9 @@ const loading_dialog = document.getElementById("loading-dialog");
 
 const allInputs = [firstname_input, lastname_input, email_input, email_input_login, password_input, password_input_login, repeat_password_input]
 
-const BASE_URL = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1'
-    ? 'http://localhost:8081'
-    : 'https://dndassistantbackend.onrender.com'
+// const BASE_URL = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1'
+//     ? 'http://localhost:8081'
+//     : 'https://dndassistantbackend.onrender.com'
 
 const fieldToInputMap = {
     'firstname': firstname_input,

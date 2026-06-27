@@ -5,9 +5,9 @@ import { loadChatHistory } from './chat.js';
 import { socket } from './socket.js';
 import { sessionContext } from './session-context.js';
 
-const BASE_URL = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1'
-    ? 'http://localhost:8081'
-    : 'https://dndassistantbackend.onrender.com';
+// const BASE_URL = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1'
+//     ? 'http://localhost:8081'
+//     : 'https://dndassistantbackend.onrender.com';
 
 window.broadcastTokenMove = (data) => {
     // Emit the custom event to the Node.js backend
