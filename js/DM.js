@@ -193,6 +193,11 @@ function renderAssets(assetsData, assetType) {
                 changeMapBackground(asset.imageUrl)
             })
         }
+        else if (assetType === 'token') {
+            itemDiv.addEventListener('click', () => {
+                spawnToken(asset.imageUrl)
+            })
+        }
 
         assetsGrid.appendChild(itemDiv)
     });
@@ -217,6 +222,24 @@ function changeMapBackground(imageUrl) {
 
     } catch (err) {
         console.error("Failed to update canvas background.", err)
+    }
+}
+
+function spawnToken(imageUrl) {
+    try {
+        const mapIframe = document.getElementById('main-map');       
+        const iframeWindow = mapIframe.contentWindow; 
+        
+        if (iframeWindow && iframeWindow.addToken) {
+            iframeWindow.addToken(imageUrl);
+            
+            // TODO for the future: Broadcast this new token to the players!
+            // socket.emit('map:spawnToken', { imageUrl: imageUrl });
+        } else {
+            console.error("Could not find the addToken function inside the iframe!");
+        }
+    } catch (err) {
+        console.error("Failed to spawn token.", err);
     }
 }
 

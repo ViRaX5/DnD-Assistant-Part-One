@@ -42,31 +42,11 @@ function resize() {
 }
 
 function draw() {
-  // const w = canvas.clientWidth;
-  // const h = canvas.clientHeight;
-
-  // ctx.clearRect(0, 0, w, h);
-  // ctx.fillStyle = "#2d3748";
-  // ctx.fillRect(0, 0, w, h);
-
-  // const step = state.baseGrid * state.scale;
-  // const mapWidth = state.gridCols * step;
-  // const mapHeight = state.gridRows * step;
-
-  // ctx.fillStyle = "#f0f8ff";
-  // ctx.fillRect(state.offsetX, state.offsetY, mapWidth, mapHeight);
-
-  // ctx.strokeStyle = "#000000";
-  // ctx.lineWidth = 1;
-  // ctx.beginPath();
-
   const w = canvas.clientWidth;
   const h = canvas.clientHeight;
 
-  // 1. Clear the entire canvas first
+  // 1. Clear canvas and paint the "out of bounds" void (Dark Gray)
   ctx.clearRect(0, 0, w, h);
-  
-  // 2. Fill the "out of bounds" void with your dark gray color
   ctx.fillStyle = "#2d3748";
   ctx.fillRect(0, 0, w, h);
 
@@ -74,16 +54,52 @@ function draw() {
   const mapWidth = state.gridCols * step;
   const mapHeight = state.gridRows * step;
 
-  // 3. Draw the map image, or a fallback color if no map is loaded yet!
+  // 2. Paint the actual grid board area (White/Blue)
+  ctx.fillStyle = "#f0f8ff";
+  ctx.fillRect(state.offsetX, state.offsetY, mapWidth, mapHeight);
+
+  // 3. Draw the map image (Scaled and Centered)
   if (mapImageObj) {
-      ctx.drawImage(mapImageObj, state.offsetX, state.offsetY, mapWidth, mapHeight)
-  } 
-  else {
-      ctx.fillStyle = "#f0f8ff"
-      ctx.fillRect(state.offsetX, state.offsetY, mapWidth, mapHeight)
+      const imgAspect = mapImageObj.width / mapImageObj.height;
+      const gridAspect = mapWidth / mapHeight;
+
+      let drawWidth = mapWidth;
+      let drawHeight = mapHeight;
+
+      // Adjust dimensions to prevent stretching
+      if (imgAspect > gridAspect) {
+          drawHeight = mapWidth / imgAspect; // Image is wider, scale height down
+      } else {
+          drawWidth = mapHeight * imgAspect; // Image is taller, scale width down
+      }
+
+      // Center the image perfectly inside the white-blue grid board!
+      const centerX = state.offsetX + (mapWidth - drawWidth) / 2;
+      const centerY = state.offsetY + (mapHeight - drawHeight) / 2;
+
+      ctx.drawImage(mapImageObj, centerX, centerY, drawWidth, drawHeight);
   }
 
-  // --- Leave the rest of your grid-drawing code exactly as it was! ---
+  state.tokens.forEach(token => {
+    const screenX = state.offsetX + (token.gridX * state.baseGrid * state.scale);
+    const screenY = state.offsetY + (token.gridY * state.baseGrid * state.scale);
+    const squareSize = state.baseGrid * state.scale;
+
+    if (token.imgObj) {
+      // Draw the uploaded token image exactly inside the grid square!
+      ctx.drawImage(token.imgObj, screenX, screenY, squareSize, squareSize);
+    } else {
+      // Fallback for your hardcoded colored tokens
+      const halfSquare = squareSize / 2;
+      ctx.beginPath();
+      ctx.arc(screenX + halfSquare, screenY + halfSquare, token.radius * state.scale, 0, Math.PI * 2);
+      ctx.fillStyle = token.color;
+      ctx.fill();
+      ctx.stroke();
+    }
+  })
+
+  // 4. Draw the Grid Lines
   ctx.strokeStyle = "#000000";
   ctx.lineWidth = 1;
   ctx.beginPath();
@@ -104,6 +120,7 @@ function draw() {
 
   ctx.stroke();
 
+  // 5. Draw the Tokens
   state.tokens.forEach(token => {
     // Translate Grid Math to Pixel Math
     const screenX = state.offsetX + (token.gridX * state.baseGrid * state.scale);
@@ -111,17 +128,115 @@ function draw() {
 
     // Find the center of the grid square
     const halfSquare = (state.baseGrid * state.scale) / 2;
-    const centerX = screenX + halfSquare;
-    const centerY = screenY + halfSquare;
+    const tokenCenterX = screenX + halfSquare;
+    const tokenCenterY = screenY + halfSquare;
 
     // Draw the token
     ctx.beginPath();
-    ctx.arc(centerX, centerY, token.radius * state.scale, 0, Math.PI * 2);
+    ctx.arc(tokenCenterX, tokenCenterY, token.radius * state.scale, 0, Math.PI * 2);
     ctx.fillStyle = token.color;
     ctx.fill();
     ctx.stroke();
   });
 }
+
+// function draw() {
+//   // const w = canvas.clientWidth;
+//   // const h = canvas.clientHeight;
+
+//   // ctx.clearRect(0, 0, w, h);
+//   // ctx.fillStyle = "#2d3748";
+//   // ctx.fillRect(0, 0, w, h);
+
+//   // const step = state.baseGrid * state.scale;
+//   // const mapWidth = state.gridCols * step;
+//   // const mapHeight = state.gridRows * step;
+
+//   // ctx.fillStyle = "#f0f8ff";
+//   // ctx.fillRect(state.offsetX, state.offsetY, mapWidth, mapHeight);
+
+//   // ctx.strokeStyle = "#000000";
+//   // ctx.lineWidth = 1;
+//   // ctx.beginPath();
+
+//   const w = canvas.clientWidth;
+//   const h = canvas.clientHeight;
+
+//   // 1. Clear the entire canvas first
+//   ctx.clearRect(0, 0, w, h);
+
+//   // 2. Fill the "out of bounds" void with your dark gray color
+//   ctx.fillStyle = "#2d3748";
+//   ctx.fillRect(0, 0, w, h);
+
+//   const step = state.baseGrid * state.scale;
+//   const mapWidth = state.gridCols * step;
+//   const mapHeight = state.gridRows * step;
+
+//   // 3. Always paint the white-blue grid background first!
+//   ctx.fillStyle = "#f0f8ff";
+//   ctx.fillRect(state.offsetX, state.offsetY, mapWidth, mapHeight);
+
+//   // 4. Draw the map on top, preserving its natural aspect ratio
+//   if (mapImageObj) {
+//     const imgAspect = mapImageObj.width / mapImageObj.height;
+//     const gridAspect = mapWidth / mapHeight;
+
+//     let drawWidth = mapWidth;
+//     let drawHeight = mapHeight;
+
+//     // Adjust dimensions to prevent stretching
+//     if (imgAspect > gridAspect) {
+//       // Image is wider than the grid
+//       drawHeight = mapWidth / imgAspect;
+//     } else {
+//       // Image is taller than the grid
+//       drawWidth = mapHeight * imgAspect;
+//     }
+
+//     // Draw the image starting from the top-left corner so it aligns perfectly with the grid lines!
+//     ctx.drawImage(mapImageObj, state.offsetX, state.offsetY, drawWidth, drawHeight);
+//   }
+
+//   // --- Leave the rest of your grid-drawing code exactly as it was! ---
+//   ctx.strokeStyle = "#000000";
+//   ctx.lineWidth = 1;
+//   ctx.beginPath();
+
+//   // Vertical lines
+//   for (let col = 0; col <= state.gridCols; col++) {
+//     const x = state.offsetX + (col * step);
+//     ctx.moveTo(x, state.offsetY);
+//     ctx.lineTo(x, state.offsetY + mapHeight);
+//   }
+
+//   // Horizontal lines
+//   for (let row = 0; row <= state.gridRows; row++) {
+//     const y = state.offsetY + (row * step);
+//     ctx.moveTo(state.offsetX, y);
+//     ctx.lineTo(state.offsetX + mapWidth, y);
+//   }
+
+//   ctx.stroke();
+
+//   state.tokens.forEach(token => {
+//     // Translate Grid Math to Pixel Math
+//     const screenX = state.offsetX + (token.gridX * state.baseGrid * state.scale);
+//     const screenY = state.offsetY + (token.gridY * state.baseGrid * state.scale);
+
+//     // Find the center of the grid square
+//     const halfSquare = (state.baseGrid * state.scale) / 2;
+//     const centerX = screenX + halfSquare;
+//     const centerY = screenY + halfSquare;
+
+//     // Draw the token
+//     ctx.beginPath();
+//     ctx.arc(centerX, centerY, token.radius * state.scale, 0, Math.PI * 2);
+//     ctx.fillStyle = token.color;
+//     ctx.fill();
+//     ctx.stroke();
+//   });
+// }
 
 function zoomAt(clientX, clientY, factor) {
   const rect = canvas.getBoundingClientRect();
@@ -389,10 +504,24 @@ canvasObserver.observe(canvas);
 let mapImageObj = null
 
 window.setMapImage = (imageUrl) => {
-    const img = new Image()
-    img.onload = () => {
-        mapImageObj = img
-        draw()
-    }
-    img.src = imageUrl
+  const img = new Image()
+  img.onload = () => {
+    mapImageObj = img
+    draw()
+  }
+  img.src = imageUrl
+}
+
+window.addToken = (imageUrl) => {
+  const img = new Image();
+  img.onload = () => {
+    state.tokens.push({
+      id: 'token-' + Date.now(),
+      gridX: Math.floor(state.gridCols / 2), 
+      gridY: Math.floor(state.gridRows / 2),
+      imgObj: img 
+    })
+    draw()
+  }
+  img.src = imageUrl
 }
