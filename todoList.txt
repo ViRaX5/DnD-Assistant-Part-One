@@ -42,6 +42,9 @@ manual add skills to players
 only map, other info is in a tab that you can open when you want
 option to create new character when your character dies without leaving and rejoining campaign
 a bar for the dm to choose the size of the grid (defualt 50x50 blocks)
+add assets can connect to an AI to generate an image if the user so chooses.
+add characters background manually as the api doesnt support it well
+give the dm a way to give players items, money, exp, levelup, etc.
 
 ---- very future and not now, homebrew -----
 characters

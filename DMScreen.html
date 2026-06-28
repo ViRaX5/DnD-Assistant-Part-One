@@ -72,6 +72,25 @@
               placeholder="Search Assets..."
             />
           </div>
+          <!-- <div class="search-container">
+            <input type="text" id="asset-search" placeholder="Search Assets..." />
+          </div> -->
+
+          <dialog id="add-asset-modal">
+            <div class="modal-content">
+              <h2 id="add-asset-title">Add Asset</h2>
+              <form id="add-asset-form">
+                <input type="file" id="asset-file-input" name="media" class="menu-input" required>
+                
+                <div id="upload-error-message" class="form-error-message"></div>
+                
+                <div class="modal-buttons">
+                  <button type="button" id="close-asset-modal" class="cancel-button">Cancel</button>
+                  <button type="submit" id="submit-asset-button" class="upload-confirm">Upload</button>
+                </div>
+              </form>
+            </div>
+          </dialog>
         </div>
       </div>
       <div id="main" class="mobile-active">

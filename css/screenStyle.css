@@ -367,7 +367,7 @@ h6 {
   padding-bottom: 6px;
 }
 
-#hit-points-container-top > h4 {
+#hit-points-container-top>h4 {
   font-size: 13px;
   color: #a5b1c2;
 }
@@ -428,13 +428,13 @@ h6 {
   transition: all 0.2s ease;
 }
 
-.skill-toggle input[type="checkbox"]:checked + label::before {
+.skill-toggle input[type="checkbox"]:checked+label::before {
   /* When the input is checked, find the adjacent label and style its ::before */
   background-color: #cdd3df;
   border-color: #cdd3df;
 }
 
-.skill-toggle input[type="checkbox"]:checked + label {
+.skill-toggle input[type="checkbox"]:checked+label {
   color: #000000;
 }
 
@@ -468,7 +468,7 @@ h6 {
   box-sizing: border-box;
 }
 
-.attack-container > span {
+.attack-container>span {
   font-size: 13px;
 }
 
@@ -531,7 +531,7 @@ h6 {
   justify-content: space-between;
 }
 
-#equipment-and-traits-top > span {
+#equipment-and-traits-top>span {
   font-size: 24px;
   color: #556985;
 
@@ -583,7 +583,7 @@ h6 {
   gap: 5px;
 }
 
-.trait > span,
+.trait>span,
 .equipment-name {
   font-size: 13px;
 }
@@ -914,7 +914,7 @@ h6 {
   background-color: #721f83;
 }
 
-#add-effect-modal > .modal-content {
+#add-effect-modal>.modal-content {
   display: flex;
   flex-direction: column;
   gap: 8px;
@@ -1273,12 +1273,14 @@ h6 {
   padding-left: 6px;
   padding-right: 6px;
 }
+
 .tracker-group h3 {
   font-size: 1rem;
   font-weight: normal;
   text-align: left;
   margin-bottom: 8px;
 }
+
 .current-turn {
   padding-top: 10px;
 }
@@ -1316,6 +1318,7 @@ h6 {
   font-size: 0.9rem;
   border: 1px solid #cbd0d6;
 }
+
 .initiative-card span {
   padding-right: 6px;
 }
@@ -1709,20 +1712,21 @@ nav {
   margin: 0;
 }
 
-.modal-buttons > .cancel-button {
+.modal-buttons>.cancel-button {
   background-color: #e5e7eb;
   color: var(--text-color-base);
 }
 
-.modal-buttons > .cancel-button:hover {
+.modal-buttons>.cancel-button:hover {
   background-color: #d1d5db;
 }
 
-.modal-buttons > .confirm-button {
+.modal-buttons>.confirm-button {
   background-color: #f06272;
   color: white;
 }
-.modal-buttons > .confirm-button:hover {
+
+.modal-buttons>.confirm-button:hover {
   background-color: #ed253c;
 }
 
@@ -1746,6 +1750,40 @@ nav {
 #DMBody #active-effects {
   flex: 1 1 0;
   width: 100%;
+}
+
+.upload-confirm {
+  background-color: #4a749f;
+  color: #ffffff;
+  border: none;
+  border-radius: 25px;
+  padding: 8px 20px;
+  font-size: 0.9rem;
+  margin-top: 10px;
+  font-family: inherit;
+  font-weight: bold;
+  cursor: pointer;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  transition: background-color 0.2s ease, transform 0.1s ease, box-shadow 0.2s ease;
+}
+
+.upload-confirm:hover:not(:disabled) {
+  background-color: #3b5c7e;
+  box-shadow: 0 6px 8px rgba(0, 0, 0, 0.15);
+  transform: translateY(-1px);
+}
+
+.upload-confirm:active:not(:disabled) {
+  transform: translateY(1px) scale(0.98);
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.upload-confirm:disabled {
+  background-color: #a4b9cd;
+  color: #e0e0e0;
+  cursor: not-allowed;
+  box-shadow: none;
+  transform: none;
 }
 
 /* media for all */

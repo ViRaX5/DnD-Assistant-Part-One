@@ -46,9 +46,23 @@ const mockAssetsByType = {
 let activeAssetType = 'token';
 
 async function loadAssets(assetType) {
-    // TODO: replace with a real fetch to /api/DM/getAsset once the backend
-    // wiring for this panel is ready.
-    return mockAssetsByType[assetType] || [];
+    try {
+        const campaignId = sessionStorage.getItem('activeCampaignId');
+
+        const response = await fetchWithAuth(`${BASE_URL}/api/DM/getAsset?campaignID=${campaignId}`)
+        const data = await response.json()
+
+        if (response.ok && data.success) {
+            return data.assets.filter(asset => asset.asset_type === assetType);
+        } else {
+            console.error("Failed to fetch assets:", data.error);
+            return [];
+        }
+    }
+    catch (error) {
+        console.error("Connection error loading assets:", error);
+        return [];
+    }
 }
 
 const combatTracker1 = {
@@ -132,24 +146,78 @@ function renderCombatTracker(combatData) {
 }
 
 function renderAssets(assetsData, assetType) {
-    const addButtonHtml = `<div id="add-asset-item" class="asset-item">${ASSET_TYPE_LABELS[assetType] || 'Add Asset'}</div>`;
+    // const addButtonHtml = `<div id="add-asset-item" class="asset-item">${ASSET_TYPE_LABELS[assetType] || 'Add Asset'}</div>`;
 
+    // assetsGrid.innerHTML = '';
+    // if (!assetsData || assetsData.length === 0) {
+    //     assetsGrid.innerHTML += addButtonHtml;
+    //     assetsGrid.innerHTML += `<span class="no-assets-message">No assets found</span>`;
+    //     return;
+    // }
+    // assetsData.forEach(asset => {
+    //     if (!asset.name) return;
+    //     const token = document.createElement('div');
+    //     const info = document.createElement('span')
+    //     token.className = 'asset-item';
+    //     info.innerText = asset.name;
+    //     token.appendChild(info);
+    //     assetsGrid.appendChild(token);
+    // });
+    // assetsGrid.innerHTML += addButtonHtml;
+    const addButtonHtml = `<div id="add-asset-item" class="asset-item">${ASSET_TYPE_LABELS[assetType] || 'Add Asset'}</div>`;
     assetsGrid.innerHTML = '';
+
     if (!assetsData || assetsData.length === 0) {
         assetsGrid.innerHTML += addButtonHtml;
         assetsGrid.innerHTML += `<span class="no-assets-message">No assets found</span>`;
         return;
     }
+
     assetsData.forEach(asset => {
-        if (!asset.name) return;
-        const token = document.createElement('div');
-        const info = document.createElement('span')
-        token.className = 'asset-item';
-        info.innerText = asset.name;
-        token.appendChild(info);
-        assetsGrid.appendChild(token);
+        // Use original_name to match your MySQL database!
+        if (!asset.original_name) return;
+
+        const itemDiv = document.createElement('div');
+        itemDiv.className = 'asset-item';
+
+        const info = document.createElement('span');
+        info.innerText = asset.original_name;
+        itemDiv.appendChild(info);
+
+        // --- NEW: The Click Listener for Maps ---
+        if (assetType === 'map') {
+            itemDiv.addEventListener('click', () => {
+                // Pass the AWS pre-signed URL to the iframe handler!
+                changeMapBackground(asset.imageUrl);
+            });
+        }
+
+        assetsGrid.appendChild(itemDiv);
     });
+
     assetsGrid.innerHTML += addButtonHtml;
+}
+
+function changeMapBackground(imageUrl) {
+    try {
+        const mapIframe = document.getElementById('main-map');
+        
+        // Reach inside the iframe's DOM
+        const iframeDocument = mapIframe.contentDocument || mapIframe.contentWindow.document;
+        
+        // Find whatever container holds your grid (assuming it's the body or a specific div)
+        // If your map uses a specific div ID like 'grid-container', change 'body' to getElementById('grid-container')
+        iframeDocument.body.style.backgroundImage = `url('${imageUrl}')`;
+        iframeDocument.body.style.backgroundSize = 'cover';
+        iframeDocument.body.style.backgroundPosition = 'center';
+        iframeDocument.body.style.backgroundRepeat = 'no-repeat';
+
+        // TODO for the future: Emit a Socket event here!
+        // socket.emit('map:changeBackground', { campaignId: ..., imageUrl: imageUrl });
+
+    } catch (err) {
+        console.error("Failed to update iframe background. Cross-origin issue?", err);
+    }
 }
 
 function handleNextTurn(clickedBtn) {
@@ -204,28 +272,94 @@ assetTabs.forEach(tab => {
         e.target.classList.remove('not-active')
         e.target.blur()
 
-        const tabName = e.target.innerText.toLowerCase();
-        const assetType = TAB_TO_ASSET_TYPE[tabName];
-        if (!assetType) return;
+        const tabName = e.target.innerText.toLowerCase()
+        const assetType = TAB_TO_ASSET_TYPE[tabName]
+        if (!assetType) return
 
-        activeAssetType = assetType;
-        const assets = await loadAssets(assetType);
-        renderAssets(assets, assetType);
-    });
-});
+        activeAssetType = assetType
+        const assets = await loadAssets(assetType)
+        renderAssets(assets, assetType)
+    })
+})
+
+
+const addAssetModal = document.getElementById('add-asset-modal');
+const addAssetForm = document.getElementById('add-asset-form');
+const closeAssetModal = document.getElementById('close-asset-modal');
+const uploadErrorMessage = document.getElementById('upload-error-message');
+const addAssetTitle = document.getElementById('add-asset-title');
+const submitAssetBtn = document.getElementById('submit-asset-button');
+const assetFileInput = document.getElementById('asset-file-input');
 
 // #add-asset-item is recreated on every renderAssets() call, so this listener
 // is attached once to the grid itself rather than to the button directly.
 assetsGrid.addEventListener('click', (e) => {
-    const addButton = e.target.closest('#add-asset-item');
+    const addButton = e.target.closest('#add-asset-item')
     if (addButton) {
-        // TODO: open the add-asset popup for activeAssetType once it's built.
-        console.log(`TODO: open add-${activeAssetType} popup`);
+        const addButton = e.target.closest('#add-asset-item');
+        if (addButton) {
+            addAssetTitle.innerText = `Add ${activeAssetType.charAt(0).toUpperCase() + activeAssetType.slice(1)}`
+            uploadErrorMessage.innerText = ""
+            addAssetForm.reset()
+            addAssetModal.showModal()
+        }
     } else {
-        console.log(e.target);
+        console.log(e.target)
     }
-});
+})
 
+closeAssetModal.addEventListener('click', () => {
+    addAssetModal.close()
+    closeAssetModal.blur()
+})
+
+addAssetForm.addEventListener('submit', async (e) => {
+    e.preventDefault();
+
+    if (!assetFileInput.files.length) {
+        uploadErrorMessage.innerText = "Please select a file to upload."
+        return
+    }
+
+    submitAssetBtn.innerText = "Uploading..."
+    submitAssetBtn.disabled = true
+
+    const formData = new FormData()
+
+    formData.append('media', assetFileInput.files[0])
+    formData.append('campaignID', sessionStorage.getItem('activeCampaignId'))
+    formData.append('uploaderID', getUserIdFromToken())
+    formData.append('assetType', activeAssetType)
+
+    try {
+        const response = await fetchWithAuth(`${BASE_URL}/api/DM/uploadAsset`, {
+            method: 'POST',
+            body: formData
+        })
+
+        const data = await response.json()
+
+        if (response.ok && data.success) {
+            addAssetModal.close()
+            mockAssetsByType[activeAssetType].push({
+                id: data.assetId,
+                name: assetFileInput.files[0].name
+            })
+            renderAssets(mockAssetsByType[activeAssetType], activeAssetType)
+        }
+        else {
+            uploadErrorMessage.innerText = data.error || "Failed to upload asset."
+        }
+    }
+    catch (err) {
+        console.error("Upload error:", err)
+        uploadErrorMessage.innerText = "Connection error during upload."
+    }
+    finally {
+        submitAssetBtn.innerText = "Upload"
+        submitAssetBtn.disabled = false
+    }
+})
 // Add Effects
 addEffectBtn.addEventListener('click', () => {
     addEffectModal.showModal()
