@@ -1,5 +1,6 @@
 import { sendMessage, fetchCampaignParticipants } from './chat.js';
 import { sessionContext } from './session-context.js';
+import { socket } from './socket.js';
 // Smoothly animates `element`'s height between its size before and after `applyChange`
 // runs, by measuring both states and transitioning a temporary inline height between
 // them (CSS can't transition to/from a content-based "auto" height directly). Any
@@ -407,6 +408,40 @@ function activeEffectsPopUp() {
         }
     });
 }
+
+let activeEffects = [];
+
+function renderActiveEffects() {
+    const effectsListPopup = document.querySelector('.effects-list');
+
+    if (!effectsListPopup) return;
+
+    effectsListPopup.innerHTML = '';
+    activeEffects.forEach(effect => {
+        effectsListPopup.innerHTML += `<div class="effect-item">${effect.name}: ${effect.duration}</div>`;
+    });
+}
+
+export async function loadActiveEffects() {
+    try {
+        const response = await fetchWithAuth(
+            `${BASE_URL}/api/getEffects?campaignId=${sessionContext.campaignId}`
+        );
+        const data = await response.json();
+
+        if (response.ok && data.success) {
+            activeEffects = data.effects;
+            renderActiveEffects();
+        }
+    } catch (err) {
+        console.error("Failed to load active effects:", err);
+    }
+}
+
+socket.on('effects:new', (effect) => {
+    activeEffects.push(effect);
+    renderActiveEffects();
+});
 
 function actionsHoverPopUp() {
     const actionWrappers = document.querySelectorAll(".action-wrapper");

@@ -106,7 +106,6 @@ const addEffectModalBtn = document.getElementById('add-effect-modal-button');
 const activeEffectsBtn = document.getElementById("active-effects");
 const effectNameInput = document.getElementById('effect-name-input');
 const effectDurationInput = document.getElementById('effect-duration-input');
-const effectsListPopup = document.getElementsByClassName('effects-list')[0];
 
 function renderCombatTracker(combatData) {
     if (!combatData || (!combatData.currentTurn && combatData.upcoming.length === 0)) {
@@ -395,25 +394,13 @@ closeAddEffectModal.addEventListener('click', () => {
     addEffectModal.blur()
 });
 
-const activeEffects = [];
-
-function renderEffects() {
-    effectsListPopup.innerHTML = '';
-    activeEffects.forEach(effect => {
-        effectsListPopup.innerHTML += `<div class="effect-item">${effect.name}: ${effect.duration}</div>`
-    })
-}
-
 addEffectModalBtn.addEventListener('click', () => {
-    activeEffects.push(
-        {
-            name: effectNameInput.value,
-            duration: effectDurationInput.value
-        }
-    )
+    socket.emit('effects:add', {
+        name: effectNameInput.value,
+        duration: effectDurationInput.value
+    })
     effectNameInput.value = '';
     effectDurationInput.value = '';
-    renderEffects();
 })
 
 renderCombatTracker(activeCombatTracker);
