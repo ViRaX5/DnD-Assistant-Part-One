@@ -1,4 +1,5 @@
 import { sendMessage, fetchCampaignParticipants } from './chat.js';
+import { sessionContext } from './session-context.js';
 // Smoothly animates `element`'s height between its size before and after `applyChange`
 // runs, by measuring both states and transitioning a temporary inline height between
 // them (CSS can't transition to/from a content-based "auto" height directly). Any
@@ -97,6 +98,9 @@ export function setupUIInteractions() {
     // Player Info Page Toggle
     playerInfoToggle();
 
+    // Add Proficiency
+    updateProficiency();
+
     // Dice Tray Interaction
     const diceTray = diceTrayInteraction();
 
@@ -182,6 +186,45 @@ function playerInfoToggle() {
             });
         });
     }
+}
+
+function updateProficiency() {
+    const savingThrowsList = document.getElementById('saving-throws-list');
+    const skillsList = document.getElementById('skill-list');
+
+    savingThrowsList.addEventListener('change', async (e) => {
+        if (e.target.type !== 'checkbox') return;
+
+        const response = await fetchWithAuth(`${BASE_URL}/api/updateSavingThrowProficiency`, {
+            method: 'PATCH',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ campaignId: sessionContext.campaignId, savingThrowId: e.target.id, proficient: e.target.checked })
+        });
+
+        const data = await response.json();
+
+        if (data.success) {
+            const label = e.target.nextElementSibling;
+            label.textContent = `${data.savingThrow.modifier} ${data.savingThrow.name}`;
+        }
+    })
+
+    skillsList.addEventListener('change', async (e) => {
+        if (e.target.type !== 'checkbox') return;
+
+        const response = await fetchWithAuth(`${BASE_URL}/api/updateSkillProficiency`, {
+            method: 'PATCH',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ campaignId: sessionContext.campaignId, skillId: e.target.id, proficient: e.target.checked })
+        });
+
+        const data = await response.json();
+
+        if (data.success) {
+            const label = e.target.nextElementSibling;
+            label.textContent = `${data.skill.modifier} ${data.skill.name} (${data.skill.attribute})`;
+        }
+    })
 }
 
 function diceTrayInteraction() {

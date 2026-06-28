@@ -1,6 +1,6 @@
 hover functionality on actions in player screen - DONE
 add player info from characters sheet (temp hp, all skills, saving throws, passive perception, proficency bonus, ??inspiration??) - DONE
-proficency bonus should be added to proficient skills
+proficency bonus should be added to proficient skills - DONE
 add gold/silver/copper to equipment - DONE
 
 add new creature as DM logic and functionality (use api for new monster) 
@@ -17,7 +17,7 @@ delete sigle token
 custom token and tile sizes. tokens collisions and interactions
 not infinite map - DONE
 add logic for all dm buttons at the bottom (including round tracker auto update -- this may also affects active effects)
-add effect will open dialog (see how to choose the list of viable effects)
+add effect will open dialog (see how to choose the list of viable effects) - DONE, free text for now
 
 chat to all or specific players (whisper button and logic) - DONE
 
@@ -28,7 +28,7 @@ create new campaign dialog -- COMPLETE
 abandon capmaign button logic and functioanlity -- COMPLETE
 when abandoning as dm chech if the DM is the only participant and change dialog accordingly
 when abandoning as dm, dont display the DM as an option for successor
-email verification?
+email verification? - DONE?
 
 create backend server (render) -- COMPLETE
 
