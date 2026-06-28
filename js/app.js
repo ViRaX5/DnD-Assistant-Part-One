@@ -29,8 +29,8 @@ async function initializeApp() {
 
     if (currentPath.endsWith("playerScreen.html")) {
         try {
-            const response = await fetch(
-                `${BASE_URL}/api/getCharacter?campaignId=${sessionContext.campaignId}&userId=${sessionContext.userId}`
+            const response = await fetchWithAuth(
+                `${BASE_URL}/api/getCharacter?campaignId=${sessionContext.campaignId}`
             );
             const data = await response.json();
 

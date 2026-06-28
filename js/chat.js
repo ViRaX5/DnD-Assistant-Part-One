@@ -15,8 +15,8 @@ export function sendMessage({ type, text, targetId = null, targetName = null, me
 
 export async function loadChatHistory() {
     try {
-        const response = await fetch(
-            `${BASE_URL}/api/chatHistory?campaignId=${sessionContext.campaignId}&userId=${sessionContext.userId}&isDM=${sessionContext.isDM}`
+        const response = await fetchWithAuth(
+            `${BASE_URL}/api/chatHistory?campaignId=${sessionContext.campaignId}&isDM=${sessionContext.isDM}`
         );
         const data = await response.json();
 
@@ -31,8 +31,8 @@ export async function loadChatHistory() {
 
 export async function fetchCampaignParticipants() {
     try {
-        const response = await fetch(
-            `${BASE_URL}/api/campaignListCampaignAndDM?id=${sessionContext.campaignId}&DM=${sessionContext.userId}`
+        const response = await fetchWithAuth(
+            `${BASE_URL}/api/campaignListCampaignAndDM?id=${sessionContext.campaignId}`
         );
         const data = await response.json();
 

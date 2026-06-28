@@ -57,7 +57,7 @@ const campaignContainerSection = document.querySelector('.campaigns-container')
 const noCampaignContainerSection = document.querySelector('.no-campaigns-container')
 async function loadPage() {
     try {
-        const response = await fetch(`${BASE_URL}/api/campaignListID?id=${tempID}`, {
+        const response = await fetchWithAuth(`${BASE_URL}/api/campaignListID`, {
             method: 'GET',
             headers: { 'Content-Type': 'application/json' },
         })
@@ -100,11 +100,13 @@ loadPage()
 campaignContainerSection.addEventListener('click', async (e) => {
     if (e.target.classList.contains('join-button')) {
         const campaignId = e.target.closest('.campaign-instance').dataset.id
-        window.location.href = `./playerScreen.html?campaignId=${campaignId}&userId=${tempID}`
+        sessionStorage.setItem('activeCampaignId', campaignId)
+        window.location.href = `./playerScreen.html`
     }
     else if (e.target.classList.contains('start-session-button')) {
         const campaignId = e.target.closest('.campaign-instance').dataset.id
-        window.location.href = `./DMScreen.html?campaignId=${campaignId}&userId=${tempID}`
+        sessionStorage.setItem('activeCampaignId', campaignId)
+        window.location.href = `./DMScreen.html`
     }
     else if (e.target.classList.contains('abandon-button')) {
         const relevantCampaign = e.target.closest('.campaign-instance')
@@ -122,7 +124,7 @@ campaignContainerSection.addEventListener('click', async (e) => {
             try {
                 // const matchedCampaign = campaigns_info.find(campaign => campaign.campaign_id === parseInt(campaignId))
                 // const playersNames = matchedCampaign.participants
-                const response = await fetch(`${BASE_URL}/api/campaignListCampaignAndDM?id=${campaignId}&DM=${tempID}`, {
+                const response = await fetchWithAuth(`${BASE_URL}/api/campaignListCampaignAndDM?id=${campaignId}`, {
                     method: "GET",
                     headers: { 'Content-Type': 'application/json' }
                 })
@@ -517,7 +519,7 @@ button_container.addEventListener('click', async (e) => {
         }, 500)
 
         try {
-            const response = await fetch(`${BASE_URL}/api/generateCode`, {
+            const response = await fetchWithAuth(`${BASE_URL}/api/generateCode`, {
                 method: 'GET',
                 headers: { 'Content-Type': 'application/json' }
             })
@@ -566,7 +568,7 @@ button_container.addEventListener('click', async (e) => {
         // check database
 
         try {
-            const response = await fetch(`${BASE_URL}/api/campaignListCode?code=${codeInput}`, {
+            const response = await fetchWithAuth(`${BASE_URL}/api/campaignListCode?code=${codeInput}`, {
                 method: 'GET',
                 headers: { 'Content-Type': 'application/json' },
             })
@@ -682,7 +684,7 @@ button_container.addEventListener('click', async (e) => {
         const computedSheet = await computeCharacterSheet(characterClass, characterRace, stats, skills);
 
         const payload = {
-            userId: tempID,
+            userId: getUserIdFromToken(),
             campaignCode: campaignCode,
             characterName: characterName,
             className: characterClass,
@@ -703,7 +705,7 @@ button_container.addEventListener('click', async (e) => {
             tools: tools
         }
 
-        fetch(`${BASE_URL}/api/joinCampaign`, {
+        fetchWithAuth(`${BASE_URL}/api/joinCampaign`, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify(payload)
@@ -764,7 +766,7 @@ button_container.addEventListener('click', async (e) => {
         }
         errorMsgBox.innerText = ""
         try {
-            const response = await fetch(`${BASE_URL}/api/createNewCampaign`, {
+            const response = await fetchWithAuth(`${BASE_URL}/api/createNewCampaign`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({
@@ -871,7 +873,7 @@ confirmDmAbandonBtn.addEventListener('click', async (e) => {
     if (selectedPlayerID) {
         const newDMID = selectedPlayerID.value
         try {
-            const response = await fetch(`${BASE_URL}/api/campaignListNewDM?campaignID=${campaignId}&leavingUserID=${tempID}&newDMid=${newDMID}`, {
+            const response = await fetchWithAuth(`${BASE_URL}/api/campaignListNewDM?campaignID=${campaignId}&newDMid=${newDMID}`, {
                 method: "DELETE",
                 headers: { 'Content-Type': 'application/json' }
             })
@@ -902,7 +904,7 @@ cancelPlayerAbandonBtn.addEventListener('click', () => {
 confirmPlayerAbandonBtn.addEventListener('click', async (e) => {
     const campaignId = e.target.dataset.campaignId
     try {
-        const response = await fetch(`${BASE_URL}/api/campaignListPlayerLeave?campaignID=${campaignId}&leavingUserID=${tempID}`, {
+        const response = await fetchWithAuth(`${BASE_URL}/api/campaignListPlayerLeave?campaignID=${campaignId}`, {
             method: "DELETE",
             headers: { 'Content-Type': 'application/json' }
         })
@@ -930,7 +932,7 @@ confirmDeleteBtn.addEventListener('click', async (e) => {
     const campaignId = e.target.dataset.campaignId
 
     try {
-        const response = await fetch(`${BASE_URL}/api/deleteEntireCampaign?campaignID=${campaignId}`, {
+        const response = await fetchWithAuth(`${BASE_URL}/api/deleteEntireCampaign?campaignID=${campaignId}`, {
             method: "DELETE",
             headers: { 'Content-Type': 'application/json' }
         });

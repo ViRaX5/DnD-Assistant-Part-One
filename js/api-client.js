@@ -54,7 +54,7 @@ async function fetchWithAuth(url, options = {}) {
             } else {
                 console.error("Refresh token expired or invalid. User must log in again.");
                 localStorage.removeItem('accessToken');
-                window.location.href = '/index.html';
+                window.location.href = './index.html';
             }
         } 
         catch (err) {
