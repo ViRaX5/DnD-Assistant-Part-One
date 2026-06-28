@@ -1,6 +1,6 @@
 import { renderPlayerInfo } from './player-info.js';
 import { renderEquipmentAndTraits } from './equipment-and-traits.js';
-import { setupUIInteractions, loadActiveEffects } from './ui-interactions.js';
+import { setupUIInteractions, loadActiveEffects, loadShopStatus } from './ui-interactions.js';
 import { loadChatHistory } from './chat.js';
 import { socket } from './socket.js';
 import { sessionContext } from './session-context.js';
@@ -68,6 +68,13 @@ async function initializeApp() {
 
     } catch (error) {
         console.error("Failed to load active effects:", error);
+    }
+
+    try {
+        loadShopStatus();
+
+    } catch (error) {
+        console.error("Failed to load shop status:", error);
     }
 }
 

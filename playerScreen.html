@@ -178,7 +178,10 @@
           <nav>
             <div class="nav-container">
               <button type="button" class="DM not-clicked">Rest</button>
-              <button type="button" class="player not-clicked">Shop</button>
+              <button type="button" id="shop-btn" class="not-clicked locked" disabled>
+                <i class="fa-solid fa-lock"></i>
+                Shop
+              </button>
               <button type="button" class="end-session">Exit Session</button>
               <dialog id="end-session-modal">
                 <div class="modal-content">
@@ -198,6 +201,22 @@
                       class="confirm-button"
                     >
                       Yes, Exit Session
+                    </button>
+                  </div>
+                </div>
+              </dialog>
+              <dialog id="shop-modal">
+                <div class="modal-content">
+                  <h2>Shop</h2>
+                  <select id="shop-category-select" class="menu-input"></select>
+                  <div id="shop-items-list" class="shop-items-list"></div>
+                  <div class="modal-buttons">
+                    <button
+                      type="button"
+                      id="close-shop-modal"
+                      class="cancel-button"
+                    >
+                      Close
                     </button>
                   </div>
                 </div>
