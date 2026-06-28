@@ -928,6 +928,62 @@ h6 {
   background-color: #b969d2;
 }
 
+#shop-modal {
+  width: min(320px, 90vw);
+}
+
+#shop-modal>.modal-content {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+#shop-category-select {
+  margin-bottom: 0;
+}
+
+#shop-items-list {
+  max-height: 280px;
+  overflow-y: auto;
+  text-align: left;
+  border: 1px solid #c7d2df;
+  border-radius: 8px;
+  padding: 6px;
+}
+
+.shop-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 6px 4px;
+  border-bottom: 1px solid #e2e8f0;
+  cursor: pointer;
+}
+
+.shop-item:last-child {
+  border-bottom: none;
+}
+
+.shop-item-price {
+  color: #556985;
+  font-size: 13px;
+}
+
+#shop-btn i {
+  display: none;
+  margin-right: 4px;
+}
+
+#shop-btn.locked i {
+  display: inline-block;
+}
+
+#shop-btn:disabled {
+  background-color: #a4b9cd;
+  color: #e0e0e0;
+  cursor: not-allowed;
+}
+
 #dice-roller-outer {
   background-color: #5d4037;
   border: 5px solid #153b2f;

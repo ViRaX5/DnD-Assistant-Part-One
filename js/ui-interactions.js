@@ -90,9 +90,6 @@ function rollSelectedDice(diceList) {
 }
 
 export function setupUIInteractions() {
-    // Navbar Page Switch
-    navbarPageSwitch();
-
     // Navbar End / Exit Session
     navbarExitSession();
 
@@ -117,27 +114,11 @@ export function setupUIInteractions() {
     // Chat Input Interaction
     chatInputInteraction();
 
+    // Shop Interaction
+    shopInteraction();
+
     // Nav Footer Switch
     navFooterSwitch();
-}
-
-function navbarPageSwitch() {
-    const playerPageButton = document.getElementsByClassName("player");
-    const DMPageButton = document.getElementsByClassName("DM");
-
-    const currentPath = window.location.pathname;
-
-    playerPageButton[0].addEventListener('click', () => {
-        if (!currentPath.endsWith("playerScreen.html")) {
-            window.location.href = "playerScreen.html";
-        }
-    });
-
-    DMPageButton[0].addEventListener('click', () => {
-        if (!currentPath.endsWith("DMScreen.html")) {
-            window.location.href = "DMScreen.html";
-        }
-    });
 }
 
 function navbarExitSession() {
@@ -442,6 +423,155 @@ socket.on('effects:new', (effect) => {
     activeEffects.push(effect);
     renderActiveEffects();
 });
+
+let shopOpen = false;
+let equipmentCategories = null;
+const equipmentCategoryCache = {};
+
+function updateShopButtonState() {
+    const shopBtn = document.getElementById('shop-btn');
+
+    if (!shopBtn) return;
+
+    const isDMScreen = window.location.pathname.endsWith("DMScreen.html");
+
+    if (isDMScreen) {
+        shopBtn.textContent = shopOpen ? "Close Shop" : "Open Shop";
+    }
+    else {
+        shopBtn.disabled = !shopOpen;
+        shopBtn.classList.toggle('locked', !shopOpen);
+
+        const shopModal = document.getElementById('shop-modal');
+        if (!shopOpen && shopModal && shopModal.open) {
+            shopModal.close();
+            showTemporaryNotice("The DM closed the shop.");
+        }
+    }
+}
+
+export async function loadShopStatus() {
+    try {
+        const response = await fetchWithAuth(
+            `${BASE_URL}/api/getShopStatus?campaignId=${sessionContext.campaignId}`
+        );
+        const data = await response.json();
+
+        if (response.ok && data.success) {
+            shopOpen = data.isOpen;
+            updateShopButtonState();
+        }
+    } catch (err) {
+        console.error("Failed to load shop status:", err);
+    }
+}
+
+export function isShopOpen() {
+    return shopOpen;
+}
+
+socket.on('shop:status', ({ isOpen }) => {
+    shopOpen = isOpen;
+    updateShopButtonState();
+});
+
+async function fetchEquipmentCategories() {
+    if (equipmentCategories) return equipmentCategories;
+
+    const response = await fetch('https://www.dnd5eapi.co/api/equipment-categories');
+    const data = await response.json();
+
+    equipmentCategories = data.results;
+    return equipmentCategories;
+}
+
+async function fetchEquipmentCategoryItems(categoryIndex) {
+    if (equipmentCategoryCache[categoryIndex]) return equipmentCategoryCache[categoryIndex];
+
+    const response = await fetch(`https://www.dnd5eapi.co/api/equipment-categories/${categoryIndex}`);
+    const data = await response.json();
+
+    equipmentCategoryCache[categoryIndex] = data.equipment;
+    return data.equipment;
+}
+
+async function renderShopItems(categoryIndex) {
+    const shopItemsList = document.getElementById('shop-items-list');
+    shopItemsList.innerHTML = 'Loading...';
+
+    const items = await fetchEquipmentCategoryItems(categoryIndex);
+
+    shopItemsList.innerHTML = '';
+    items.forEach(item => {
+        shopItemsList.innerHTML += `<div class="shop-item" data-index="${item.index}">
+            <span class="shop-item-name">${item.name}</span>
+            <span class="shop-item-price"></span>
+        </div>`;
+    });
+}
+
+async function showShopItemPrice(itemIndex, priceSpan) {
+    if (priceSpan.textContent) return;
+
+    priceSpan.textContent = '...';
+
+    const response = await fetch(`https://www.dnd5eapi.co/api/equipment/${itemIndex}`);
+    const data = await response.json();
+
+    priceSpan.textContent = data.cost ? `${data.cost.quantity}${data.cost.unit}` : '';
+}
+
+async function openShopModal() {
+    const shopModal = document.getElementById('shop-modal');
+    const categorySelect = document.getElementById('shop-category-select');
+
+    const categories = await fetchEquipmentCategories();
+
+    if (!categorySelect.children.length) {
+        categories.forEach(category => {
+            const option = document.createElement('option');
+            option.textContent = category.name;
+            option.value = category.index;
+            categorySelect.appendChild(option);
+        });
+
+        categorySelect.addEventListener('change', () => {
+            renderShopItems(categorySelect.value);
+        });
+    }
+
+    shopModal.showModal();
+
+    if (categories.length) {
+        renderShopItems(categorySelect.value);
+    }
+}
+
+function shopInteraction() {
+    const shopBtn = document.getElementById('shop-btn');
+    const shopModal = document.getElementById('shop-modal');
+
+    if (!shopBtn || !shopModal) return;
+
+    shopBtn.addEventListener('click', () => {
+        if (!shopOpen) return;
+        openShopModal();
+    });
+
+    const shopItemsList = document.getElementById('shop-items-list');
+    shopItemsList.addEventListener('click', (e) => {
+        const shopItem = e.target.closest('.shop-item');
+        if (!shopItem) return;
+
+        const priceSpan = shopItem.querySelector('.shop-item-price');
+        showShopItemPrice(shopItem.dataset.index, priceSpan);
+    });
+
+    const closeShopModalButton = document.getElementById('close-shop-modal');
+    closeShopModalButton.addEventListener('click', () => {
+        shopModal.close();
+    });
+}
 
 function actionsHoverPopUp() {
     const actionWrappers = document.querySelectorAll(".action-wrapper");

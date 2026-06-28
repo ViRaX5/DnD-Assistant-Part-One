@@ -1,4 +1,5 @@
 import { socket } from './socket.js'
+import { isShopOpen } from './ui-interactions.js'
 
 const assetsDB1 = [
     { id: "t1", name: "player1_token" },
@@ -402,6 +403,13 @@ addEffectModalBtn.addEventListener('click', () => {
     effectNameInput.value = '';
     effectDurationInput.value = '';
 })
+
+// Shop Toggle
+const shopBtn = document.getElementById('shop-btn');
+
+shopBtn.addEventListener('click', () => {
+    socket.emit('shop:toggle', { isOpen: !isShopOpen() })
+});
 
 renderCombatTracker(activeCombatTracker);
 loadAssets(activeAssetType).then(assets => renderAssets(assets, activeAssetType));
