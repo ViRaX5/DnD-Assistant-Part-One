@@ -16,3 +16,21 @@ socket.on('connect', () => {
         isDM: sessionContext.isDM
     })
 })
+
+socket.on('map:changeBackground', (data) => {
+    try {
+        const mapIframe = document.getElementById('main-map')
+        
+        if (mapIframe) {
+            const iframeWindow = mapIframe.contentWindow
+            
+            // Pass the URL to the player's canvas!
+            if (iframeWindow && iframeWindow.setMapImage) {
+                iframeWindow.setMapImage(data.imageUrl)
+            }
+        }
+    } 
+    catch (err) {
+        console.error("Failed to sync map background from socket", err)
+    }
+})

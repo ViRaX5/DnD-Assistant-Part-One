@@ -1,3 +1,5 @@
+import { socket } from './socket.js'
+
 const assetsDB1 = [
     { id: "t1", name: "player1_token" },
     { id: "t2", name: "player2_token" },
@@ -164,59 +166,57 @@ function renderAssets(assetsData, assetType) {
     //     assetsGrid.appendChild(token);
     // });
     // assetsGrid.innerHTML += addButtonHtml;
-    const addButtonHtml = `<div id="add-asset-item" class="asset-item">${ASSET_TYPE_LABELS[assetType] || 'Add Asset'}</div>`;
-    assetsGrid.innerHTML = '';
+    const addButtonHtml = `<div id="add-asset-item" class="asset-item">${ASSET_TYPE_LABELS[assetType] || 'Add Asset'}</div>`
+    assetsGrid.innerHTML = ''
 
     if (!assetsData || assetsData.length === 0) {
-        assetsGrid.innerHTML += addButtonHtml;
-        assetsGrid.innerHTML += `<span class="no-assets-message">No assets found</span>`;
-        return;
+        assetsGrid.innerHTML += addButtonHtml
+        assetsGrid.innerHTML += `<span class="no-assets-message">No assets found</span>`
+        return
     }
 
     assetsData.forEach(asset => {
         // Use original_name to match your MySQL database!
-        if (!asset.original_name) return;
+        if (!asset.original_name) return
 
-        const itemDiv = document.createElement('div');
-        itemDiv.className = 'asset-item';
+        const itemDiv = document.createElement('div')
+        itemDiv.className = 'asset-item'
 
-        const info = document.createElement('span');
-        info.innerText = asset.original_name;
-        itemDiv.appendChild(info);
+        const info = document.createElement('span')
+        info.innerText = asset.original_name
+        itemDiv.appendChild(info)
 
         // --- NEW: The Click Listener for Maps ---
         if (assetType === 'map') {
             itemDiv.addEventListener('click', () => {
                 // Pass the AWS pre-signed URL to the iframe handler!
-                changeMapBackground(asset.imageUrl);
-            });
+                changeMapBackground(asset.imageUrl)
+            })
         }
 
-        assetsGrid.appendChild(itemDiv);
+        assetsGrid.appendChild(itemDiv)
     });
 
-    assetsGrid.innerHTML += addButtonHtml;
+    assetsGrid.insertAdjacentHTML('beforeend', addButtonHtml)
 }
 
 function changeMapBackground(imageUrl) {
     try {
-        const mapIframe = document.getElementById('main-map');
+        console.log("Map clicked! Sending URL to canvas:", imageUrl)
         
-        // Reach inside the iframe's DOM
-        const iframeDocument = mapIframe.contentDocument || mapIframe.contentWindow.document;
+        const mapIframe = document.getElementById('main-map')   
+        const iframeWindow = mapIframe.contentWindow
         
-        // Find whatever container holds your grid (assuming it's the body or a specific div)
-        // If your map uses a specific div ID like 'grid-container', change 'body' to getElementById('grid-container')
-        iframeDocument.body.style.backgroundImage = `url('${imageUrl}')`;
-        iframeDocument.body.style.backgroundSize = 'cover';
-        iframeDocument.body.style.backgroundPosition = 'center';
-        iframeDocument.body.style.backgroundRepeat = 'no-repeat';
-
-        // TODO for the future: Emit a Socket event here!
-        // socket.emit('map:changeBackground', { campaignId: ..., imageUrl: imageUrl });
+        if (iframeWindow && iframeWindow.setMapImage) {
+            iframeWindow.setMapImage(imageUrl)
+            socket.emit('map:changeBackground', { imageUrl: imageUrl })
+        } 
+        else {
+            console.error("Could not find the setMapImage function inside the iframe!")
+        }
 
     } catch (err) {
-        console.error("Failed to update iframe background. Cross-origin issue?", err);
+        console.error("Failed to update canvas background.", err)
     }
 }
 
@@ -303,9 +303,11 @@ assetsGrid.addEventListener('click', (e) => {
             addAssetForm.reset()
             addAssetModal.showModal()
         }
-    } else {
-        console.log(e.target)
-    }
+    } 
+    // else {
+
+    //     changeMapBackground()
+    // }
 })
 
 closeAssetModal.addEventListener('click', () => {

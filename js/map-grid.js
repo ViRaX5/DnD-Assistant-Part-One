@@ -42,10 +42,31 @@ function resize() {
 }
 
 function draw() {
+  // const w = canvas.clientWidth;
+  // const h = canvas.clientHeight;
+
+  // ctx.clearRect(0, 0, w, h);
+  // ctx.fillStyle = "#2d3748";
+  // ctx.fillRect(0, 0, w, h);
+
+  // const step = state.baseGrid * state.scale;
+  // const mapWidth = state.gridCols * step;
+  // const mapHeight = state.gridRows * step;
+
+  // ctx.fillStyle = "#f0f8ff";
+  // ctx.fillRect(state.offsetX, state.offsetY, mapWidth, mapHeight);
+
+  // ctx.strokeStyle = "#000000";
+  // ctx.lineWidth = 1;
+  // ctx.beginPath();
+
   const w = canvas.clientWidth;
   const h = canvas.clientHeight;
 
+  // 1. Clear the entire canvas first
   ctx.clearRect(0, 0, w, h);
+  
+  // 2. Fill the "out of bounds" void with your dark gray color
   ctx.fillStyle = "#2d3748";
   ctx.fillRect(0, 0, w, h);
 
@@ -53,9 +74,16 @@ function draw() {
   const mapWidth = state.gridCols * step;
   const mapHeight = state.gridRows * step;
 
-  ctx.fillStyle = "#f0f8ff";
-  ctx.fillRect(state.offsetX, state.offsetY, mapWidth, mapHeight);
+  // 3. Draw the map image, or a fallback color if no map is loaded yet!
+  if (mapImageObj) {
+      ctx.drawImage(mapImageObj, state.offsetX, state.offsetY, mapWidth, mapHeight)
+  } 
+  else {
+      ctx.fillStyle = "#f0f8ff"
+      ctx.fillRect(state.offsetX, state.offsetY, mapWidth, mapHeight)
+  }
 
+  // --- Leave the rest of your grid-drawing code exactly as it was! ---
   ctx.strokeStyle = "#000000";
   ctx.lineWidth = 1;
   ctx.beginPath();
@@ -356,3 +384,15 @@ const canvasObserver = new ResizeObserver(() => {
 
 // Attach it to the canvas
 canvasObserver.observe(canvas);
+
+
+let mapImageObj = null
+
+window.setMapImage = (imageUrl) => {
+    const img = new Image()
+    img.onload = () => {
+        mapImageObj = img
+        draw()
+    }
+    img.src = imageUrl
+}
