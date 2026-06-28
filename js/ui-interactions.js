@@ -102,7 +102,7 @@ export function setupUIInteractions() {
     updateProficiency();
 
     // Dice Tray Interaction
-    const diceTray = diceTrayInteraction();
+    diceTrayInteraction();
 
     // Active Effects Pop-up
     activeEffectsPopUp();
@@ -111,7 +111,7 @@ export function setupUIInteractions() {
     actionsHoverPopUp();
 
     // Action Bar Interaction
-    actionBarInteraction(diceTray);
+    actionBarInteraction();
 
     // Chat Input Interaction
     chatInputInteraction();
@@ -192,6 +192,8 @@ function updateProficiency() {
     const savingThrowsList = document.getElementById('saving-throws-list');
     const skillsList = document.getElementById('skill-list');
 
+    if (!savingThrowsList || !skillsList) return;
+
     savingThrowsList.addEventListener('change', async (e) => {
         if (e.target.type !== 'checkbox') return;
 
@@ -230,7 +232,6 @@ function updateProficiency() {
 function diceTrayInteraction() {
     let selectedDice = [];
     let trayContentVisible = false;
-    let pendingAction = null; // { actionName, modifier } | null
 
     const diceGrid = document.getElementById("dice-grid");
     const diceTray = document.getElementById("dice-tray-area");
@@ -337,8 +338,6 @@ function diceTrayInteraction() {
 
         const clickedDie = dieButton.getAttribute('data-die');
 
-        // Manually touching the grid breaks any action's claim on the tray's contents.
-        pendingAction = null;
         selectedDice.push(clickedDie);
         renderTray();
     });
@@ -355,7 +354,6 @@ function diceTrayInteraction() {
             selectedDice.splice(index, 1);
         }
 
-        pendingAction = null;
         renderTray();
     });
 
@@ -374,46 +372,21 @@ function diceTrayInteraction() {
             ? (document.getElementById("player-name").textContent || "Unknown Hero")
             : "DM";
 
-        let message;
-        let type;
-        let meta;
-
-        if (pendingAction) {
-            const total = rollData.total + pendingAction.modifier;
-
-            message = `${senderName} used ${pendingAction.actionName}: ${rollData.rollString}`;
-            if (pendingAction.modifier !== 0) {
-                message += ` ${pendingAction.modifier > 0 ? '+' : ''}${pendingAction.modifier}`;
-            }
-            message += ` (Total: ${total}).`;
-
-            type = 'action';
-            meta = { actionName: pendingAction.actionName, rollString: rollData.rollString, total };
-        }
-        else {
-            message = `${senderName} rolled: ${rollData.rollString}.`;
-            if (selectedDice.length > 1) {
-                message += ` (Total: ${rollData.total})`;
-            }
-
-            type = 'roll';
-            meta = { rollString: rollData.rollString, total: rollData.total, dice: selectedDice };
+        let message = `${senderName} rolled: ${rollData.rollString}.`;
+        if (selectedDice.length > 1) {
+            message += ` (Total: ${rollData.total})`;
         }
 
-        sendMessage({ type, text: message, senderName, meta });
+        sendMessage({
+            type: 'roll',
+            text: message,
+            senderName,
+            meta: { rollString: rollData.rollString, total: rollData.total, dice: selectedDice }
+        });
 
         selectedDice = [];
-        pendingAction = null;
         renderTray();
     });
-
-    return {
-        queueActionDice({ actionName, diceList, modifier }) {
-            selectedDice = [...diceList];
-            pendingAction = { actionName, modifier };
-            renderTray();
-        }
-    };
 }
 
 function activeEffectsPopUp() {
@@ -449,7 +422,7 @@ function actionsHoverPopUp() {
     });
 }
 
-function actionBarInteraction(diceTray) {
+function actionBarInteraction() {
     const actionsList = document.getElementById("actions-list");
 
     if (!actionsList) return;
@@ -473,9 +446,23 @@ function actionBarInteraction(diceTray) {
             const modifier = diceMatch[3] ? parseInt(diceMatch[3]) : 0;
 
             const diceList = Array(count).fill(`d${sides}`);
+            const rollData = rollSelectedDice(diceList);
+            const total = rollData.total + modifier;
 
-            diceTray.queueActionDice({ actionName: rawName, diceList, modifier });
-            showTemporaryNotice(`Roll the dice to use ${rawName}!`);
+            const playerName = document.getElementById("player-name").textContent || "Unknown Hero";
+
+            let message = `${playerName} used ${rawName}: ${rollData.rollString}`;
+            if (modifier !== 0) {
+                message += ` ${modifier > 0 ? '+' : ''}${modifier}`;
+            }
+            message += ` (Total: ${total}).`;
+
+            sendMessage({
+                type: 'action',
+                text: message,
+                senderName: playerName,
+                meta: { actionName: rawName, rollString: rollData.rollString, total }
+            });
         }
         else {
             const playerName = document.getElementById("player-name").textContent || "Unknown Hero";
