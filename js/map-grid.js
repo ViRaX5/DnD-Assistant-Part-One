@@ -60,24 +60,24 @@ function draw() {
 
   // 3. Draw the map image (Scaled and Centered)
   if (mapImageObj) {
-      const imgAspect = mapImageObj.width / mapImageObj.height;
-      const gridAspect = mapWidth / mapHeight;
+    const imgAspect = mapImageObj.width / mapImageObj.height;
+    const gridAspect = mapWidth / mapHeight;
 
-      let drawWidth = mapWidth;
-      let drawHeight = mapHeight;
+    let drawWidth = mapWidth;
+    let drawHeight = mapHeight;
 
-      // Adjust dimensions to prevent stretching
-      if (imgAspect > gridAspect) {
-          drawHeight = mapWidth / imgAspect; // Image is wider, scale height down
-      } else {
-          drawWidth = mapHeight * imgAspect; // Image is taller, scale width down
-      }
+    // Adjust dimensions to prevent stretching
+    if (imgAspect > gridAspect) {
+      drawHeight = mapWidth / imgAspect; // Image is wider, scale height down
+    } else {
+      drawWidth = mapHeight * imgAspect; // Image is taller, scale width down
+    }
 
-      // Center the image perfectly inside the white-blue grid board!
-      const centerX = state.offsetX + (mapWidth - drawWidth) / 2;
-      const centerY = state.offsetY + (mapHeight - drawHeight) / 2;
+    // Center the image perfectly inside the white-blue grid board!
+    const centerX = state.offsetX + (mapWidth - drawWidth) / 2;
+    const centerY = state.offsetY + (mapHeight - drawHeight) / 2;
 
-      ctx.drawImage(mapImageObj, centerX, centerY, drawWidth, drawHeight);
+    ctx.drawImage(mapImageObj, centerX, centerY, drawWidth, drawHeight);
   }
 
   state.tokens.forEach(token => {

@@ -1772,22 +1772,23 @@ nav {
   margin: 0;
 }
 
-.modal-buttons>.cancel-button {
+.modal-buttons > .cancel-button {
   background-color: #e5e7eb;
   color: var(--text-color-base);
 }
 
-.modal-buttons>.cancel-button:hover {
+.modal-buttons > .cancel-button:hover {
   background-color: #d1d5db;
 }
 
-.modal-buttons>.confirm-button {
-  background-color: #f06272;
+.modal-buttons > .confirm-button {
+  margin-top: 10px;
+  background-color: #4a749f;
   color: white;
 }
 
-.modal-buttons>.confirm-button:hover {
-  background-color: #ed253c;
+.modal-buttons > .confirm-button:hover {
+  background-color: #3b5c7e;
 }
 
 #DMBody .combat-group {
@@ -1901,7 +1902,11 @@ nav {
 #audio-player-container.hidden-ui,
 #assets-grid.hidden-ui,
 #hint.hidden-ui,
-.search-container.hidden-ui {
+.search-container.hidden-ui,
+#monster-search-view.hidden-ui,
+#monster-edit-view.hidden-ui,
+#monster-loading.hidden-ui,
+#monster-search-results.hidden-ui {
   display: none;
 }
 
@@ -1943,12 +1948,17 @@ nav {
   accent-color: #e74c3c;
 }
 
+.audio-action-divider {
+  margin: 15px 0 5px 0;
+  background-color: #4a749f;
+}
+
 /* adding monsters */
 
 .monster-modal-content {
   max-height: 85vh;
   overflow-y: auto;
-  width: 400px;
+  width: 600px;
   max-width: 90vw;
 }
 
@@ -1958,12 +1968,12 @@ nav {
 }
 
 .monster-results-container {
-  max-height: 300px;
+  max-height: 350px; 
   overflow-y: auto;
   margin-top: 10px;
-  border: 1px solid #4a749f;
-  border-radius: 5px;
-  background: #1a202c;
+  border: 1px solid #cbd5e1;
+  border-radius: 8px;
+  background: #ffffff;
 }
 
 .edit-view-description {
@@ -1988,29 +1998,121 @@ nav {
   margin-top: 20px;
 }
 
-.back-btn {
-  margin-bottom: 0 !important;
-  width: auto !important;
-  padding: 10px 20px !important;
+.search-dropdown-container {
+  position: relative;
+  width: 100%;
+}
+
+.edit-view-header {
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+  gap: 8px;
+  margin: 10px 0;
+}
+
+.edit-view-header .stat-input-text {
+  border: 1px solid #cbd5e1; /* Subtle border so they know it's editable */
+  background: #ffffff;
+  padding: 6px 10px;
+  margin-bottom: 0;
+}
+
+.edit-view-header,
+.edit-view-footer {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  margin: 15px 0;
+}
+
+.edit-view-header label,
+.edit-view-footer label {
+  color: #000;
+  font-weight: bold;
+  white-space: nowrap;
+  margin: 0;
+}
+
+.stat-input-text {
+  margin-bottom: 0;
+  width: auto;
+  flex: 1;
+}
+
+.edit-stat-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0;
+  border: 1px solid #000000;
+  border-radius: 8px;
+  overflow: hidden;
+  background: #ffffff;
+  margin-top: 10px;
+  margin-bottom: 10px;
+}
+
+.stat-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 8px 16px;
+  border-bottom: 1px solid #000000;
+}
+
+.stat-item:nth-child(odd) {
+  border-right: 1px solid #000000;
+}
+
+.stat-item:nth-last-child(-n+2) {
+  border-bottom: none;
+}
+
+.stat-item label {
+  font-weight: bold;
+  color: #000;
+  font-size: 0.9rem;
+}
+
+.stat-input {
+  width: 45px;
+  text-align: right;
+  background: transparent;
+  border: none;
+  font: inherit;
+  font-size: 1rem;
+  color: #000000;
+}
+
+.stat-input:focus {
+  outline: none;
+  font-weight: bold;
 }
 
 /* For the JS-generated monster rows */
 .monster-list-item {
-  padding: 10px;
-  border-bottom: 1px solid #4a749f;
+  padding: 10px 15px;
+  border-bottom: 1px solid #e2e8f0;
   cursor: pointer;
-  color: #e2e8f0;
+  color: #000000;
+  text-align: left;
   transition: background-color 0.2s;
 }
 
 .monster-list-item:hover {
-  background-color: #4a749f;
+  background-color: #f1f5f9;
+}
+
+.monster-list-item:last-child {
+  border-bottom: none;
 }
 
 .monster-error-message {
   color: #e53e3e;
   padding: 10px;
-  display: block; /* To ensure padding applies correctly to the span */
+  display: block;
+  /* To ensure padding applies correctly to the span */
 }
 
 .monster-empty-message {
