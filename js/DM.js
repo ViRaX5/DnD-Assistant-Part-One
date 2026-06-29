@@ -64,6 +64,18 @@ const closeExistingModalBtn = document.getElementById('close-existing-modal-btn'
 const existingCreaturesList = document.getElementById('existing-creatures-list');
 const existingLoading = document.getElementById('existing-loading');
 
+const editShopBtn = document.getElementById('edit-shop-btn');
+const editShopModal = document.getElementById('edit-shop-modal');
+const closeEditShopBtn = document.getElementById('close-edit-shop-btn');
+const saveShopBtn = document.getElementById('save-shop-btn');
+const shopSearchInput = document.getElementById('shop-search-input');
+const shopSearchResults = document.getElementById('shop-search-results');
+const shopLoading = document.getElementById('shop-loading');
+const currentShopInventoryContainer = document.getElementById('current-shop-inventory');
+
+let allEquipmentCache = [];
+let currentShopItems = [];
+
 // The native browser audio engine
 let currentAudio = new Audio()
 let isAudioPlaying = false
@@ -354,6 +366,182 @@ function handleRemoveEntity(idStr) {
     renderCombatTracker(activeCombatTracker);
 }
 
+editShopBtn.addEventListener('click', async () => {
+    editShopModal.showModal();
+    editShopBtn.blur();
+    
+    // Fetch the existing shop inventory from your backend first
+    await loadExistingShop();
+
+    if (allEquipmentCache.length === 0) {
+        shopLoading.classList.remove('hidden-ui');
+        try {
+            const res = await fetch('https://www.dnd5eapi.co/api/equipment');
+            const data = await res.json();
+            allEquipmentCache = data.results;
+        } catch (err) {
+            console.error("Failed to fetch equipment:", err);
+            shopSearchInput.placeholder = "Failed to load API.";
+        } finally {
+            shopLoading.classList.add('hidden-ui');
+        }
+    }
+});
+
+closeEditShopBtn.addEventListener('click', () => {
+    editShopModal.close();
+    shopSearchInput.value = '';
+    shopSearchResults.classList.add('hidden-ui');
+    closeEditShopBtn.blur();
+    editShopBtn.blur();
+});
+
+shopSearchInput.addEventListener('input', (e) => {
+    const query = e.target.value.toLowerCase().trim();
+    
+    if (query === '') {
+        shopSearchResults.classList.add('hidden-ui');
+        shopSearchResults.innerHTML = '';
+        return;
+    }
+
+    const filtered = allEquipmentCache.filter(item => item.name.toLowerCase().includes(query));
+    
+    shopSearchResults.innerHTML = '';
+    shopSearchResults.classList.remove('hidden-ui');
+    
+    const displayList = filtered.slice(0, 50); 
+    if (displayList.length === 0) {
+        shopSearchResults.innerHTML = '<div class="monster-empty-message">No items found.</div>';
+        return;
+    }
+
+    displayList.forEach(item => {
+        const div = document.createElement('div');
+        div.className = 'monster-list-item';
+        div.innerText = item.name;
+        
+        // When clicking a search result, fetch its details and add to inventory
+        div.addEventListener('click', () => addItemToShop(item.index));
+        shopSearchResults.appendChild(div);
+    });
+});
+
+async function addItemToShop(index) {
+    shopSearchResults.classList.add('hidden-ui');
+    shopSearchInput.value = '';
+    shopSearchInput.placeholder = "Adding item...";
+    
+    try {
+        const res = await fetch(`https://www.dnd5eapi.co/api/equipment/${index}`);
+        const itemData = await res.json();
+        
+        // Format the cost nicely
+        const costString = itemData.cost ? `${itemData.cost.quantity} ${itemData.cost.unit}` : '0 gp';
+        
+        // Format description (sometimes it's an array of strings in the 5e API)
+        let descString = "Standard item.";
+        if (itemData.desc && itemData.desc.length > 0) {
+            descString = itemData.desc.join(" ");
+        }
+
+        const newItem = {
+            id: `item_${Date.now()}`,
+            name: itemData.name,
+            cost: costString,
+            description: descString
+        };
+        
+        currentShopItems.push(newItem);
+        renderShopInventory();
+        
+    } catch (err) {
+        console.error("Failed to fetch item details:", err);
+    } finally {
+        shopSearchInput.placeholder = "Search equipment (e.g. Dagger)...";
+    }
+}
+
+function renderShopInventory() {
+    currentShopInventoryContainer.innerHTML = '';
+    
+    if (currentShopItems.length === 0) {
+        currentShopInventoryContainer.innerHTML = '<div class="empty-state-text">Shop is currently empty.</div>';
+        return;
+    }
+
+    currentShopItems.forEach(item => {
+        const div = document.createElement('div');
+        div.className = 'shop-inventory-item';
+        
+        div.innerHTML = `
+            <div class="shop-item-info">
+                <div class="shop-item-header">
+                    <span class="shop-item-name">${item.name}</span>
+                    <span class="shop-item-cost">${item.cost}</span>
+                </div>
+                <span class="shop-item-desc">${item.description}</span>
+            </div>
+            <button class="remove-btn" data-id="${item.id}">X</button>
+        `;
+        
+        // Add remove listener
+        const removeBtn = div.querySelector('.remove-btn');
+        removeBtn.addEventListener('click', () => {
+            removeBtn.blur();
+            currentShopItems = currentShopItems.filter(i => i.id !== item.id);
+            renderShopInventory();
+        });
+
+        currentShopInventoryContainer.appendChild(div);
+    });
+}
+
+async function loadExistingShop() {
+    const campaignId = sessionStorage.getItem('activeCampaignId');
+    try {
+        const response = await fetchWithAuth(`${BASE_URL}/api/DM/getShopInventory?campaignID=${campaignId}`);
+        const data = await response.json();
+        
+        if (data.success && data.shop && data.shop.items) {
+            currentShopItems = data.shop.items;
+        } else {
+            currentShopItems = [];
+        }
+        renderShopInventory();
+    } catch (err) {
+        console.error("Failed to load shop:", err);
+    }
+}
+
+saveShopBtn.addEventListener('click', async () => {
+    saveShopBtn.blur();
+    saveShopBtn.innerText = "Saving...";
+    saveShopBtn.disabled = true;
+    
+    const campaignId = sessionStorage.getItem('activeCampaignId');
+    
+    try {
+        await fetchWithAuth(`${BASE_URL}/api/DM/updateShopInventory`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+                campaignID: campaignId,
+                items: currentShopItems
+            })
+        });
+        
+        editShopModal.close();
+        editShopBtn.blur();
+    } catch (err) {
+        console.error("Failed to save shop:", err);
+        // alert("Error saving shop!");
+    } finally {
+        saveShopBtn.innerText = "Save Shop";
+        saveShopBtn.disabled = false;
+    }
+});
+
 nextBtn.addEventListener('click', () => { handleNextTurn(nextBtn) });
 prevBtn.addEventListener('click', () => { handlePrevTurn(prevBtn) });
 
@@ -484,10 +672,12 @@ addNewCreatureBtn.addEventListener('click', async () => {
 
 closeMonsterSearchModal.addEventListener('click', () => {
     monsterSearchModal.close();
+    closeMonsterSearchModal.blur();
 });
 
 closeMonsterEditBtn.addEventListener('click', () => {
     monsterSearchModal.close();
+    closeMonsterEditBtn.blur();
 });
 
 
@@ -579,6 +769,8 @@ function resetMonsterSearchModal() {
 }
 
 confirmMonsterAddBtn.addEventListener('click', async () => {
+    confirmMonsterAddBtn.blur();
+
     const name = monsterEditName.value || selectedMonsterOriginalData.name;
     const initiative = parseInt(monsterEditInitiative.value) || 0;
     
@@ -657,6 +849,7 @@ addExistingCreatureBtn.addEventListener('click', async () => {
 
 closeExistingModalBtn.addEventListener('click', () => {
     existingCreaturesModal.close();
+    closeExistingModalBtn.blur();
 });
 
 function renderExistingMonsters(savedMonsters) {
@@ -848,6 +1041,7 @@ addEffectModalBtn.addEventListener('click', () => {
 const shopBtn = document.getElementById('shop-btn');
 
 shopBtn.addEventListener('click', () => {
+    shopBtn.blur();
     socket.emit('shop:toggle', { isOpen: !isShopOpen() })
 });
 

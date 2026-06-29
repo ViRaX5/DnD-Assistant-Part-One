@@ -192,9 +192,33 @@
         <nav>
           <!-- <span>Filter by:</span> -->
           <div class="nav-container">
-            <button type="button" class="DM not-clicked">Rest</button>
+            <button type="button" id="edit-shop-btn" class="DM not-clicked">Edit Shop</button>
             <button type="button" id="shop-btn" class="not-clicked">Shop</button>
             <button type="button" class="end-session">End Session</button>
+            <dialog id="edit-shop-modal">
+              <div class="modal-content monster-modal-content">
+                <h2>Edit Shop Inventory</h2>
+
+                <div class="search-dropdown-container">
+                  <input type="text" id="shop-search-input" class="menu-input"
+                    placeholder="Search equipment (e.g. Dagger)..." autocomplete="off">
+                  <div id="shop-loading" class="hidden-ui monster-loading-text">Loading items...</div>
+                  <div id="shop-search-results" class="monster-results-container hidden-ui"></div>
+                </div>
+
+                <div class="shop-inventory-section">
+                  <h3>Current Inventory</h3>
+                  <div id="current-shop-inventory" class="shop-inventory-list">
+                    <div class="empty-state-text">Shop is currently empty.</div>
+                  </div>
+                </div>
+
+                <div class="modal-buttons monster-modal-buttons">
+                  <button type="button" id="close-edit-shop-btn" class="cancel-button">Close</button>
+                  <button type="button" id="save-shop-btn" class="confirm-button">Save Shop</button>
+                </div>
+              </div>
+            </dialog>
             <dialog id="end-session-modal">
               <div class="modal-content">
                 <h2>Ending the Adventure</h2>

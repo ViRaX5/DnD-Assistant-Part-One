@@ -216,18 +216,33 @@
                 </div>
               </dialog>
               <dialog id="shop-modal">
-                <div class="modal-content">
+                <div class="modal-content monster-modal-content shop-modal-wide">
                   <h2>Shop</h2>
-                  <select id="shop-category-select" class="menu-input"></select>
-                  <div id="shop-items-list" class="shop-items-list"></div>
+                  
+                  <div class="shop-split-layout">
+                    <div class="shop-inventory-side">
+                      <div id="shop-items-list" class="shop-inventory-list" style="height: 100%;"></div>
+                    </div>
+                    
+                    <div class="shop-cart-side">
+                      <h3>Your Cart</h3>
+                      <div id="cart-items-list" class="cart-items-list">
+                        <div class="empty-state-text" style="text-align: center; margin-top: 20px;">Cart is empty.</div>
+                      </div>
+                      
+                      <div class="cart-summary">
+                        <div class="cart-total-line">
+                          <span>Total:</span>
+                          <span id="cart-total-display">0 gp</span>
+                        </div>
+                        <div id="checkout-message" class="form-error-message"></div>
+                        <button id="checkout-btn" class="confirm-button">Checkout</button>
+                      </div>
+                    </div>
+                  </div>
+
                   <div class="modal-buttons">
-                    <button
-                      type="button"
-                      id="close-shop-modal"
-                      class="cancel-button"
-                    >
-                      Close
-                    </button>
+                    <button type="button" id="close-shop-modal" class="cancel-button">Close</button>
                   </div>
                 </div>
               </dialog>
