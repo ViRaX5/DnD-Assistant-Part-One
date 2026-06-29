@@ -475,103 +475,398 @@ socket.on('shop:status', ({ isOpen }) => {
     updateShopButtonState();
 });
 
-async function fetchEquipmentCategories() {
-    if (equipmentCategories) return equipmentCategories;
+let shopInventory = [];
+let shoppingCart = [];
 
-    const response = await fetch('https://www.dnd5eapi.co/api/equipment-categories');
-    const data = await response.json();
-
-    equipmentCategories = data.results;
-    return equipmentCategories;
+// Helper: Converts D&D string costs (e.g., "15 gp", "5 sp") to pure Copper Pieces
+function parseCostToCP(costString) {
+    if (!costString) return 0;
+    const match = costString.toLowerCase().match(/(\d+(?:\.\d+)?)\s*(cp|sp|ep|gp|pp)/);
+    if (!match) return 0;
+    
+    const amount = parseFloat(match[1]);
+    const unit = match[2];
+    
+    switch (unit) {
+        case 'cp': return amount;
+        case 'sp': return amount * 10;
+        case 'ep': return amount * 50;
+        case 'gp': return amount * 100;
+        case 'pp': return amount * 1000;
+        default: return 0;
+    }
 }
 
-async function fetchEquipmentCategoryItems(categoryIndex) {
-    if (equipmentCategoryCache[categoryIndex]) return equipmentCategoryCache[categoryIndex];
-
-    const response = await fetch(`https://www.dnd5eapi.co/api/equipment-categories/${categoryIndex}`);
-    const data = await response.json();
-
-    equipmentCategoryCache[categoryIndex] = data.equipment;
-    return data.equipment;
+// Helper: Converts Copper Pieces back to a readable string (e.g., "1 gp, 5 sp")
+function formatCPtoCoinage(totalCP) {
+    if (totalCP === 0) return "0 gp";
+    
+    const gp = Math.floor(totalCP / 100);
+    const remainder = totalCP % 100;
+    const sp = Math.floor(remainder / 10);
+    const cp = remainder % 10;
+    
+    let res = [];
+    if (gp > 0) res.push(`${gp} gp`);
+    if (sp > 0) res.push(`${sp} sp`);
+    if (cp > 0) res.push(`${cp} cp`);
+    
+    return res.join(", ");
 }
 
-async function renderShopItems(categoryIndex) {
-    const shopItemsList = document.getElementById('shop-items-list');
-    shopItemsList.innerHTML = 'Loading...';
+function renderCart() {
+    const cartList = document.getElementById('cart-items-list');
+    const totalDisplay = document.getElementById('cart-total-display');
+    const checkoutMessage = document.getElementById('checkout-message');
+    
+    checkoutMessage.innerText = ""; // Clear errors
+    
+    if (shoppingCart.length === 0) {
+        cartList.innerHTML = '<div class="empty-state-text" style="text-align: center; margin-top: 20px;">Cart is empty.</div>';
+        totalDisplay.innerText = "0 gp";
+        return;
+    }
 
-    const items = await fetchEquipmentCategoryItems(categoryIndex);
+    cartList.innerHTML = '';
+    let totalCP = 0;
 
-    shopItemsList.innerHTML = '';
-    items.forEach(item => {
-        shopItemsList.innerHTML += `<div class="shop-item" data-index="${item.index}">
-            <span class="shop-item-name">${item.name}</span>
-            <span class="shop-item-price"></span>
-        </div>`;
+    shoppingCart.forEach((cartItem, index) => {
+        const itemTotalCP = cartItem.unitCostCP * cartItem.quantity;
+        totalCP += itemTotalCP;
+
+        const div = document.createElement('div');
+        div.className = 'cart-item';
+        div.innerHTML = `
+            <span>${cartItem.item.name}</span>
+            <div class="cart-controls">
+                <button class="qty-btn minus-btn" data-index="${index}">-</button>
+                <span>${cartItem.quantity}</span>
+                <button class="qty-btn plus-btn" data-index="${index}">+</button>
+            </div>
+        `;
+        cartList.appendChild(div);
+    });
+
+    totalDisplay.innerText = formatCPtoCoinage(totalCP);
+
+    // Attach listeners for + and - buttons
+    document.querySelectorAll('.minus-btn').forEach(btn => {
+        btn.addEventListener('click', (e) => {
+            const idx = e.target.dataset.index;
+            if (shoppingCart[idx].quantity > 1) {
+                shoppingCart[idx].quantity--;
+            } else {
+                shoppingCart.splice(idx, 1); // Remove if 0
+            }
+            renderCart();
+        });
+    });
+
+    document.querySelectorAll('.plus-btn').forEach(btn => {
+        btn.addEventListener('click', (e) => {
+            shoppingCart[e.target.dataset.index].quantity++;
+            renderCart();
+        });
     });
 }
 
-async function showShopItemPrice(itemIndex, priceSpan) {
-    if (priceSpan.textContent) return;
+function addToCart(itemId) {
+    const item = shopInventory.find(i => i.id === itemId);
+    if (!item) return;
 
-    priceSpan.textContent = '...';
-
-    const response = await fetch(`https://www.dnd5eapi.co/api/equipment/${itemIndex}`);
-    const data = await response.json();
-
-    priceSpan.textContent = data.cost ? `${data.cost.quantity}${data.cost.unit}` : '';
+    const existingCartItem = shoppingCart.find(i => i.item.id === itemId);
+    
+    if (existingCartItem) {
+        existingCartItem.quantity++;
+    } else {
+        shoppingCart.push({
+            item: item,
+            quantity: 1,
+            unitCostCP: parseCostToCP(item.cost)
+        });
+    }
+    renderCart();
 }
 
 async function openShopModal() {
     const shopModal = document.getElementById('shop-modal');
-    const categorySelect = document.getElementById('shop-category-select');
-
-    const categories = await fetchEquipmentCategories();
-
-    if (!categorySelect.children.length) {
-        categories.forEach(category => {
-            const option = document.createElement('option');
-            option.textContent = category.name;
-            option.value = category.index;
-            categorySelect.appendChild(option);
-        });
-
-        categorySelect.addEventListener('change', () => {
-            renderShopItems(categorySelect.value);
-        });
-    }
-
+    const shopItemsList = document.getElementById('shop-items-list');
+    
+    shoppingCart = []; // Reset cart on open
+    renderCart();
+    
+    shopItemsList.innerHTML = '<div class="monster-loading-text">Loading shop inventory...</div>';
     shopModal.showModal();
 
-    if (categories.length) {
-        renderShopItems(categorySelect.value);
+    try {
+        const response = await fetchWithAuth(`${BASE_URL}/api/getShopInventory?campaignID=${sessionContext.campaignId}`);
+        const data = await response.json();
+
+        shopItemsList.innerHTML = '';
+
+        if (data.success && data.shop && data.shop.items && data.shop.items.length > 0) {
+            shopInventory = data.shop.items; // Store locally for cart reference
+            
+            shopInventory.forEach(item => {
+                const div = document.createElement('div');
+                div.className = 'shop-inventory-item'; 
+                
+                div.innerHTML = `
+                    <div class="shop-item-info">
+                        <div class="shop-item-header">
+                            <span class="shop-item-name">${item.name}</span>
+                            <span class="shop-item-cost">${item.cost}</span>
+                        </div>
+                        <span class="shop-item-desc">${item.description}</span>
+                    </div>
+                    <button class="add-to-cart-btn" data-id="${item.id}">Add</button>
+                `;
+                
+                div.querySelector('.add-to-cart-btn').addEventListener('click', (e) => {
+                    e.target.blur();
+                    addToCart(item.id);
+                });
+                
+                shopItemsList.appendChild(div);
+            });
+        } else {
+            shopItemsList.innerHTML = '<div class="empty-state-text">The shop is currently empty.</div>';
+        }
+    } catch (err) {
+        console.error("Failed to load shop inventory:", err);
+        shopItemsList.innerHTML = '<div class="monster-error-message">Failed to load shop inventory.</div>';
     }
 }
 
 function shopInteraction() {
     const shopBtn = document.getElementById('shop-btn');
     const shopModal = document.getElementById('shop-modal');
+    const checkoutBtn = document.getElementById('checkout-btn');
 
     if (!shopBtn || !shopModal) return;
 
     shopBtn.addEventListener('click', () => {
+        shopBtn.blur();
         if (!shopOpen) return;
         openShopModal();
-    });
-
-    const shopItemsList = document.getElementById('shop-items-list');
-    shopItemsList.addEventListener('click', (e) => {
-        const shopItem = e.target.closest('.shop-item');
-        if (!shopItem) return;
-
-        const priceSpan = shopItem.querySelector('.shop-item-price');
-        showShopItemPrice(shopItem.dataset.index, priceSpan);
     });
 
     const closeShopModalButton = document.getElementById('close-shop-modal');
     closeShopModalButton.addEventListener('click', () => {
         shopModal.close();
+        closeShopModalButton.blur();
+    });
+    
+    // Process Checkout
+    checkoutBtn.addEventListener('click', async () => {
+        checkoutBtn.blur();
+        const checkoutMessage = document.getElementById('checkout-message');
+        
+        if (shoppingCart.length === 0) {
+            checkoutMessage.innerText = "Your cart is empty.";
+            return;
+        }
+        
+        // Calculate final total
+        const totalCostCP = shoppingCart.reduce((total, cartItem) => total + (cartItem.unitCostCP * cartItem.quantity), 0);
+        
+        checkoutBtn.innerText = "Processing...";
+        checkoutBtn.disabled = true;
+        
+        try {
+            const response = await fetchWithAuth(`${BASE_URL}/api/player/checkout`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    campaignId: sessionContext.campaignId,
+                    cart: shoppingCart,
+                    totalCostCP: totalCostCP
+                })
+            });
+            
+            const data = await response.json();
+            
+            if (data.success) {
+                checkoutMessage.style.color = "#10b981"; // Success Green
+                checkoutMessage.innerText = "Purchase successful!";
+                shoppingCart = []; // Clear cart
+                renderCart();
+                
+                // Optional: You can call a function here to refresh the player's UI inventory/gold
+                // e.g., reloadCharacterData();
+                
+                setTimeout(() => shopModal.close(), 1500);
+            } else {
+                checkoutMessage.style.color = "#ef4444"; // Error Red
+                checkoutMessage.innerText = data.error || "Transaction failed.";
+            }
+        } catch (err) {
+            checkoutMessage.style.color = "#ef4444";
+            checkoutMessage.innerText = "Connection error during checkout.";
+        } finally {
+            checkoutBtn.innerText = "Checkout";
+            checkoutBtn.disabled = false;
+        }
     });
 }
+
+// async function fetchEquipmentCategories() {
+//     if (equipmentCategories) return equipmentCategories;
+
+//     const response = await fetch('https://www.dnd5eapi.co/api/equipment-categories');
+//     const data = await response.json();
+
+//     equipmentCategories = data.results;
+//     return equipmentCategories;
+// }
+
+// async function fetchEquipmentCategoryItems(categoryIndex) {
+//     if (equipmentCategoryCache[categoryIndex]) return equipmentCategoryCache[categoryIndex];
+
+//     const response = await fetch(`https://www.dnd5eapi.co/api/equipment-categories/${categoryIndex}`);
+//     const data = await response.json();
+
+//     equipmentCategoryCache[categoryIndex] = data.equipment;
+//     return data.equipment;
+// }
+
+// async function openShopModal() {
+//     const shopModal = document.getElementById('shop-modal');
+//     const shopItemsList = document.getElementById('shop-items-list');
+
+//     // Show a loading state
+//     shopItemsList.innerHTML = '<div class="monster-loading-text">Loading shop inventory...</div>';
+//     shopModal.showModal();
+
+//     try {
+//         const response = await fetchWithAuth(`${BASE_URL}/api/getShopInventory?campaignID=${sessionContext.campaignId}`);
+//         const data = await response.json();
+
+//         shopItemsList.innerHTML = '';
+
+//         if (data.success && data.shop && data.shop.items && data.shop.items.length > 0) {
+//             data.shop.items.forEach(item => {
+//                 const div = document.createElement('div');
+//                 // Reuse the DM's CSS class for a consistent look!
+//                 div.className = 'shop-inventory-item'; 
+                
+//                 div.innerHTML = `
+//                     <div class="shop-item-info">
+//                         <div class="shop-item-header">
+//                             <span class="shop-item-name">${item.name}</span>
+//                             <span class="shop-item-cost">${item.cost}</span>
+//                         </div>
+//                         <span class="shop-item-desc">${item.description}</span>
+//                     </div>
+//                 `;
+//                 // Notice there is no remove button rendered here!
+//                 shopItemsList.appendChild(div);
+//             });
+//         } else {
+//             shopItemsList.innerHTML = '<div class="empty-state-text">The shop is currently empty.</div>';
+//         }
+//     } catch (err) {
+//         console.error("Failed to load shop inventory:", err);
+//         shopItemsList.innerHTML = '<div class="monster-error-message">Failed to load shop inventory.</div>';
+//     }
+// }
+
+// function shopInteraction() {
+//     const shopBtn = document.getElementById('shop-btn');
+//     const shopModal = document.getElementById('shop-modal');
+
+//     if (!shopBtn || !shopModal) return;
+
+//     shopBtn.addEventListener('click', () => {
+//         shopBtn.blur();
+//         if (!shopOpen) return;
+//         openShopModal();
+//     });
+
+//     const closeShopModalButton = document.getElementById('close-shop-modal');
+//     closeShopModalButton.addEventListener('click', () => {
+//         shopModal.close();
+//         closeShopModalButton.blur();
+//     });
+// }
+
+// async function renderShopItems(categoryIndex) {
+//     const shopItemsList = document.getElementById('shop-items-list');
+//     shopItemsList.innerHTML = 'Loading...';
+
+//     const items = await fetchEquipmentCategoryItems(categoryIndex);
+
+//     shopItemsList.innerHTML = '';
+//     items.forEach(item => {
+//         shopItemsList.innerHTML += `<div class="shop-item" data-index="${item.index}">
+//             <span class="shop-item-name">${item.name}</span>
+//             <span class="shop-item-price"></span>
+//         </div>`;
+//     });
+// }
+
+// async function showShopItemPrice(itemIndex, priceSpan) {
+//     if (priceSpan.textContent) return;
+
+//     priceSpan.textContent = '...';
+
+//     const response = await fetch(`https://www.dnd5eapi.co/api/equipment/${itemIndex}`);
+//     const data = await response.json();
+
+//     priceSpan.textContent = data.cost ? `${data.cost.quantity}${data.cost.unit}` : '';
+// }
+
+// async function openShopModal() {
+//     const shopModal = document.getElementById('shop-modal');
+//     const categorySelect = document.getElementById('shop-category-select');
+
+//     const categories = await fetchEquipmentCategories();
+
+//     if (!categorySelect.children.length) {
+//         categories.forEach(category => {
+//             const option = document.createElement('option');
+//             option.textContent = category.name;
+//             option.value = category.index;
+//             categorySelect.appendChild(option);
+//         });
+
+//         categorySelect.addEventListener('change', () => {
+//             renderShopItems(categorySelect.value);
+//         });
+//     }
+
+//     shopModal.showModal();
+
+//     if (categories.length) {
+//         renderShopItems(categorySelect.value);
+//     }
+// }
+
+// function shopInteraction() {
+//     const shopBtn = document.getElementById('shop-btn');
+//     const shopModal = document.getElementById('shop-modal');
+
+//     if (!shopBtn || !shopModal) return;
+
+//     shopBtn.addEventListener('click', () => {
+//         if (!shopOpen) return;
+//         openShopModal();
+//     });
+
+//     const shopItemsList = document.getElementById('shop-items-list');
+//     shopItemsList.addEventListener('click', (e) => {
+//         const shopItem = e.target.closest('.shop-item');
+//         if (!shopItem) return;
+
+//         const priceSpan = shopItem.querySelector('.shop-item-price');
+//         showShopItemPrice(shopItem.dataset.index, priceSpan);
+//     });
+
+//     const closeShopModalButton = document.getElementById('close-shop-modal');
+//     closeShopModalButton.addEventListener('click', () => {
+//         shopModal.close();
+//     });
+// }
 
 function actionsHoverPopUp() {
     const actionWrappers = document.querySelectorAll(".action-wrapper");
