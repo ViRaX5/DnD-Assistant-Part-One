@@ -49,51 +49,51 @@
 
         </div>
         <div class="buttons-placeholder">
-          <dialog id="dm-abandon-modal">
-            <div class="modal-content">
-              <h2>Abandoning: <span id="dm-modal-campaign-name"></span></h2>
-
-              <p>As the DM, you must appoint a successor before leaving.</p>
-              <p>Select a player to become the new DM:</p>
-
-              <p id="dm-error-message"></p>
-
-              <ul id="dm-modal-player-list" class="player-selection-list">
-              </ul>
-
-              <div class="modal-buttons">
-                <button type="button" id="cancel-dm-abandon" class="cancel-button">Cancel</button>
-                <button type="button" id="confirm-dm-abandon" class="confirm-button">Appoint DM & Leave</button>
-              </div>
-            </div>
-          </dialog>
-          <dialog id="delete-campaign-modal">
-            <h2>Destroy Campaign?</h2>
-            <p>You are the only member left in this campaign.</p>
-
-            <p class="danger-warning-text">By abandoning it now, the campaign and all associated data will be
-              permanently destroyed!</p>
-
-            <div id="delete-error-message" class="form-error-message"></div>
-            <div class="modal-buttons">
-              <button type="button" id="cancel-delete-campaign" class="cancel-button">Cancel</button>
-              <button type="button" id="confirm-delete-campaign" class="confirm-button">Destroy</button>
-            </div>
-          </dialog>
-          <dialog id="player-abandon-modal">
-            <h2>Abandoning: <span id="player-modal-campaign-name"></span></h2>
-
-            <p>Abandoning the campaign will delete your character and it's data</p>
-            <p>Are you sure you want to proceed?</p>
-
-            <div class="modal-buttons">
-              <button type="button" id="cancel-player-abandon" class="cancel-button">Cancel</button>
-              <button type="button" id="confirm-player-abandon" class="confirm-button">Yes. Abandon campaign</button>
-            </div>
-          </dialog>
         </div>
       </div>
     </div>
+    <dialog id="dm-abandon-modal">
+      <div class="modal-content">
+        <h2>Abandoning: <span id="dm-modal-campaign-name"></span></h2>
+
+        <p>As the DM, you must appoint a successor before leaving.</p>
+        <p>Select a player to become the new DM:</p>
+
+        <p id="dm-error-message"></p>
+
+        <ul id="dm-modal-player-list" class="player-selection-list">
+        </ul>
+
+        <div class="modal-buttons">
+          <button type="button" id="cancel-dm-abandon" class="cancel-button">Cancel</button>
+          <button type="button" id="confirm-dm-abandon" class="confirm-button">Appoint DM & Leave</button>
+        </div>
+      </div>
+    </dialog>
+    <dialog id="delete-campaign-modal">
+      <h2>Destroy Campaign?</h2>
+      <p>You are the only member left in this campaign.</p>
+
+      <p class="danger-warning-text">By abandoning it now, the campaign and all associated data will be
+        permanently destroyed!</p>
+
+      <div id="delete-error-message" class="form-error-message"></div>
+      <div class="modal-buttons">
+        <button type="button" id="cancel-delete-campaign" class="cancel-button">Cancel</button>
+        <button type="button" id="confirm-delete-campaign" class="confirm-button">Destroy</button>
+      </div>
+    </dialog>
+    <dialog id="player-abandon-modal">
+      <h2>Abandoning: <span id="player-modal-campaign-name"></span></h2>
+
+      <p>Abandoning the campaign will delete your character and it's data</p>
+      <p>Are you sure you want to proceed?</p>
+
+      <div class="modal-buttons">
+        <button type="button" id="cancel-player-abandon" class="cancel-button">Cancel</button>
+        <button type="button" id="confirm-player-abandon" class="confirm-button">Yes. Abandon campaign</button>
+      </div>
+    </dialog>
   </body>
 
 </html>

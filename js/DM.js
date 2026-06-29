@@ -57,6 +57,7 @@ const volumeBar = document.getElementById('volume-bar');
 const currentTimeDisplay = document.getElementById('current-time');
 const durationDisplay = document.getElementById('duration');
 const searchContainer = document.querySelector('.search-container');
+const assetSearchInput = document.getElementById('asset-search');
 
 const addExistingCreatureBtn = document.getElementById('add-existing-creature-btn');
 const existingCreaturesModal = document.getElementById('existing-creatures-modal');
@@ -82,6 +83,7 @@ let isAudioPlaying = false
 let currentAudioName = ""
 
 let activeAssetType = 'token';
+let currentAssetsCache = [];
 
 async function loadAssets(assetType) {
     try {
@@ -102,6 +104,21 @@ async function loadAssets(assetType) {
         return [];
     }
 }
+
+assetSearchInput.addEventListener('input', (e) => {
+    const query = e.target.value.toLowerCase().trim();
+
+    if (query === '') {
+        renderAssets(currentAssetsCache, activeAssetType);
+        return;
+    }
+
+    const filtered = currentAssetsCache.filter(asset =>
+        asset.original_name && asset.original_name.toLowerCase().includes(query)
+    );
+
+    renderAssets(filtered, activeAssetType);
+})
 
 const emptyCombatTracker = { currentTurn: null, upcoming: [] };
 
@@ -261,14 +278,14 @@ function renderAssets(assetsData, assetType) {
 function changeMapBackground(imageUrl) {
     try {
         console.log("Map clicked! Sending URL to canvas:", imageUrl)
-        
-        const mapIframe = document.getElementById('main-map')   
+
+        const mapIframe = document.getElementById('main-map')
         const iframeWindow = mapIframe.contentWindow
-        
+
         if (iframeWindow && iframeWindow.setMapImage) {
             iframeWindow.setMapImage(imageUrl)
             socket.emit('map:changeBackground', { imageUrl: imageUrl })
-        } 
+        }
         else {
             console.error("Could not find the setMapImage function inside the iframe!")
         }
@@ -280,9 +297,9 @@ function changeMapBackground(imageUrl) {
 
 function spawnToken(imageUrl) {
     try {
-        const mapIframe = document.getElementById('main-map');       
-        const iframeWindow = mapIframe.contentWindow; 
-        
+        const mapIframe = document.getElementById('main-map');
+        const iframeWindow = mapIframe.contentWindow;
+
         if (iframeWindow && iframeWindow.addToken) {
             iframeWindow.addToken(imageUrl);
         } else {
@@ -349,7 +366,7 @@ function handleRemoveEntity(idStr) {
 editShopBtn.addEventListener('click', async () => {
     editShopModal.showModal();
     editShopBtn.blur();
-    
+
     // Fetch the existing shop inventory from your backend first
     await loadExistingShop();
 
@@ -378,7 +395,7 @@ closeEditShopBtn.addEventListener('click', () => {
 
 shopSearchInput.addEventListener('input', (e) => {
     const query = e.target.value.toLowerCase().trim();
-    
+
     if (query === '') {
         shopSearchResults.classList.add('hidden-ui');
         shopSearchResults.innerHTML = '';
@@ -386,11 +403,11 @@ shopSearchInput.addEventListener('input', (e) => {
     }
 
     const filtered = allEquipmentCache.filter(item => item.name.toLowerCase().includes(query));
-    
+
     shopSearchResults.innerHTML = '';
     shopSearchResults.classList.remove('hidden-ui');
-    
-    const displayList = filtered.slice(0, 50); 
+
+    const displayList = filtered.slice(0, 50);
     if (displayList.length === 0) {
         shopSearchResults.innerHTML = '<div class="monster-empty-message">No items found.</div>';
         return;
@@ -400,7 +417,7 @@ shopSearchInput.addEventListener('input', (e) => {
         const div = document.createElement('div');
         div.className = 'monster-list-item';
         div.innerText = item.name;
-        
+
         // When clicking a search result, fetch its details and add to inventory
         div.addEventListener('click', () => addItemToShop(item.index));
         shopSearchResults.appendChild(div);
@@ -411,14 +428,14 @@ async function addItemToShop(index) {
     shopSearchResults.classList.add('hidden-ui');
     shopSearchInput.value = '';
     shopSearchInput.placeholder = "Adding item...";
-    
+
     try {
         const res = await fetch(`https://www.dnd5eapi.co/api/equipment/${index}`);
         const itemData = await res.json();
-        
+
         // Format the cost nicely
         const costString = itemData.cost ? `${itemData.cost.quantity} ${itemData.cost.unit}` : '0 gp';
-        
+
         // Format description (sometimes it's an array of strings in the 5e API)
         let descString = "Standard item.";
         if (itemData.desc && itemData.desc.length > 0) {
@@ -431,10 +448,10 @@ async function addItemToShop(index) {
             cost: costString,
             description: descString
         };
-        
+
         currentShopItems.push(newItem);
         renderShopInventory();
-        
+
     } catch (err) {
         console.error("Failed to fetch item details:", err);
     } finally {
@@ -444,7 +461,7 @@ async function addItemToShop(index) {
 
 function renderShopInventory() {
     currentShopInventoryContainer.innerHTML = '';
-    
+
     if (currentShopItems.length === 0) {
         currentShopInventoryContainer.innerHTML = '<div class="empty-state-text">Shop is currently empty.</div>';
         return;
@@ -453,7 +470,7 @@ function renderShopInventory() {
     currentShopItems.forEach(item => {
         const div = document.createElement('div');
         div.className = 'shop-inventory-item';
-        
+
         div.innerHTML = `
             <div class="shop-item-info">
                 <div class="shop-item-header">
@@ -464,7 +481,7 @@ function renderShopInventory() {
             </div>
             <button class="remove-btn" data-id="${item.id}">X</button>
         `;
-        
+
         // Add remove listener
         const removeBtn = div.querySelector('.remove-btn');
         removeBtn.addEventListener('click', () => {
@@ -482,7 +499,7 @@ async function loadExistingShop() {
     try {
         const response = await fetchWithAuth(`${BASE_URL}/api/DM/getShopInventory?campaignID=${campaignId}`);
         const data = await response.json();
-        
+
         if (data.success && data.shop && data.shop.items) {
             currentShopItems = data.shop.items;
         } else {
@@ -498,9 +515,9 @@ saveShopBtn.addEventListener('click', async () => {
     saveShopBtn.blur();
     saveShopBtn.innerText = "Saving...";
     saveShopBtn.disabled = true;
-    
+
     const campaignId = sessionStorage.getItem('activeCampaignId');
-    
+
     try {
         await fetchWithAuth(`${BASE_URL}/api/DM/updateShopInventory`, {
             method: 'POST',
@@ -510,7 +527,7 @@ saveShopBtn.addEventListener('click', async () => {
                 items: currentShopItems
             })
         });
-        
+
         editShopModal.close();
         editShopBtn.blur();
     } catch (err) {
@@ -624,7 +641,7 @@ closeInitModal.addEventListener('click', () => {
 });
 
 addNewCreatureBtn.addEventListener('click', async () => {
-    initModal.close(); 
+    initModal.close();
     resetMonsterSearchModal();
     monsterSearchModal.showModal();
     addNewCreatureBtn.blur();
@@ -635,7 +652,7 @@ addNewCreatureBtn.addEventListener('click', async () => {
             const res = await fetch('https://www.dnd5eapi.co/api/monsters');
             const data = await res.json();
             allMonstersCache = data.results;
-            
+
             // Render the list immediately after fetching
             renderMonsterList(allMonstersCache);
         } catch (err) {
@@ -664,7 +681,7 @@ closeMonsterEditBtn.addEventListener('click', () => {
 // Live Search filtering
 monsterSearchInput.addEventListener('input', (e) => {
     const query = e.target.value.toLowerCase().trim();
-    
+
     // if (query === '') {
     //     monsterSearchResults.classList.add('hidden-ui');
     //     monsterSearchResults.innerHTML = '';
@@ -678,9 +695,9 @@ monsterSearchInput.addEventListener('input', (e) => {
 function renderMonsterList(list) {
     monsterSearchResults.innerHTML = '';
     monsterSearchResults.classList.remove('hidden-ui');
-    
-    const displayList = list.slice(0, 50); 
-    
+
+    const displayList = list.slice(0, 50);
+
     if (displayList.length === 0) {
         monsterSearchResults.innerHTML = '<div class="monster-empty-message">No monsters found.</div>';
         return;
@@ -690,9 +707,9 @@ function renderMonsterList(list) {
         const div = document.createElement('div');
         div.className = 'monster-list-item';
         div.innerText = monster.name;
-        
+
         div.addEventListener('click', () => selectMonster(monster.index, monster.name));
-        
+
         monsterSearchResults.appendChild(div);
     });
 }
@@ -703,35 +720,35 @@ async function selectMonster(index, name) {
     monsterSearchInput.value = '';
     monsterSearchView.classList.add('hidden-ui');
     monsterSearchTitle.innerText = "Fetching data...";
-    
+
     try {
         const res = await fetch(`https://www.dnd5eapi.co/api/monsters/${index}`);
         selectedMonsterOriginalData = await res.json();
-        
+
         // Populate ALL fields for the Edit Form
         monsterSearchTitle.innerText = `Edit`; // Figma just says "Edit"
         monsterEditName.value = selectedMonsterOriginalData.name;
         monsterEditHp.value = selectedMonsterOriginalData.hit_points || 0;
-        
+
         // Armor class is often an array in the 5e API
         const acData = selectedMonsterOriginalData.armor_class;
         monsterEditAc.value = (acData && acData.length > 0) ? acData[0].value : 10;
-        
+
         monsterEditStr.value = selectedMonsterOriginalData.strength || 10;
         monsterEditDex.value = selectedMonsterOriginalData.dexterity || 10;
         monsterEditCon.value = selectedMonsterOriginalData.constitution || 10;
         monsterEditInt.value = selectedMonsterOriginalData.intelligence || 10;
         monsterEditWis.value = selectedMonsterOriginalData.wisdom || 10;
         monsterEditCha.value = selectedMonsterOriginalData.charisma || 10;
-        
+
         // Roll initiative (1d20 + DEX mod)
         const dex = selectedMonsterOriginalData.dexterity || 10;
         const dexMod = Math.floor((dex - 10) / 2);
         const roll = Math.floor(Math.random() * 20) + 1;
         monsterEditInitiative.value = roll + dexMod;
-        
+
         monsterEditView.classList.remove('hidden-ui');
-        
+
     } catch (err) {
         console.error("Failed to fetch monster details:", err);
         monsterSearchTitle.innerText = "Error fetching details";
@@ -743,7 +760,7 @@ function resetMonsterSearchModal() {
     monsterSearchView.classList.remove('hidden-ui');
     monsterEditView.classList.add('hidden-ui');
     // monsterSearchResults.classList.add('hidden-ui');
-    
+
     monsterSearchTitle.innerText = "Add To Initiative";
     monsterSearchInput.value = '';
 }
@@ -753,10 +770,10 @@ confirmMonsterAddBtn.addEventListener('click', async () => {
 
     const name = monsterEditName.value || selectedMonsterOriginalData.name;
     const initiative = parseInt(monsterEditInitiative.value) || 0;
-    
+
     // Store the edited stats in the local tracker
     const newEntity = {
-        id: `monster_${Date.now()}`, 
+        id: `monster_${Date.now()}`,
         name: name,
         initiative: initiative,
         hp: parseInt(monsterEditHp.value) || 0,
@@ -770,7 +787,7 @@ confirmMonsterAddBtn.addEventListener('click', async () => {
             cha: parseInt(monsterEditCha.value) || 10
         }
     };
-    
+
     if (initiativeRollPhaseActive) {
         pendingCreatures.push(newEntity);
         pendingCreatures.sort((a, b) => b.initiative - a.initiative);
@@ -779,7 +796,7 @@ confirmMonsterAddBtn.addEventListener('click', async () => {
         activeCombatTracker.upcoming.sort((a, b) => b.initiative - a.initiative);
         renderCombatTracker(activeCombatTracker);
     }
-    
+
     // Send the ORIGINAL API data to the backend exactly as requested
     const campaignId = sessionStorage.getItem('activeCampaignId');
     try {
@@ -788,13 +805,13 @@ confirmMonsterAddBtn.addEventListener('click', async () => {
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({
                 campaignID: campaignId,
-                monsterData: selectedMonsterOriginalData 
+                monsterData: selectedMonsterOriginalData
             })
         });
     } catch (err) {
         console.error("Failed to save monster to backend:", err);
     }
-    
+
     monsterSearchModal.close();
 });
 
@@ -802,19 +819,19 @@ addExistingCreatureBtn.addEventListener('click', async () => {
     initModal.close(); // Close the main menu
     existingCreaturesModal.showModal();
     addExistingCreatureBtn.blur();
-    
+
     existingLoading.classList.remove('hidden-ui');
     existingCreaturesList.innerHTML = '';
-    
+
     const campaignId = sessionStorage.getItem('activeCampaignId');
-    
+
     try {
         // Fetch the saved monsters for this specific campaign
         const response = await fetchWithAuth(`${BASE_URL}/api/DM/getSavedMonsters?campaignID=${campaignId}`);
         const data = await response.json();
-        
+
         existingLoading.classList.add('hidden-ui');
-        
+
         if (response.ok && data.success && data.monsters.length > 0) {
             renderExistingMonsters(data.monsters);
         } else {
@@ -834,53 +851,53 @@ closeExistingModalBtn.addEventListener('click', () => {
 
 function renderExistingMonsters(savedMonsters) {
     existingCreaturesList.innerHTML = '';
-    
+
     savedMonsters.forEach(monster => {
         // Assuming your backend sends back the parsed JSON in a 'data' or 'stats' field
         // Adjust 'monster.monster_data' based on exactly how your SQL row is returned!
-        const monsterStats = typeof monster.monster_data === 'string' 
-            ? JSON.parse(monster.monster_data) 
+        const monsterStats = typeof monster.monster_data === 'string'
+            ? JSON.parse(monster.monster_data)
             : monster.monster_data;
 
         const div = document.createElement('div');
         div.className = 'monster-list-item';
         // Show the name, maybe append a little visual indicator that it's saved
-        div.innerText = monsterStats.name; 
-        
+        div.innerText = monsterStats.name;
+
         div.addEventListener('click', () => {
             // Close the existing list modal
             existingCreaturesModal.close();
-            
+
             // Re-use our original data variable so the Confirm button works normally!
             selectedMonsterOriginalData = monsterStats;
-            
+
             // Populate the Edit View with the saved default stats
-            monsterSearchTitle.innerText = `Edit`; 
+            monsterSearchTitle.innerText = `Edit`;
             monsterEditName.value = monsterStats.name;
             monsterEditHp.value = monsterStats.hit_points || 0;
-            
+
             const acData = monsterStats.armor_class;
             monsterEditAc.value = (acData && acData.length > 0) ? acData[0].value : 10;
-            
+
             monsterEditStr.value = monsterStats.strength || 10;
             monsterEditDex.value = monsterStats.dexterity || 10;
             monsterEditCon.value = monsterStats.constitution || 10;
             monsterEditInt.value = monsterStats.intelligence || 10;
             monsterEditWis.value = monsterStats.wisdom || 10;
             monsterEditCha.value = monsterStats.charisma || 10;
-            
+
             // Roll fresh initiative
             const dex = monsterStats.dexterity || 10;
             const dexMod = Math.floor((dex - 10) / 2);
             const roll = Math.floor(Math.random() * 20) + 1;
             monsterEditInitiative.value = roll + dexMod;
-            
+
             // Hide the search views and show the edit view!
             monsterSearchView.classList.add('hidden-ui');
             monsterEditView.classList.remove('hidden-ui');
             monsterSearchModal.showModal(); // Open the edit modal
         });
-        
+
         existingCreaturesList.appendChild(div);
     });
 }
@@ -904,10 +921,12 @@ assetTabs.forEach(tab => {
             // If they clicked the Audio tab and a song is already playing, 
             // skip fetching the list and just show them the player UI!
             showAudioPlayer();
-        } else {
-            // Otherwise, hide the player and render the standard grid
+        } 
+        else {
             hideAudioPlayer();
             const assets = await loadAssets(assetType);
+            currentAssetsCache = assets;
+            assetSearchInput.value = '';
             renderAssets(assets, assetType);
         }
     })
@@ -933,7 +952,7 @@ assetsGrid.addEventListener('click', (e) => {
             uploadErrorMessage.innerText = ""
             addAssetForm.reset()
 
-            if(activeAssetType === 'audio') {
+            if (activeAssetType === 'audio') {
                 assetFileInput.accept = "audio/mpeg, audio/wav, audio/ogg"
             }
             else {
@@ -942,7 +961,7 @@ assetsGrid.addEventListener('click', (e) => {
 
             addAssetModal.showModal()
         }
-    } 
+    }
     // else {
 
     //     changeMapBackground()
@@ -983,6 +1002,8 @@ addAssetForm.addEventListener('submit', async (e) => {
         if (response.ok && data.success) {
             addAssetModal.close()
             const freshAssets = await loadAssets(activeAssetType)
+            currentAssetsCache = freshAssets
+            assetSearchInput.value = ''
             renderAssets(freshAssets, activeAssetType)
         }
         else {
@@ -1088,7 +1109,7 @@ async function loadPartyVolumeControls() {
     participants.forEach(player => {
         const row = document.createElement('div')
         row.className = 'player-volume-row'
-        
+
         const nameSpan = document.createElement('span')
         nameSpan.className = 'player-volume-name'
         nameSpan.innerText = player.first_name
@@ -1100,11 +1121,11 @@ async function loadPartyVolumeControls() {
         slider.max = '1'
         slider.step = '0.05'
         slider.value = '0.5'
-        
+
         slider.addEventListener('input', () => {
-            socket.emit('audio:setPlayerVolume', { 
-                targetUserId: player.user_id, 
-                volume: slider.value 
+            socket.emit('audio:setPlayerVolume', {
+                targetUserId: player.user_id,
+                volume: slider.value
             })
         })
 
@@ -1119,7 +1140,7 @@ function playAudio(url, name) {
     currentAudio.src = url
     currentAudio.volume = volumeBar.value
     currentAudio.play()
-    
+
     isAudioPlaying = true
     playPauseBtn.innerHTML = '<i class="fa-solid fa-pause"></i>'
     showAudioPlayer()
@@ -1147,7 +1168,7 @@ playPauseBtn.addEventListener('click', () => {
         currentAudio.play()
         playPauseBtn.innerHTML = '<i class="fa-solid fa-pause"></i>'
         socket.emit('audio:resume')
-    } 
+    }
     else {
         currentAudio.pause()
         playPauseBtn.innerHTML = '<i class="fa-solid fa-play"></i>'
@@ -1185,9 +1206,10 @@ closeAudioBtn.addEventListener('click', async () => {
     hideAudioPlayer()
 
     socket.emit('audio:stop')
-    
-    // Re-fetch and show the audio list
+
     const assets = await loadAssets('audio')
+    currentAssetsCache = assets; // <-- Update cache
+    assetSearchInput.value = ''; // <-- Clear search bar
     renderAssets(assets, 'audio')
 })
 
@@ -1202,4 +1224,7 @@ seekBar.addEventListener('change', () => {
 })
 
 renderCombatTracker(activeCombatTracker);
-loadAssets(activeAssetType).then(assets => renderAssets(assets, activeAssetType));
+loadAssets(activeAssetType).then(assets => {
+    currentAssetsCache = assets;
+    renderAssets(assets, activeAssetType);
+})
