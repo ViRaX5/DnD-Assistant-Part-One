@@ -336,13 +336,23 @@ function handlePrevTurn(clickedBtn) {
 
 function handleRemoveEntity(idStr) {
     const id = parseInt(idStr) || idStr;
+    let removed = false;
 
     if (activeCombatTracker.currentTurn && activeCombatTracker.currentTurn.id === id) {
         activeCombatTracker.currentTurn = activeCombatTracker.upcoming.shift() || null;
+        removed = true;
     }
     else {
+        const beforeLength = activeCombatTracker.upcoming.length;
         activeCombatTracker.upcoming = activeCombatTracker.upcoming.filter(entity => entity.id !== id);
+        removed = activeCombatTracker.upcoming.length < beforeLength;
     }
+
+    if (removed && combatActive) {
+        combatantCount = Math.max(0, combatantCount - 1);
+        if (turnsTakenThisRound >= combatantCount) turnsTakenThisRound = 0;
+    }
+
     renderCombatTracker(activeCombatTracker);
 }
 
@@ -540,7 +550,13 @@ function renderInitiativeRoster(roster) {
         });
     }
 
-    initiativePanelStartBtn.disabled = !roster.every(p => p.hasRolled);
+    updateInitiativeStartButtonState();
+}
+
+function updateInitiativeStartButtonState() {
+    const allRolled = initiativeRosterCache.every(p => p.hasRolled);
+    const hasAnyCombatant = initiativeRosterCache.length > 0 || pendingCreatures.length > 0;
+    initiativePanelStartBtn.disabled = !allRolled || !hasAnyCombatant;
 }
 
 socket.on('initiative:panelUpdate', (roster) => {
@@ -571,6 +587,8 @@ initiativeAddToCombatBtn.addEventListener('click', () => {
 });
 
 initiativePanelStartBtn.addEventListener('click', () => {
+    if (initiativeRosterCache.length === 0 && pendingCreatures.length === 0) return;
+
     const playerEntries = initiativeRosterCache.map(p => ({
         id: p.userId,
         userId: p.userId,
@@ -774,9 +792,11 @@ confirmMonsterAddBtn.addEventListener('click', async () => {
     if (initiativeRollPhaseActive) {
         pendingCreatures.push(newEntity);
         pendingCreatures.sort((a, b) => b.initiative - a.initiative);
+        updateInitiativeStartButtonState();
     } else {
         activeCombatTracker.upcoming.push(newEntity);
         activeCombatTracker.upcoming.sort((a, b) => b.initiative - a.initiative);
+        if (combatActive) combatantCount++;
         renderCombatTracker(activeCombatTracker);
     }
     
@@ -1031,26 +1051,37 @@ const restApprovalText = document.getElementById('rest-approval-text');
 const restApproveBtn = document.getElementById('rest-approve-btn');
 const restDenyBtn = document.getElementById('rest-deny-btn');
 
-let pendingRestRequest = null;
+let restRequestQueue = [];
+
+function showNextRestRequest() {
+    const request = restRequestQueue[0];
+    if (!request) {
+        restApprovalModal.close();
+        return;
+    }
+    restApprovalText.textContent = `${request.playerName} is requesting a ${request.restType === 'long' ? 'Long' : 'Short'} Rest.`;
+    restApprovalModal.showModal();
+}
 
 socket.on('rest:approvalRequest', ({ playerUserId, playerName, restType }) => {
-    pendingRestRequest = { playerUserId, restType };
-    restApprovalText.textContent = `${playerName} is requesting a ${restType === 'long' ? 'Long' : 'Short'} Rest.`;
-    restApprovalModal.showModal();
+    restRequestQueue.push({ playerUserId, playerName, restType });
+    if (restRequestQueue.length === 1) {
+        showNextRestRequest();
+    }
 });
 
 restApproveBtn.addEventListener('click', () => {
-    if (!pendingRestRequest) return;
-    socket.emit('rest:respond', { ...pendingRestRequest, approved: true });
-    restApprovalModal.close();
-    pendingRestRequest = null;
+    const request = restRequestQueue.shift();
+    if (!request) return;
+    socket.emit('rest:respond', { playerUserId: request.playerUserId, restType: request.restType, approved: true });
+    showNextRestRequest();
 });
 
 restDenyBtn.addEventListener('click', () => {
-    if (!pendingRestRequest) return;
-    socket.emit('rest:respond', { ...pendingRestRequest, approved: false });
-    restApprovalModal.close();
-    pendingRestRequest = null;
+    const request = restRequestQueue.shift();
+    if (!request) return;
+    socket.emit('rest:respond', { playerUserId: request.playerUserId, restType: request.restType, approved: false });
+    showNextRestRequest();
 });
 
 // Reset Map

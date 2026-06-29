@@ -554,7 +554,24 @@ h6 {
 #currency {
   display: flex;
   flex-direction: row;
-  gap: 10px;
+  gap: 6px;
+}
+
+.currency-item {
+  display: flex;
+  align-items: baseline;
+  gap: 3px;
+  padding: 2px 7px;
+  border-radius: 8px;
+  background: rgba(255, 255, 255, 0.08);
+  font-size: 13px;
+  font-weight: 600;
+}
+
+.currency-label {
+  font-size: 10px;
+  font-weight: 500;
+  opacity: 0.75;
 }
 
 #gold-amount {
@@ -1934,7 +1951,8 @@ nav {
 #shop-search-results.hidden-ui,
 #shop-loading.hidden-ui,
 #short-rest-btn.hidden-ui,
-#long-rest-btn.hidden-ui {
+#long-rest-btn.hidden-ui,
+#existing-loading.hidden-ui {
   display: none;
 }
 
