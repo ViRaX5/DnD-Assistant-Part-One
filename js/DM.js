@@ -103,26 +103,9 @@ async function loadAssets(assetType) {
     }
 }
 
-const combatTracker1 = {
-    currentTurn: { id: 2, name: "Player 2", initiative: 10 },
-    upcoming: [
-        { id: 4, name: "Tharion (Rogue)", initiative: 19 },
-        { id: 5, name: "Eldrin (Wizard)", initiative: 18 },
-        { id: 6, name: "Young Red Dragon", initiative: 17 },
-        { id: 7, name: "Lurking Grick", initiative: 16 },
-        { id: 8, name: "Orc Warlord", initiative: 15 },
-        { id: 9, name: "Dire Wolf", initiative: 14 },
-        { id: 10, name: "Hobgoblin Captain", initiative: 13 },
-        { id: 11, name: "Skeletal Archer", initiative: 12 },
-        { id: 12, name: "Goblin Shaman", initiative: 11 },
-        { id: 13, name: "Kaelen (Paladin)", initiative: 9 },
-        { id: 14, name: "Cave Troll", initiative: 6 },
-        { id: 15, name: "Gelatinous Cube", initiative: 4 }
-    ]
-};
-const combatTracker2 = {};
+const emptyCombatTracker = { currentTurn: null, upcoming: [] };
 
-let activeCombatTracker = JSON.parse(JSON.stringify(combatTracker1));
+let activeCombatTracker = JSON.parse(JSON.stringify(emptyCombatTracker));
 
 const currentPlayerContainer = document.getElementById('current-player-container');
 const nextInitiativesContainer = document.getElementById('next-initiatives-container');
@@ -302,9 +285,6 @@ function spawnToken(imageUrl) {
         
         if (iframeWindow && iframeWindow.addToken) {
             iframeWindow.addToken(imageUrl);
-            
-            // TODO for the future: Broadcast this new token to the players!
-            // socket.emit('map:spawnToken', { imageUrl: imageUrl });
         } else {
             console.error("Could not find the addToken function inside the iframe!");
         }
@@ -621,7 +601,7 @@ initiativePanelStartBtn.addEventListener('click', () => {
 });
 
 endCombatBtn.addEventListener('click', () => {
-    activeCombatTracker = JSON.parse(JSON.stringify(combatTracker2));
+    activeCombatTracker = JSON.parse(JSON.stringify(emptyCombatTracker));
     combatActive = false;
     roundNumber = 1;
     pendingCreatures = [];

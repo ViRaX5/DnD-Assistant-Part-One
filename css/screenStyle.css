@@ -14,6 +14,12 @@
   font-size: 18px;
   font-weight: 600;
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+  opacity: 0;
+  transition: opacity 0.3s ease;
+}
+
+.temporary-notice.visible {
+  opacity: 1;
 }
 
 :root {
@@ -1738,6 +1744,15 @@ nav {
   background-color: #a6a8ab;
 }
 
+.end-session {
+  background-color: #f06272;
+  color: white;
+}
+
+.end-session:hover {
+  background-color: #ed253c;
+}
+
 #end-session-modal {
   margin: auto;
   padding: 20px;
@@ -1918,7 +1933,6 @@ nav {
 #monster-search-results.hidden-ui,
 #shop-search-results.hidden-ui,
 #shop-loading.hidden-ui,
-#initiative-roll-banner.hidden-ui,
 #short-rest-btn.hidden-ui,
 #long-rest-btn.hidden-ui {
   display: none;

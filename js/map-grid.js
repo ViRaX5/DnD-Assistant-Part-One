@@ -537,20 +537,55 @@ window.setMapImage = (imageUrl) => {
 window.addToken = (imageUrl) => {
   const img = new Image();
   img.onload = () => {
-    state.tokens.push({
+    const newToken = {
       id: 'token-' + Date.now(),
       gridX: Math.floor(state.gridCols / 2),
       gridY: Math.floor(state.gridRows / 2),
+      imageUrl: imageUrl,
       imgObj: img
-    })
-    draw()
+    };
+    state.tokens.push(newToken);
+    draw();
+
+    if (window.parent !== window && window.parent.broadcastTokenSpawn) {
+      window.parent.broadcastTokenSpawn({
+        id: newToken.id,
+        gridX: newToken.gridX,
+        gridY: newToken.gridY,
+        imageUrl: newToken.imageUrl
+      });
+    }
   }
   img.src = imageUrl
 }
 
+window.addRemoteToken = (data) => {
+  const img = new Image();
+  img.onload = () => draw();
+  img.src = data.imageUrl;
+
+  state.tokens.push({
+    id: data.id,
+    gridX: data.gridX,
+    gridY: data.gridY,
+    imageUrl: data.imageUrl,
+    imgObj: img
+  });
+  draw();
+}
+
 window.setInitialTokens = (tokens) => {
-  state.tokens = tokens || []
-  draw()
+  state.tokens = (tokens || []).map(token => {
+    const restored = { ...token, imgObj: null };
+    if (token.imageUrl) {
+      const img = new Image();
+      img.onload = () => draw();
+      img.src = token.imageUrl;
+      restored.imgObj = img;
+    }
+    return restored;
+  });
+  draw();
 }
 
 window.resetMap = () => {

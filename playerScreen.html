@@ -255,12 +255,14 @@
           title="Grid map"
           loading="lazy"
         ></iframe>
-        <div id="initiative-roll-banner" class="hidden-ui">
-          <span id="initiative-roll-banner-text">Roll for Initiative!</span>
-          <button id="roll-initiative-auto-btn">Roll for me</button>
-          <input type="number" id="roll-initiative-manual-input" placeholder="Enter your raw d20 result (bonus added automatically)" />
-          <button id="roll-initiative-manual-submit-btn">Submit</button>
-        </div>
+        <dialog id="initiative-roll-banner">
+          <div class="modal-content">
+            <h2 id="initiative-roll-banner-text">Roll for Initiative!</h2>
+            <button id="roll-initiative-auto-btn" class="menu-btn">Roll for me</button>
+            <input type="number" id="roll-initiative-manual-input" class="menu-input" placeholder="Enter your raw d20 result (bonus added automatically)" />
+            <button id="roll-initiative-manual-submit-btn" class="menu-btn">Submit</button>
+          </div>
+        </dialog>
         <div id="action-bar">
           <div id="actions-list">
             <div class="action-wrapper">

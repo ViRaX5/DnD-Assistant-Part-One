@@ -53,8 +53,13 @@ function showTemporaryNotice(text) {
 
     document.body.appendChild(notice);
 
+    requestAnimationFrame(() => {
+        notice.classList.add('visible');
+    });
+
     setTimeout(() => {
-        notice.remove();
+        notice.classList.remove('visible');
+        notice.addEventListener('transitionend', () => notice.remove(), { once: true });
     }, 2000);
 }
 
@@ -110,10 +115,8 @@ function initiativeRollInteraction() {
             meta: { rollString: `${d20Result} (1d20)`, total: d20Result, dice: ['d20'] }
         });
 
-        bannerText.textContent = 'Waiting for combat to start...';
-        autoBtn.style.display = 'none';
-        manualInput.style.display = 'none';
-        manualSubmitBtn.style.display = 'none';
+        showTemporaryNotice("Roll submitted! Waiting for combat to start...");
+        banner.close();
     }
 
     autoBtn.addEventListener('click', () => {
@@ -132,15 +135,12 @@ function initiativeRollInteraction() {
 
     socket.on('initiative:rollPrompt', () => {
         bannerText.textContent = 'Roll for Initiative!';
-        autoBtn.style.display = '';
-        manualInput.style.display = '';
         manualInput.value = '';
-        manualSubmitBtn.style.display = '';
-        banner.classList.remove('hidden-ui');
+        banner.showModal();
     });
 
     socket.on('initiative:rollPromptClear', () => {
-        banner.classList.add('hidden-ui');
+        if (banner.open) banner.close();
     });
 }
 
@@ -943,7 +943,7 @@ function updateActionLockState() {
     if (!actionsList) return;
 
     actionsList.querySelectorAll('.action-container').forEach(button => {
-        const turnLocked = combatActive && currentTurnUserId !== sessionContext.userId;
+        const turnLocked = !combatActive || currentTurnUserId !== sessionContext.userId;
         const cooldownLocked = activeCooldowns.has(button.id);
         const locked = turnLocked || cooldownLocked;
 
@@ -990,7 +990,11 @@ function actionBarInteraction() {
 
         if (!button) return;
 
-        if (combatActive && currentTurnUserId !== sessionContext.userId) {
+        if (!combatActive) {
+            showTemporaryNotice("No active combat.");
+            return;
+        }
+        if (currentTurnUserId !== sessionContext.userId) {
             showTemporaryNotice("It's not your turn!");
             return;
         }
@@ -1066,10 +1070,21 @@ function restInteraction() {
     }
 
     restBtn.addEventListener('click', () => {
-        if (combatActive) return;
+        if (combatActive) {
+            showTemporaryNotice("You can't rest during combat.");
+            return;
+        }
 
-        shortRestBtn.classList.toggle('hidden-ui', !hasCooldownType('shortRest'));
-        longRestBtn.classList.toggle('hidden-ui', !(hasCooldownType('shortRest') || hasCooldownType('longRest')));
+        const canShortRest = hasCooldownType('shortRest');
+        const canLongRest = canShortRest || hasCooldownType('longRest');
+
+        if (!canShortRest && !canLongRest) {
+            showTemporaryNotice("Nothing to rest from right now.");
+            return;
+        }
+
+        shortRestBtn.classList.toggle('hidden-ui', !canShortRest);
+        longRestBtn.classList.toggle('hidden-ui', !canLongRest);
 
         restModal.showModal();
     });

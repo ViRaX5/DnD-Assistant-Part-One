@@ -14,6 +14,10 @@ window.broadcastTokenMove = (data) => {
     socket.emit('map:moveToken', data);
 };
 
+window.broadcastTokenSpawn = (data) => {
+    socket.emit('map:spawnToken', data);
+};
+
 socket.on('map:updateToken', (data) => {
     const mapIframe = document.getElementById('main-map');
 
@@ -21,6 +25,14 @@ socket.on('map:updateToken', (data) => {
     if (mapIframe && mapIframe.contentWindow && mapIframe.contentWindow.updateRemoteToken) {
         // Pass the data down through the iframe boundary
         mapIframe.contentWindow.updateRemoteToken(data.tokenId, data.newX, data.newY);
+    }
+});
+
+socket.on('map:spawnToken', (data) => {
+    const mapIframe = document.getElementById('main-map');
+
+    if (mapIframe && mapIframe.contentWindow && mapIframe.contentWindow.addRemoteToken) {
+        mapIframe.contentWindow.addRemoteToken(data);
     }
 });
 
