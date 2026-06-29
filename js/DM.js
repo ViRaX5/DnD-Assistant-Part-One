@@ -590,6 +590,14 @@ shopBtn.addEventListener('click', () => {
     socket.emit('shop:toggle', { isOpen: !isShopOpen() })
 });
 
+// Reset Map
+const resetMapBtn = document.getElementById('reset-map-btn');
+
+resetMapBtn.addEventListener('click', () => {
+    socket.emit('map:reset');
+    resetMapBtn.blur();
+});
+
 // Play Music
 // --- AUDIO PLAYER LOGIC ---
 

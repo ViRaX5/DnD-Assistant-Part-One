@@ -517,11 +517,24 @@ window.addToken = (imageUrl) => {
   img.onload = () => {
     state.tokens.push({
       id: 'token-' + Date.now(),
-      gridX: Math.floor(state.gridCols / 2), 
+      gridX: Math.floor(state.gridCols / 2),
       gridY: Math.floor(state.gridRows / 2),
-      imgObj: img 
+      imgObj: img
     })
     draw()
   }
   img.src = imageUrl
+}
+
+window.setInitialTokens = (tokens) => {
+  if (tokens && tokens.length > 0) {
+    state.tokens = tokens
+    draw()
+  }
+}
+
+window.resetMap = () => {
+  state.tokens = []
+  mapImageObj = null
+  draw()
 }

@@ -24,6 +24,39 @@ socket.on('map:updateToken', (data) => {
     }
 });
 
+socket.on('map:reset', () => {
+    const mapIframe = document.getElementById('main-map');
+
+    if (mapIframe && mapIframe.contentWindow && mapIframe.contentWindow.resetMap) {
+        mapIframe.contentWindow.resetMap();
+    }
+});
+
+async function loadMapState() {
+    const mapIframe = document.getElementById('main-map');
+    if (!mapIframe) return;
+
+    try {
+        const response = await fetchWithAuth(
+            `${BASE_URL}/api/getMapState?campaignId=${sessionContext.campaignId}`
+        );
+        const data = await response.json();
+
+        if (response.ok && data.success) {
+            const iframeWindow = mapIframe.contentWindow;
+
+            if (data.backgroundUrl && iframeWindow.setMapImage) {
+                iframeWindow.setMapImage(data.backgroundUrl);
+            }
+            if (iframeWindow.setInitialTokens) {
+                iframeWindow.setInitialTokens(data.tokens);
+            }
+        }
+    } catch (error) {
+        console.error("Failed to load map state:", error);
+    }
+}
+
 async function initializeApp() {
     const currentPath = window.location.pathname;
 
@@ -75,6 +108,20 @@ async function initializeApp() {
 
     } catch (error) {
         console.error("Failed to load shop status:", error);
+    }
+
+    try {
+        const mapIframe = document.getElementById('main-map');
+        if (mapIframe) {
+            if (mapIframe.contentDocument && mapIframe.contentDocument.readyState === 'complete') {
+                loadMapState();
+            } else {
+                mapIframe.addEventListener('load', loadMapState);
+            }
+        }
+
+    } catch (error) {
+        console.error("Failed to set up map state load:", error);
     }
 }
 
