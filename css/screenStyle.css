@@ -1943,6 +1943,86 @@ nav {
   accent-color: #e74c3c;
 }
 
+/* adding monsters */
+
+.monster-modal-content {
+  max-height: 85vh;
+  overflow-y: auto;
+  width: 400px;
+  max-width: 90vw;
+}
+
+.monster-loading-text {
+  color: #a0aec0;
+  margin-top: 10px;
+}
+
+.monster-results-container {
+  max-height: 300px;
+  overflow-y: auto;
+  margin-top: 10px;
+  border: 1px solid #4a749f;
+  border-radius: 5px;
+  background: #1a202c;
+}
+
+.edit-view-description {
+  margin-bottom: 15px;
+  color: #a0aec0;
+  font-size: 0.9rem;
+}
+
+.edit-view-label {
+  display: block;
+  text-align: left;
+  font-size: 0.8rem;
+  margin-bottom: 4px;
+  color: #cbd5e0;
+}
+
+.edit-view-label.mt-10 {
+  margin-top: 10px;
+}
+
+.monster-modal-buttons {
+  margin-top: 20px;
+}
+
+.back-btn {
+  margin-bottom: 0 !important;
+  width: auto !important;
+  padding: 10px 20px !important;
+}
+
+/* For the JS-generated monster rows */
+.monster-list-item {
+  padding: 10px;
+  border-bottom: 1px solid #4a749f;
+  cursor: pointer;
+  color: #e2e8f0;
+  transition: background-color 0.2s;
+}
+
+.monster-list-item:hover {
+  background-color: #4a749f;
+}
+
+.monster-error-message {
+  color: #e53e3e;
+  padding: 10px;
+  display: block; /* To ensure padding applies correctly to the span */
+}
+
+.monster-empty-message {
+  padding: 10px;
+  color: #a0aec0;
+}
+
+/* general empty state */
+.empty-state-text {
+  color: #63748c;
+}
+
 /* media for all */
 
 /* @media (max-width: 1500px) {

@@ -131,7 +131,8 @@ sign_up_form.addEventListener('submit', async (e) => {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify(userData),
-            signal: controller.signal
+            signal: controller.signal,
+            credentials: 'include'
         })
 
         clearTimeout(timeoutId)
@@ -193,7 +194,8 @@ login_form.addEventListener('submit', async (e) => {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify(loginData),
-            signal: controller.signal
+            signal: controller.signal,
+            credentials: 'include'
         });
 
         clearTimeout(timeoutId)

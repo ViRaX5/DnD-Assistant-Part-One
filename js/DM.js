@@ -117,6 +117,24 @@ const initModal = document.getElementById('add-initiative-modal');
 const closeInitModal = document.getElementById('close-initiative-modal');
 const assetTabs = document.querySelectorAll('.assets-tabs button');
 
+const addNewCreatureBtn = document.getElementById('add-new-creature-btn');
+const monsterSearchModal = document.getElementById('monster-search-modal');
+const closeMonsterSearchModal = document.getElementById('close-monster-search-modal');
+const monsterSearchInput = document.getElementById('monster-search-input');
+const monsterSearchResults = document.getElementById('monster-search-results');
+const monsterLoading = document.getElementById('monster-loading');
+const monsterSearchView = document.getElementById('monster-search-view');
+const monsterEditView = document.getElementById('monster-edit-view');
+const monsterSearchTitle = document.getElementById('monster-search-title');
+const monsterEditName = document.getElementById('monster-edit-name');
+const monsterEditInitiative = document.getElementById('monster-edit-initiative');
+const monsterEditHp = document.getElementById('monster-edit-hp');
+const backMonsterSearchBtn = document.getElementById('back-monster-search-btn');
+const confirmMonsterAddBtn = document.getElementById('confirm-monster-add-btn');
+
+let allMonstersCache = [];
+let selectedMonsterOriginalData = null;
+
 const addEffectBtn = document.getElementsByClassName('add-effect-btn')[0];
 const addEffectModal = document.getElementById('add-effect-modal');
 const closeAddEffectModal = document.getElementById('close-add-effect-modal');
@@ -127,7 +145,7 @@ const effectDurationInput = document.getElementById('effect-duration-input');
 
 function renderCombatTracker(combatData) {
     if (!combatData || (!combatData.currentTurn && combatData.upcoming.length === 0)) {
-        currentPlayerContainer.innerHTML = `<span style="color: #63748c;">No active combat</span>`;
+        currentPlayerContainer.innerHTML = `<span class="empty-state-text">No active combat</span>`;
         nextInitiativesContainer.innerHTML = '';
         return;
     }
@@ -140,7 +158,7 @@ function renderCombatTracker(combatData) {
           </div>
         `;
     } else {
-        currentPlayerContainer.innerHTML = `<span style="color: #63748c;">No current player</span>`;
+        currentPlayerContainer.innerHTML = `<span class="empty-state-text">No current player</span>`;
     }
 
     nextInitiativesContainer.innerHTML = '';
@@ -287,6 +305,150 @@ addInitBtn.addEventListener('click', () => {
 closeInitModal.addEventListener('click', () => {
     initModal.close()
     closeInitModal.blur()
+});
+
+addNewCreatureBtn.addEventListener('click', async () => {
+    initModal.close(); // Close the previous menu
+    resetMonsterSearchModal();
+    monsterSearchModal.showModal();
+    addNewCreatureBtn.blur();
+
+    // Only hit the D&D API once per session!
+    if (allMonstersCache.length === 0) {
+        monsterLoading.classList.remove('hidden-ui');
+        try {
+            const res = await fetch('https://www.dnd5eapi.co/api/monsters');
+            const data = await res.json();
+            allMonstersCache = data.results;
+            renderMonsterList(allMonstersCache);
+        } catch (err) {
+            console.error("Failed to fetch monsters:", err);
+            monsterSearchResults.innerHTML = '<span class="monster-error-message">Failed to load monsters.</span>';
+        } finally {
+            monsterLoading.classList.add('hidden-ui');
+        }
+    } else {
+        renderMonsterList(allMonstersCache);
+    }
+});
+
+closeMonsterSearchModal.addEventListener('click', () => {
+    monsterSearchModal.close();
+});
+
+backMonsterSearchBtn.addEventListener('click', () => {
+    // Go back to the search view without closing the modal
+    monsterEditView.classList.add('hidden-ui');
+    backMonsterSearchBtn.classList.add('hidden-ui');
+    confirmMonsterAddBtn.classList.add('hidden-ui');
+    
+    monsterSearchView.classList.remove('hidden-ui');
+    monsterSearchTitle.innerText = "Search Monster";
+});
+
+// Live Search filtering
+monsterSearchInput.addEventListener('input', (e) => {
+    const query = e.target.value.toLowerCase();
+    const filtered = allMonstersCache.filter(m => m.name.toLowerCase().includes(query));
+    renderMonsterList(filtered);
+});
+
+function renderMonsterList(list) {
+    monsterSearchResults.innerHTML = '';
+    
+    // Display max 50 at a time to prevent UI lag when searching
+    const displayList = list.slice(0, 50); 
+    
+    if (displayList.length === 0) {
+        monsterSearchResults.innerHTML = '<div class="monster-empty-message">No monsters found.</div>';
+        return;
+    }
+
+    displayList.forEach(monster => {
+        const div = document.createElement('div');
+        div.className = 'monster-list-item';
+        div.innerText = monster.name;
+        
+        div.addEventListener('click', () => selectMonster(monster.index, monster.name));
+        
+        monsterSearchResults.appendChild(div);
+    });
+}
+
+async function selectMonster(index, name) {
+    monsterSearchView.classList.add('hidden-ui');
+    monsterSearchTitle.innerText = "Fetching data...";
+    
+    try {
+        const res = await fetch(`https://www.dnd5eapi.co/api/monsters/${index}`);
+        selectedMonsterOriginalData = await res.json();
+        
+        // Populate the Edit Form!
+        monsterSearchTitle.innerText = `Edit: ${selectedMonsterOriginalData.name}`;
+        monsterEditName.value = selectedMonsterOriginalData.name;
+        monsterEditHp.value = selectedMonsterOriginalData.hit_points;
+        
+        // Automatically roll a standard 1d20 + DEX modifier for initiative!
+        const dex = selectedMonsterOriginalData.dexterity || 10;
+        const dexMod = Math.floor((dex - 10) / 2);
+        const roll = Math.floor(Math.random() * 20) + 1;
+        monsterEditInitiative.value = roll + dexMod;
+        
+        monsterEditView.classList.remove('hidden-ui');
+        backMonsterSearchBtn.classList.remove('hidden-ui');
+        confirmMonsterAddBtn.classList.remove('hidden-ui');
+        
+    } catch (err) {
+        console.error("Failed to fetch monster details:", err);
+        monsterSearchTitle.innerText = "Error fetching details";
+        monsterSearchView.classList.remove('hidden-ui');
+    }
+}
+
+function resetMonsterSearchModal() {
+    monsterSearchView.classList.remove('hidden-ui');
+    monsterEditView.classList.add('hidden-ui');
+    backMonsterSearchBtn.classList.add('hidden-ui');
+    confirmMonsterAddBtn.classList.add('hidden-ui');
+    
+    monsterSearchTitle.innerText = "Search Monster";
+    monsterSearchInput.value = '';
+    if (allMonstersCache.length > 0) renderMonsterList(allMonstersCache);
+}
+
+confirmMonsterAddBtn.addEventListener('click', async () => {
+    const name = monsterEditName.value || selectedMonsterOriginalData.name;
+    const initiative = parseInt(monsterEditInitiative.value) || 0;
+    
+    const newEntity = {
+        id: `monster_${Date.now()}`, 
+        name: name,
+        initiative: initiative
+    };
+    
+    // 1. Add to active combat tracker
+    activeCombatTracker.upcoming.push(newEntity);
+    
+    // 2. Sort the upcoming tracker automatically so highest initiative goes to the top!
+    activeCombatTracker.upcoming.sort((a, b) => b.initiative - a.initiative);
+    renderCombatTracker(activeCombatTracker);
+    
+    // 3. Send the ORIGINAL API data to the backend!
+    const campaignId = sessionStorage.getItem('activeCampaignId');
+    try {
+        await fetchWithAuth(`${BASE_URL}/api/DM/saveMonster`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+                campaignID: campaignId,
+                monsterData: selectedMonsterOriginalData // Contains all original untouched stats!
+            })
+        });
+    } catch (err) {
+        console.error("Failed to save monster to backend:", err);
+    }
+    
+    monsterSearchModal.close();
 });
 
 assetTabs.forEach(tab => {
@@ -441,14 +603,14 @@ function formatTime(seconds) {
 
 async function loadPartyVolumeControls() {
     const listContainer = document.getElementById('party-volume-list')
-    listContainer.innerHTML = '<span style="color: #63748c;">Loading party...</span>'
+    listContainer.innerHTML = '<span class="empty-state-text">Loading party...</span>'
 
     // Reuse the exact same fetch you built for the chat whispers!
     const participants = await fetchCampaignParticipants()
     listContainer.innerHTML = ''
 
     if (participants.length === 0) {
-        listContainer.innerHTML = '<span style="color: #63748c;">No players connected.</span>'
+        listContainer.innerHTML = '<span class="empty-state-text">No players connected.</span>'
         return
     }
 
