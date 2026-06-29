@@ -12,8 +12,7 @@ socket.on('connect', () => {
 
     socket.emit('session:join', {
         campaignId: sessionContext.campaignId,
-        userId: sessionContext.userId,
-        isDM: sessionContext.isDM
+        accessToken: localStorage.getItem('accessToken')
     })
 })
 

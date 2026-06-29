@@ -17,9 +17,9 @@ export function renderEquipmentAndTraits(data) {
 }
 
 function renderCurrency(currencyData) {
-    document.getElementById("gold-amount").textContent = `${currencyData.gold}G`;
-    document.getElementById("silver-amount").textContent = `${currencyData.silver}S`;
-    document.getElementById("copper-amount").textContent = `${currencyData.copper}C`;
+    document.querySelector("#gold-amount .currency-value").textContent = currencyData.gold;
+    document.querySelector("#silver-amount .currency-value").textContent = currencyData.silver;
+    document.querySelector("#copper-amount .currency-value").textContent = currencyData.copper;
 }
 
 function renderTraits(traitsData) {
