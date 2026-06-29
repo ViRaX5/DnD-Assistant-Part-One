@@ -3,7 +3,7 @@ add player info from characters sheet (temp hp, all skills, saving throws, passi
 proficency bonus should be added to proficient skills - DONE
 add gold/silver/copper to equipment - DONE
 
-add new creature as DM logic and functionality (use api for new monster) 
+add new creature as DM logic and functionality (use api for new monster)  - DONE
 sessions and campaign codes - DONE
 pop ups for dm when new player wants to join the campaign
 sync with API to streamline character creation - DONE
