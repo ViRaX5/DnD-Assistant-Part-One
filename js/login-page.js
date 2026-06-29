@@ -154,6 +154,7 @@ sign_up_form.addEventListener('submit', async (e) => {
             }
         }
         else {
+            localStorage.setItem('accessToken', data.token)
             window.location.href = data.redirect
         }
     }

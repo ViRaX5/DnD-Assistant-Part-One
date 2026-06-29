@@ -1,20 +1,18 @@
 <!doctype html>
 <html lang="en">
+
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <link rel="stylesheet" href="css/screenStyle.css" />
-    <link
-      rel="stylesheet"
-      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css"
-      integrity="sha512-SnH5WK+bZxgPHs44uWIX+LLJAJ9/2PkPKZ5QiAj6Ta86w+fsb2TkcmfRyVX3pBnMFcV7oQPJkl9QevSCWr3W6A=="
-      crossorigin="anonymous"
-      referrerpolicy="no-referrer"
-    />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css"
+    integrity="sha512-SnH5WK+bZxgPHs44uWIX+LLJAJ9/2PkPKZ5QiAj6Ta86w+fsb2TkcmfRyVX3pBnMFcV7oQPJkl9QevSCWr3W6A=="
+    crossorigin="anonymous" referrerpolicy="no-referrer" />
+    <link rel="icon" href="data:,">
     <script type="text/javascript" src="./js/api-client.js"></script>
     <script type="module" src="./js/app.js"></script>
     <!-- <script type="text/javascript" src="./js/DM.js" defer></script> -->
-     <script type="module" src="./js/DM.js"></script>
+    <script type="module" src="./js/DM.js"></script>
     <title>DnD Assistant</title>
   </head>
 
@@ -41,11 +39,7 @@
               <button class="menu-btn">Add Existing Creature</button>
               <button class="menu-btn">Add New Creature</button>
               <div class="modal-buttons">
-                <button
-                  type="button"
-                  id="close-initiative-modal"
-                  class="cancel-button"
-                >
+                <button type="button" id="close-initiative-modal" class="cancel-button">
                   Close
                 </button>
               </div>
@@ -67,24 +61,47 @@
           <div id="assets-grid"></div>
 
           <div class="search-container">
-            <input
-              type="text"
-              id="asset-search"
-              placeholder="Search Assets..."
-            />
+            <input type="text" id="asset-search" placeholder="Search Assets..." />
           </div>
           <!-- <div class="search-container">
             <input type="text" id="asset-search" placeholder="Search Assets..." />
           </div> -->
+          <div id="audio-player-container" class="hidden-ui">
+            <div class="audio-header">
+              <span id="audio-track-name">Track Name</span>
+              <button id="close-audio-btn" class="remove-btn">X</button>
+            </div>
 
+            <div class="audio-controls">
+              <button id="play-pause-btn" class="menu-btn"><i class="fa-solid fa-pause"></i></button>
+
+              <div class="seek-container">
+                <span id="current-time">0:00</span>
+                <input type="range" id="seek-bar" value="0" step="1">
+                <span id="duration">0:00</span>
+              </div>
+
+              <div class="volume-container">
+                <i class="fa-solid fa-volume-low"></i>
+                <input type="range" id="volume-bar" min="0" max="1" step="0.05" value="0.5">
+                <i class="fa-solid fa-volume-high"></i>
+              </div>
+              <div class="action-divider" style="margin: 15px 0 5px 0; background-color: #4a749f;"></div>
+              <div id="party-volume-section">
+                <div class="party-volume-header">Target Player Volume</div>
+                <div id="party-volume-list">
+                </div>
+              </div>
+            </div>
+          </div>
           <dialog id="add-asset-modal">
             <div class="modal-content">
               <h2 id="add-asset-title">Add Asset</h2>
               <form id="add-asset-form">
-                <input type="file" id="asset-file-input" name="media" class="menu-input" accept="image/png, image/jpeg, image/webp" required>
-                
+                <input type="file" id="asset-file-input" name="media" class="menu-input" required>
+
                 <div id="upload-error-message" class="form-error-message"></div>
-                
+
                 <div class="modal-buttons">
                   <button type="button" id="close-asset-modal" class="cancel-button">Cancel</button>
                   <button type="submit" id="submit-asset-button" class="upload-confirm">Upload</button>
@@ -98,11 +115,7 @@
         <header id="DMHeader">
           <div class="image-container">
             <a href="campaignList.html">
-              <img
-                class="logo"
-                src="./images/D&DLogoTransparent.png"
-                alt="Home"
-              />
+              <img class="logo" src="./images/D&DLogoTransparent.png" alt="Home" />
             </a>
           </div>
           <nav>
@@ -116,18 +129,10 @@
                   <h2>Ending the Adventure</h2>
                   <p>Are you sure you want to end the session?</p>
                   <div class="modal-buttons">
-                    <button
-                      type="button"
-                      id="cancel-end-session"
-                      class="cancel-button"
-                    >
+                    <button type="button" id="cancel-end-session" class="cancel-button">
                       Cancel
                     </button>
-                    <button
-                      type="button"
-                      id="confirm-end-session"
-                      class="confirm-button"
-                    >
+                    <button type="button" id="confirm-end-session" class="confirm-button">
                       Yes, End Session
                     </button>
                   </div>
@@ -136,12 +141,7 @@
             </div>
           </nav>
         </header>
-        <iframe
-          id="main-map"
-          src="./map-grid.html"
-          title="Grid map"
-          loading="lazy"
-        ></iframe>
+        <iframe id="main-map" src="./map-grid.html" title="Grid map" loading="lazy"></iframe>
         <div id="action-bar">
           <div class="combat-group">
             <button id="start-combat-btn" class="action-btn start-btn">
@@ -183,27 +183,13 @@
             <dialog id="add-effect-modal">
               <div class="modal-content">
                 <h2>Add Effect</h2>
-                <input
-                  id="effect-name-input"
-                  class="menu-input"
-                  type="text"
-                  placeholder="Effect Name"
-                />
-                <input
-                  id="effect-duration-input"
-                  class="menu-input"
-                  type="text"
-                  placeholder="Effect Duration"
-                />
+                <input id="effect-name-input" class="menu-input" type="text" placeholder="Effect Name" />
+                <input id="effect-duration-input" class="menu-input" type="text" placeholder="Effect Duration" />
                 <button id="add-effect-modal-button" class="menu-btn">
                   Add
                 </button>
                 <div class="modal-buttons">
-                  <button
-                    type="button"
-                    id="close-add-effect-modal"
-                    class="cancel-button"
-                  >
+                  <button type="button" id="close-add-effect-modal" class="cancel-button">
                     Close
                   </button>
                 </div>
@@ -258,12 +244,7 @@
 
           <div id="chat-controls">
             <div id="chat-input-row">
-              <input
-                type="text"
-                id="chat-input"
-                placeholder="Type Message..."
-                autocomplete="off"
-              />
+              <input type="text" id="chat-input" placeholder="Type Message..." autocomplete="off" />
 
               <button id="send-btn">Send</button>
             </div>
@@ -291,4 +272,5 @@
       </div>
     </div>
   </body>
+
 </html>

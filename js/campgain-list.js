@@ -56,6 +56,10 @@ let campaigns = [];
 const campaignContainerSection = document.querySelector('.campaigns-container')
 const noCampaignContainerSection = document.querySelector('.no-campaigns-container')
 async function loadPage() {
+    campaignContainerSection.innerHTML = ''
+    noCampaignContainerSection.innerHTML = ''
+    button_container.innerHTML = ''
+
     try {
         const response = await fetchWithAuth(`${BASE_URL}/api/campaignListID`, {
             method: 'GET',
@@ -79,6 +83,7 @@ async function loadPage() {
     }
     else {
         noCampaignContainerSection.style.display = 'none'
+        campaignContainerSection.style.display = ''
         campaigns.forEach(campaign => {
             if (campaign.users_role === "player") {
                 displayPlayerSessions(campaign)
@@ -305,6 +310,9 @@ function addButtons() {
             if (e.target.value !== "" && parseInt(e.target.value) < 0) {
                 e.target.value = 0
             }
+            else if (e.target.value !== "" && parseInt(e.target.value) > 30) {
+                e.target.value = 30
+            }
 
             const statName = e.target.id.split('-')[1]
             const targetSpan = document.getElementById(`mod-${statName}`)
@@ -480,6 +488,10 @@ cancel_logout_button.addEventListener('click', () => {
 
 confirm_logout_button.addEventListener('click', () => {
     /* some save to database logic that needs to come in the future */
+    localStorage.removeItem('accessToken')
+    sessionStorage.clear()
+    /* maybe in the future delete refresh cookie */
+    
     window.location.href = "index.html"
 })
 
@@ -713,26 +725,20 @@ button_container.addEventListener('click', async (e) => {
             .then(response => response.json())
             .then(data => {
                 if (data.success) {
-                    resetJoinModal();
-                    join_new_campaign_modal.close();
+                    resetJoinModal()
+                    join_new_campaign_modal.close()
 
-                    // Add the new campaign to the UI dynamically
-                    displayPlayerSessions({
-                        campaign_id: data.campaignId,
-                        campaign_name: data.campaignName,
-                        users_role: "player",
-                        character_name: characterName
-                    })
+                    loadPage()
                 }
                 else {
                     // If the backend says the code is invalid, show it on the UI
-                    errorMessage.innerText = data.error;
+                    errorMessage.innerText = data.error
                 }
             })
             .catch(err => {
-                console.error("Error joining campaign: ", err);
-                errorMessage.innerText = "Connection Error. Please try again.";
-            });
+                console.error("Error joining campaign: ", err)
+                errorMessage.innerText = "Connection Error. Please try again."
+            })
     }
     else if (e.target.id === 'cancel-create') {
         create_new_campaign_modal.close();
@@ -782,12 +788,7 @@ button_container.addEventListener('click', async (e) => {
                 create_new_campaign_modal.close()
                 create_new_campaign.blur()
 
-                displayDMSessions({
-                    campaign_id: data.campaignID,
-                    campaign_name: campaignName,
-                    users_role: "DM",
-                    amount_of_players: 0
-                })
+                loadPage()
             }
             else {
                 console.error("Failed to create campaign:", data.error)

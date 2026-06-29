@@ -1,5 +1,6 @@
 import { socket } from './socket.js'
 import { isShopOpen } from './ui-interactions.js'
+import { fetchCampaignParticipants } from './chat.js'
 
 const assetsDB1 = [
     { id: "t1", name: "player1_token" },
@@ -45,6 +46,22 @@ const mockAssetsByType = {
     map: mapsDB1,
     audio: audioDB1
 };
+
+
+const audioPlayerContainer = document.getElementById('audio-player-container');
+const trackNameDisplay = document.getElementById('audio-track-name');
+const closeAudioBtn = document.getElementById('close-audio-btn');
+const playPauseBtn = document.getElementById('play-pause-btn');
+const seekBar = document.getElementById('seek-bar');
+const volumeBar = document.getElementById('volume-bar');
+const currentTimeDisplay = document.getElementById('current-time');
+const durationDisplay = document.getElementById('duration');
+const searchContainer = document.querySelector('.search-container');
+
+// The native browser audio engine
+let currentAudio = new Audio()
+let isAudioPlaying = false
+let currentAudioName = ""
 
 let activeAssetType = 'token';
 
@@ -148,24 +165,6 @@ function renderCombatTracker(combatData) {
 }
 
 function renderAssets(assetsData, assetType) {
-    // const addButtonHtml = `<div id="add-asset-item" class="asset-item">${ASSET_TYPE_LABELS[assetType] || 'Add Asset'}</div>`;
-
-    // assetsGrid.innerHTML = '';
-    // if (!assetsData || assetsData.length === 0) {
-    //     assetsGrid.innerHTML += addButtonHtml;
-    //     assetsGrid.innerHTML += `<span class="no-assets-message">No assets found</span>`;
-    //     return;
-    // }
-    // assetsData.forEach(asset => {
-    //     if (!asset.name) return;
-    //     const token = document.createElement('div');
-    //     const info = document.createElement('span')
-    //     token.className = 'asset-item';
-    //     info.innerText = asset.name;
-    //     token.appendChild(info);
-    //     assetsGrid.appendChild(token);
-    // });
-    // assetsGrid.innerHTML += addButtonHtml;
     const addButtonHtml = `<div id="add-asset-item" class="asset-item">${ASSET_TYPE_LABELS[assetType] || 'Add Asset'}</div>`
     assetsGrid.innerHTML = ''
 
@@ -196,6 +195,11 @@ function renderAssets(assetsData, assetType) {
         else if (assetType === 'token') {
             itemDiv.addEventListener('click', () => {
                 spawnToken(asset.imageUrl)
+            })
+        }
+        else if (assetType === 'audio') {
+            itemDiv.addEventListener('click', () => {
+                playAudio(asset.imageUrl, asset.original_name)
             })
         }
 
@@ -300,8 +304,16 @@ assetTabs.forEach(tab => {
         if (!assetType) return
 
         activeAssetType = assetType
-        const assets = await loadAssets(assetType)
-        renderAssets(assets, assetType)
+        if (assetType === 'audio' && isAudioPlaying) {
+            // If they clicked the Audio tab and a song is already playing, 
+            // skip fetching the list and just show them the player UI!
+            showAudioPlayer();
+        } else {
+            // Otherwise, hide the player and render the standard grid
+            hideAudioPlayer();
+            const assets = await loadAssets(assetType);
+            renderAssets(assets, assetType);
+        }
     })
 })
 
@@ -324,6 +336,14 @@ assetsGrid.addEventListener('click', (e) => {
             addAssetTitle.innerText = `Add ${activeAssetType.charAt(0).toUpperCase() + activeAssetType.slice(1)}`
             uploadErrorMessage.innerText = ""
             addAssetForm.reset()
+
+            if(activeAssetType === 'audio') {
+                assetFileInput.accept = "audio/mpeg, audio/wav, audio/ogg"
+            }
+            else {
+                assetFileInput.accept = "image/png, image/jpeg, image/webp"
+            }
+
             addAssetModal.showModal()
         }
     } 
@@ -366,11 +386,8 @@ addAssetForm.addEventListener('submit', async (e) => {
 
         if (response.ok && data.success) {
             addAssetModal.close()
-            mockAssetsByType[activeAssetType].push({
-                id: data.assetId,
-                name: assetFileInput.files[0].name
-            })
-            renderAssets(mockAssetsByType[activeAssetType], activeAssetType)
+            const freshAssets = await loadAssets(activeAssetType)
+            renderAssets(freshAssets, activeAssetType)
         }
         else {
             uploadErrorMessage.innerText = data.error || "Failed to upload asset."
@@ -410,6 +427,146 @@ const shopBtn = document.getElementById('shop-btn');
 shopBtn.addEventListener('click', () => {
     socket.emit('shop:toggle', { isOpen: !isShopOpen() })
 });
+
+// Play Music
+// --- AUDIO PLAYER LOGIC ---
+
+// Helper function to format seconds into "M:SS"
+function formatTime(seconds) {
+    if (isNaN(seconds)) return "0:00"
+    const min = Math.floor(seconds / 60)
+    const sec = Math.floor(seconds % 60)
+    return `${min}:${sec < 10 ? '0' : ''}${sec}`
+}
+
+async function loadPartyVolumeControls() {
+    const listContainer = document.getElementById('party-volume-list')
+    listContainer.innerHTML = '<span style="color: #63748c;">Loading party...</span>'
+
+    // Reuse the exact same fetch you built for the chat whispers!
+    const participants = await fetchCampaignParticipants()
+    listContainer.innerHTML = ''
+
+    if (participants.length === 0) {
+        listContainer.innerHTML = '<span style="color: #63748c;">No players connected.</span>'
+        return
+    }
+
+    participants.forEach(player => {
+        const row = document.createElement('div')
+        row.className = 'player-volume-row'
+        
+        const nameSpan = document.createElement('span')
+        nameSpan.className = 'player-volume-name'
+        nameSpan.innerText = player.first_name
+        nameSpan.title = player.first_name
+
+        const slider = document.createElement('input')
+        slider.type = 'range'
+        slider.min = '0'
+        slider.max = '1'
+        slider.step = '0.05'
+        slider.value = '0.5'
+        
+        slider.addEventListener('input', () => {
+            socket.emit('audio:setPlayerVolume', { 
+                targetUserId: player.user_id, 
+                volume: slider.value 
+            })
+        })
+
+        row.appendChild(nameSpan)
+        row.appendChild(slider)
+        listContainer.appendChild(row)
+    })
+}
+
+function playAudio(url, name) {
+    currentAudioName = name
+    currentAudio.src = url
+    currentAudio.volume = volumeBar.value
+    currentAudio.play()
+    
+    isAudioPlaying = true
+    playPauseBtn.innerHTML = '<i class="fa-solid fa-pause"></i>'
+    showAudioPlayer()
+
+    socket.emit('audio:play', { url: url, name: name })
+}
+
+function showAudioPlayer() {
+    assetsGrid.classList.add('hidden-ui')
+    searchContainer.classList.add('hidden-ui')
+    audioPlayerContainer.classList.remove('hidden-ui')
+    trackNameDisplay.innerText = currentAudioName
+    loadPartyVolumeControls()
+}
+
+function hideAudioPlayer() {
+    audioPlayerContainer.classList.add('hidden-ui')
+    assetsGrid.classList.remove('hidden-ui')
+    searchContainer.classList.remove('hidden-ui')
+}
+
+// Play/Pause Button
+playPauseBtn.addEventListener('click', () => {
+    if (currentAudio.paused) {
+        currentAudio.play()
+        playPauseBtn.innerHTML = '<i class="fa-solid fa-pause"></i>'
+        socket.emit('audio:resume')
+    } 
+    else {
+        currentAudio.pause()
+        playPauseBtn.innerHTML = '<i class="fa-solid fa-play"></i>'
+        socket.emit('audio:pause')
+    }
+})
+
+// Update the seek bar as the song plays
+currentAudio.addEventListener('timeupdate', () => {
+    seekBar.value = currentAudio.currentTime
+    currentTimeDisplay.innerText = formatTime(currentAudio.currentTime)
+})
+
+// Set the max length of the seek bar when the song loads
+currentAudio.addEventListener('loadedmetadata', () => {
+    seekBar.max = currentAudio.duration
+    durationDisplay.innerText = formatTime(currentAudio.duration)
+})
+
+// Scrubbing (dragging the seek bar)
+seekBar.addEventListener('input', () => {
+    currentAudio.currentTime = seekBar.value
+})
+
+// Volume Slider
+volumeBar.addEventListener('input', () => {
+    currentAudio.volume = volumeBar.value
+})
+
+// The 'X' Button
+closeAudioBtn.addEventListener('click', async () => {
+    currentAudio.pause()
+    currentAudio.src = ""
+    isAudioPlaying = false
+    hideAudioPlayer()
+
+    socket.emit('audio:stop')
+    
+    // Re-fetch and show the audio list
+    const assets = await loadAssets('audio')
+    renderAssets(assets, 'audio')
+})
+
+// Change button back to play when song finishes naturally
+currentAudio.addEventListener('ended', () => {
+    playPauseBtn.innerHTML = '<i class="fa-solid fa-play"></i>';
+})
+
+seekBar.addEventListener('change', () => {
+    currentAudio.currentTime = seekBar.value
+    socket.emit('audio:seek', { time: seekBar.value })
+})
 
 renderCombatTracker(activeCombatTracker);
 loadAssets(activeAssetType).then(assets => renderAssets(assets, activeAssetType));

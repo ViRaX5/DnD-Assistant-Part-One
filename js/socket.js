@@ -34,3 +34,42 @@ socket.on('map:changeBackground', (data) => {
         console.error("Failed to sync map background from socket", err)
     }
 })
+
+const backgroundAudio = new Audio()
+
+backgroundAudio.volume = 0.5
+
+socket.on('audio:syncPlay', (data) => {
+    try {
+        backgroundAudio.src = data.url
+        backgroundAudio.play().catch(err => {
+            console.warn("Browser blocked autoplay. The user must click the page first!", err)
+        })
+    } catch (err) {
+        console.error("Failed to play synced audio", err);
+    }
+})
+
+socket.on('audio:syncPause', () => {
+    backgroundAudio.pause()
+})
+
+socket.on('audio:syncResume', () => {
+    backgroundAudio.play().catch(err => console.warn("Autoplay blocked", err))
+})
+
+socket.on('audio:syncStop', () => {
+    backgroundAudio.pause()
+    backgroundAudio.src = ""
+})
+
+socket.on('audio:syncSeek', (data) => {
+    backgroundAudio.currentTime = data.time
+})
+
+socket.on('audio:syncTargetVolume', (data) => {
+    if (sessionContext.userId === data.targetUserId) {
+        backgroundAudio.volume = data.volume
+        console.log(`The DM forcefully changed your volume to ${Math.round(data.volume * 100)}%`)
+    }
+})
