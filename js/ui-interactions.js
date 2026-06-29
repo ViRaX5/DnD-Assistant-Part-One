@@ -89,6 +89,61 @@ function rollSelectedDice(diceList) {
     return { rollString: segments.join(" and "), total };
 }
 
+function initiativeRollInteraction() {
+    const banner = document.getElementById('initiative-roll-banner');
+    if (!banner) return;
+
+    const bannerText = document.getElementById('initiative-roll-banner-text');
+    const autoBtn = document.getElementById('roll-initiative-auto-btn');
+    const manualInput = document.getElementById('roll-initiative-manual-input');
+    const manualSubmitBtn = document.getElementById('roll-initiative-manual-submit-btn');
+
+    function submitRoll(d20Result) {
+        const playerName = document.getElementById("player-name").textContent || "Unknown Hero";
+
+        socket.emit('initiative:submitRoll', { d20Result });
+
+        sendMessage({
+            type: 'roll',
+            text: `${playerName} rolled: ${d20Result} (1d20) for initiative.`,
+            senderName: playerName,
+            meta: { rollString: `${d20Result} (1d20)`, total: d20Result, dice: ['d20'] }
+        });
+
+        bannerText.textContent = 'Waiting for combat to start...';
+        autoBtn.style.display = 'none';
+        manualInput.style.display = 'none';
+        manualSubmitBtn.style.display = 'none';
+    }
+
+    autoBtn.addEventListener('click', () => {
+        const rollData = rollSelectedDice(['d20']);
+        submitRoll(rollData.total);
+    });
+
+    manualSubmitBtn.addEventListener('click', () => {
+        const value = parseInt(manualInput.value);
+        if (!value || value < 1 || value > 20) {
+            showTemporaryNotice("Enter a valid d20 result (1-20).");
+            return;
+        }
+        submitRoll(value);
+    });
+
+    socket.on('initiative:rollPrompt', () => {
+        bannerText.textContent = 'Roll for Initiative!';
+        autoBtn.style.display = '';
+        manualInput.style.display = '';
+        manualInput.value = '';
+        manualSubmitBtn.style.display = '';
+        banner.classList.remove('hidden-ui');
+    });
+
+    socket.on('initiative:rollPromptClear', () => {
+        banner.classList.add('hidden-ui');
+    });
+}
+
 export function setupUIInteractions() {
     // Navbar End / Exit Session
     navbarExitSession();
@@ -116,6 +171,12 @@ export function setupUIInteractions() {
 
     // Shop Interaction
     shopInteraction();
+
+    // Initiative Roll Interaction
+    initiativeRollInteraction();
+
+    // Rest Interaction
+    restInteraction();
 
     // Nav Footer Switch
     navFooterSwitch();
@@ -399,7 +460,7 @@ function renderActiveEffects() {
 
     effectsListPopup.innerHTML = '';
     activeEffects.forEach(effect => {
-        effectsListPopup.innerHTML += `<div class="effect-item">${effect.name}: ${effect.duration}</div>`;
+        effectsListPopup.innerHTML += `<div class="effect-item">${effect.name}: ${effect.roundsRemaining}</div>`;
     });
 }
 
@@ -421,6 +482,11 @@ export async function loadActiveEffects() {
 
 socket.on('effects:new', (effect) => {
     activeEffects.push(effect);
+    renderActiveEffects();
+});
+
+socket.on('effects:sync', (effects) => {
+    activeEffects = effects;
     renderActiveEffects();
 });
 
@@ -573,6 +639,38 @@ function shopInteraction() {
     });
 }
 
+let combatActive = false;
+let currentTurnUserId = null;
+const activeCooldowns = new Map(); // actionId -> Set<cooldownType>
+
+function updateActionLockState() {
+    const actionsList = document.getElementById('actions-list');
+    if (!actionsList) return;
+
+    actionsList.querySelectorAll('.action-container').forEach(button => {
+        const turnLocked = combatActive && currentTurnUserId !== sessionContext.userId;
+        const cooldownLocked = activeCooldowns.has(button.id);
+        const locked = turnLocked || cooldownLocked;
+
+        button.classList.toggle('locked', locked);
+        button.disabled = locked;
+    });
+}
+
+socket.on('combat:turnChanged', ({ combatActive: ca, currentTurnUserId: id }) => {
+    combatActive = ca;
+    currentTurnUserId = id;
+
+    if (id === sessionContext.userId) {
+        activeCooldowns.forEach((types, actionId) => {
+            types.delete('round');
+            if (types.size === 0) activeCooldowns.delete(actionId);
+        });
+    }
+
+    updateActionLockState();
+});
+
 function actionsHoverPopUp() {
     const actionWrappers = document.querySelectorAll(".action-wrapper");
 
@@ -596,6 +694,15 @@ function actionBarInteraction() {
         const button = e.target.closest('.action-container');
 
         if (!button) return;
+
+        if (combatActive && currentTurnUserId !== sessionContext.userId) {
+            showTemporaryNotice("It's not your turn!");
+            return;
+        }
+        if (activeCooldowns.has(button.id)) {
+            showTemporaryNotice("That action is on cooldown.");
+            return;
+        }
 
         const wrapper = button.closest('.action-wrapper');
         const nameSpan = wrapper.querySelector('.action-name');
@@ -638,6 +745,64 @@ function actionBarInteraction() {
                 senderName: playerName,
                 meta: { actionName: rawName }
             });
+        }
+
+        if (button.dataset.cooldown) {
+            activeCooldowns.set(button.id, new Set(button.dataset.cooldown.split(',')));
+            updateActionLockState();
+        }
+    });
+}
+
+function restInteraction() {
+    const restBtn = document.getElementById('rest-btn');
+    const restModal = document.getElementById('rest-modal');
+    if (!restBtn || !restModal) return;
+
+    const shortRestBtn = document.getElementById('short-rest-btn');
+    const longRestBtn = document.getElementById('long-rest-btn');
+    const closeRestModal = document.getElementById('close-rest-modal');
+
+    function hasCooldownType(type) {
+        for (const types of activeCooldowns.values()) {
+            if (types.has(type)) return true;
+        }
+        return false;
+    }
+
+    restBtn.addEventListener('click', () => {
+        if (combatActive) return;
+
+        shortRestBtn.classList.toggle('hidden-ui', !hasCooldownType('shortRest'));
+        longRestBtn.classList.toggle('hidden-ui', !(hasCooldownType('shortRest') || hasCooldownType('longRest')));
+
+        restModal.showModal();
+    });
+
+    closeRestModal.addEventListener('click', () => {
+        restModal.close();
+    });
+
+    function requestRest(restType) {
+        const playerName = document.getElementById('player-name').textContent || 'Unknown Hero';
+        socket.emit('rest:request', { restType, playerName });
+        restModal.close();
+    }
+
+    shortRestBtn.addEventListener('click', () => requestRest('short'));
+    longRestBtn.addEventListener('click', () => requestRest('long'));
+
+    socket.on('rest:response', ({ restType, approved, reason }) => {
+        if (approved) {
+            activeCooldowns.forEach((types, actionId) => {
+                types.delete('shortRest');
+                if (restType === 'long') types.delete('longRest');
+                if (types.size === 0) activeCooldowns.delete(actionId);
+            });
+            updateActionLockState();
+            showTemporaryNotice("Rest approved!");
+        } else {
+            showTemporaryNotice(reason || "The DM denied your rest request.");
         }
     });
 }

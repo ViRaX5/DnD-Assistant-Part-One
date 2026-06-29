@@ -221,6 +221,29 @@
           <button id="end-combat-btn" class="action-btn end-btn">
             End Combat
           </button>
+
+          <dialog id="initiative-panel-modal">
+            <div class="modal-content">
+              <h2>Roll for Initiative</h2>
+              <div id="initiative-roster-list"></div>
+              <button id="initiative-add-to-combat-btn" class="menu-btn">Add to Initiative</button>
+              <button id="initiative-panel-start-btn" class="menu-btn" disabled>Start Combat</button>
+              <div class="modal-buttons">
+                <button type="button" id="close-initiative-panel-modal" class="cancel-button">Close</button>
+              </div>
+            </div>
+          </dialog>
+
+          <dialog id="rest-approval-modal">
+            <div class="modal-content">
+              <h2>Rest Request</h2>
+              <p id="rest-approval-text"></p>
+              <div class="modal-buttons">
+                <button type="button" id="rest-deny-btn" class="cancel-button">Deny</button>
+                <button type="button" id="rest-approve-btn" class="confirm-button">Approve</button>
+              </div>
+            </div>
+          </dialog>
         </div>
 
         <div class="action-divider"></div>
@@ -255,7 +278,7 @@
             <div class="modal-content">
               <h2>Add Effect</h2>
               <input id="effect-name-input" class="menu-input" type="text" placeholder="Effect Name" />
-              <input id="effect-duration-input" class="menu-input" type="text" placeholder="Effect Duration" />
+              <input id="effect-duration-input" class="menu-input" type="number" placeholder="Rounds Remaining" />
               <button id="add-effect-modal-button" class="menu-btn">
                 Add
               </button>

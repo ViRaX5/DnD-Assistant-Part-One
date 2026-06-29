@@ -984,6 +984,12 @@ h6 {
   cursor: not-allowed;
 }
 
+.action-container.locked {
+  filter: grayscale(1);
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
 #dice-roller-outer {
   background-color: #5d4037;
   border: 5px solid #153b2f;
@@ -1906,7 +1912,10 @@ nav {
 #monster-search-view.hidden-ui,
 #monster-edit-view.hidden-ui,
 #monster-loading.hidden-ui,
-#monster-search-results.hidden-ui {
+#monster-search-results.hidden-ui,
+#initiative-roll-banner.hidden-ui,
+#short-rest-btn.hidden-ui,
+#long-rest-btn.hidden-ui {
   display: none;
 }
 

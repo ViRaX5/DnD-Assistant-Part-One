@@ -22,10 +22,7 @@ const state = {
   baseGrid: 60,
   gridCols: 50,
   gridRows: 50,
-  tokens: [
-    { id: "gamur", gridX: 15, gridY: 30, color: "#e74c3c", radius: 25 },
-    { id: "goblin-1", gridX: 20, gridY: 34, color: "#2ecc71", radius: 25 }
-  ]
+  tokens: []
 };
 
 let isDraggingMap = false;
@@ -415,6 +412,30 @@ canvas.addEventListener(
   { passive: false }
 );
 
+canvas.addEventListener("touchstart", (event) => {
+  document.getElementById("hint").classList.add("hidden-ui");
+
+  const touch = event.touches[0];
+  const { x, y } = getGridCoords(touch.clientX, touch.clientY);
+
+  const clickedToken = state.tokens.find(t =>
+    Math.floor(x) === Math.floor(t.gridX) &&
+    Math.floor(y) === Math.floor(t.gridY)
+  );
+
+  if (clickedToken) {
+    draggingTokenId = clickedToken.id;
+    clickedToken.originalGridX = clickedToken.gridX;
+    clickedToken.originalGridY = clickedToken.gridY;
+  } else {
+    isDraggingMap = true;
+  }
+
+  lastX = touch.clientX;
+  lastY = touch.clientY;
+  canvas.classList.add("dragging");
+});
+
 canvas.addEventListener("touchend", () => {
   if (draggingTokenId) {
     const token = state.tokens.find(t => t.id === draggingTokenId);
@@ -446,6 +467,7 @@ canvas.addEventListener("touchend", () => {
   }
 
   isDraggingMap = false;
+  canvas.classList.remove("dragging");
 });
 
 canvas.addEventListener("touchmove", (event) => {
@@ -527,10 +549,8 @@ window.addToken = (imageUrl) => {
 }
 
 window.setInitialTokens = (tokens) => {
-  if (tokens && tokens.length > 0) {
-    state.tokens = tokens
-    draw()
-  }
+  state.tokens = tokens || []
+  draw()
 }
 
 window.resetMap = () => {

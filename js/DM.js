@@ -159,6 +159,26 @@ const activeEffectsBtn = document.getElementById("active-effects");
 const effectNameInput = document.getElementById('effect-name-input');
 const effectDurationInput = document.getElementById('effect-duration-input');
 
+const startCombatBtn = document.getElementById('start-combat-btn');
+const endCombatBtn = document.getElementById('end-combat-btn');
+const initiativePanelModal = document.getElementById('initiative-panel-modal');
+const initiativeRosterList = document.getElementById('initiative-roster-list');
+const initiativeAddToCombatBtn = document.getElementById('initiative-add-to-combat-btn');
+const initiativePanelStartBtn = document.getElementById('initiative-panel-start-btn');
+const closeInitiativePanelModal = document.getElementById('close-initiative-panel-modal');
+
+let initiativeRollPhaseActive = false;
+let initiativeRosterCache = [];
+let pendingCreatures = [];
+let combatActive = false;
+let roundNumber = 1;
+let turnsTakenThisRound = 0;
+let combatantCount = 0;
+
+function updateRoundDisplay() {
+    document.querySelector('.round-number').textContent = roundNumber;
+}
+
 function renderCombatTracker(combatData) {
     if (!combatData || (!combatData.currentTurn && combatData.upcoming.length === 0)) {
         currentPlayerContainer.innerHTML = `<span class="empty-state-text">No active combat</span>`;
@@ -287,6 +307,18 @@ function handleNextTurn(clickedBtn) {
     activeCombatTracker.currentTurn = activeCombatTracker.upcoming.shift();
     if (oldCurrent) activeCombatTracker.upcoming.push(oldCurrent);
     renderCombatTracker(activeCombatTracker);
+
+    if (combatActive) {
+        turnsTakenThisRound++;
+        if (turnsTakenThisRound >= combatantCount) {
+            roundNumber++;
+            turnsTakenThisRound = 0;
+            socket.emit('effects:decrementRound');
+        }
+        updateRoundDisplay();
+        socket.emit('combat:turnChanged', { combatActive, currentTurnUserId: activeCombatTracker.currentTurn?.userId || null });
+    }
+
     clickedBtn.blur()
 }
 
@@ -296,6 +328,17 @@ function handlePrevTurn(clickedBtn) {
     activeCombatTracker.currentTurn = activeCombatTracker.upcoming.pop();
     if (oldCurrent) activeCombatTracker.upcoming.unshift(oldCurrent);
     renderCombatTracker(activeCombatTracker);
+
+    if (combatActive) {
+        turnsTakenThisRound--;
+        if (turnsTakenThisRound < 0) {
+            roundNumber = Math.max(1, roundNumber - 1);
+            turnsTakenThisRound = combatantCount - 1;
+        }
+        updateRoundDisplay();
+        socket.emit('combat:turnChanged', { combatActive, currentTurnUserId: activeCombatTracker.currentTurn?.userId || null });
+    }
+
     clickedBtn.blur()
 }
 
@@ -313,6 +356,95 @@ function handleRemoveEntity(idStr) {
 
 nextBtn.addEventListener('click', () => { handleNextTurn(nextBtn) });
 prevBtn.addEventListener('click', () => { handlePrevTurn(prevBtn) });
+
+function renderInitiativeRoster(roster) {
+    initiativeRosterCache = roster;
+
+    if (roster.length === 0) {
+        initiativeRosterList.innerHTML = '<span class="empty-state-text">No players connected.</span>';
+    } else {
+        initiativeRosterList.innerHTML = '';
+        roster.forEach(p => {
+            const row = document.createElement('div');
+            row.className = 'initiative-roster-row';
+            row.innerHTML = `<span>${p.name}</span><span>${p.hasRolled ? '✓' : '✗'}</span>`;
+            initiativeRosterList.appendChild(row);
+        });
+    }
+
+    initiativePanelStartBtn.disabled = !roster.every(p => p.hasRolled);
+}
+
+socket.on('initiative:panelUpdate', (roster) => {
+    renderInitiativeRoster(roster);
+});
+
+startCombatBtn.addEventListener('click', () => {
+    if (initiativeRollPhaseActive) {
+        initiativePanelModal.showModal();
+        startCombatBtn.blur();
+        return;
+    }
+
+    initiativeRollPhaseActive = true;
+    socket.emit('initiative:start');
+    initiativeRosterList.innerHTML = '<span class="empty-state-text">Waiting for players...</span>';
+    initiativePanelStartBtn.disabled = true;
+    initiativePanelModal.showModal();
+    startCombatBtn.blur();
+});
+
+closeInitiativePanelModal.addEventListener('click', () => {
+    initiativePanelModal.close();
+});
+
+initiativeAddToCombatBtn.addEventListener('click', () => {
+    initModal.showModal();
+});
+
+initiativePanelStartBtn.addEventListener('click', () => {
+    const playerEntries = initiativeRosterCache.map(p => ({
+        id: p.userId,
+        userId: p.userId,
+        name: p.name,
+        initiative: p.result
+    }));
+
+    const combined = [...playerEntries, ...pendingCreatures].sort((a, b) => b.initiative - a.initiative);
+
+    activeCombatTracker = {
+        currentTurn: combined.shift() || null,
+        upcoming: combined
+    };
+
+    combatActive = true;
+    roundNumber = 1;
+    turnsTakenThisRound = 0;
+    combatantCount = (activeCombatTracker.currentTurn ? 1 : 0) + activeCombatTracker.upcoming.length;
+
+    renderCombatTracker(activeCombatTracker);
+    updateRoundDisplay();
+    socket.emit('combat:turnChanged', { combatActive, currentTurnUserId: activeCombatTracker.currentTurn?.userId || null });
+    socket.emit('initiative:end');
+
+    initiativePanelModal.close();
+    pendingCreatures = [];
+    initiativeRollPhaseActive = false;
+});
+
+endCombatBtn.addEventListener('click', () => {
+    activeCombatTracker = JSON.parse(JSON.stringify(combatTracker2));
+    combatActive = false;
+    roundNumber = 1;
+    pendingCreatures = [];
+    initiativeRollPhaseActive = false;
+
+    renderCombatTracker(activeCombatTracker);
+    updateRoundDisplay();
+    socket.emit('combat:turnChanged', { combatActive, currentTurnUserId: null });
+    socket.emit('initiative:end');
+    endCombatBtn.blur();
+});
 
 addInitBtn.addEventListener('click', () => {
     initModal.showModal()
@@ -467,9 +599,14 @@ confirmMonsterAddBtn.addEventListener('click', async () => {
         }
     };
     
-    activeCombatTracker.upcoming.push(newEntity);
-    activeCombatTracker.upcoming.sort((a, b) => b.initiative - a.initiative);
-    renderCombatTracker(activeCombatTracker);
+    if (initiativeRollPhaseActive) {
+        pendingCreatures.push(newEntity);
+        pendingCreatures.sort((a, b) => b.initiative - a.initiative);
+    } else {
+        activeCombatTracker.upcoming.push(newEntity);
+        activeCombatTracker.upcoming.sort((a, b) => b.initiative - a.initiative);
+        renderCombatTracker(activeCombatTracker);
+    }
     
     // Send the ORIGINAL API data to the backend exactly as requested
     const campaignId = sessionStorage.getItem('activeCampaignId');
@@ -701,7 +838,7 @@ closeAddEffectModal.addEventListener('click', () => {
 addEffectModalBtn.addEventListener('click', () => {
     socket.emit('effects:add', {
         name: effectNameInput.value,
-        duration: effectDurationInput.value
+        roundsRemaining: Number(effectDurationInput.value)
     })
     effectNameInput.value = '';
     effectDurationInput.value = '';
@@ -712,6 +849,34 @@ const shopBtn = document.getElementById('shop-btn');
 
 shopBtn.addEventListener('click', () => {
     socket.emit('shop:toggle', { isOpen: !isShopOpen() })
+});
+
+// Rest Approval
+const restApprovalModal = document.getElementById('rest-approval-modal');
+const restApprovalText = document.getElementById('rest-approval-text');
+const restApproveBtn = document.getElementById('rest-approve-btn');
+const restDenyBtn = document.getElementById('rest-deny-btn');
+
+let pendingRestRequest = null;
+
+socket.on('rest:approvalRequest', ({ playerUserId, playerName, restType }) => {
+    pendingRestRequest = { playerUserId, restType };
+    restApprovalText.textContent = `${playerName} is requesting a ${restType === 'long' ? 'Long' : 'Short'} Rest.`;
+    restApprovalModal.showModal();
+});
+
+restApproveBtn.addEventListener('click', () => {
+    if (!pendingRestRequest) return;
+    socket.emit('rest:respond', { ...pendingRestRequest, approved: true });
+    restApprovalModal.close();
+    pendingRestRequest = null;
+});
+
+restDenyBtn.addEventListener('click', () => {
+    if (!pendingRestRequest) return;
+    socket.emit('rest:respond', { ...pendingRestRequest, approved: false });
+    restApprovalModal.close();
+    pendingRestRequest = null;
 });
 
 // Reset Map

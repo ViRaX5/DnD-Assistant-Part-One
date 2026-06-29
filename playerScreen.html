@@ -177,7 +177,17 @@
           </div>
           <nav>
             <div class="nav-container">
-              <button type="button" class="DM not-clicked">Rest</button>
+              <button type="button" id="rest-btn" class="not-clicked">Rest</button>
+              <dialog id="rest-modal">
+                <div class="modal-content">
+                  <h2>Rest</h2>
+                  <button id="short-rest-btn" class="menu-btn hidden-ui">Short Rest</button>
+                  <button id="long-rest-btn" class="menu-btn hidden-ui">Long Rest</button>
+                  <div class="modal-buttons">
+                    <button type="button" id="close-rest-modal" class="cancel-button">Close</button>
+                  </div>
+                </div>
+              </dialog>
               <button type="button" id="shop-btn" class="not-clicked locked" disabled>
                 <i class="fa-solid fa-lock"></i>
                 Shop
@@ -230,10 +240,16 @@
           title="Grid map"
           loading="lazy"
         ></iframe>
+        <div id="initiative-roll-banner" class="hidden-ui">
+          <span id="initiative-roll-banner-text">Roll for Initiative!</span>
+          <button id="roll-initiative-auto-btn">Roll for me</button>
+          <input type="number" id="roll-initiative-manual-input" placeholder="Enter your raw d20 result (bonus added automatically)" />
+          <button id="roll-initiative-manual-submit-btn">Submit</button>
+        </div>
         <div id="action-bar">
           <div id="actions-list">
             <div class="action-wrapper">
-              <button id="longsword-action" class="action-container">
+              <button id="longsword-action" class="action-container" data-cooldown="round">
                 <img src="./images/Sword.png" alt="Longsword" />
               </button>
               <div class="action-popup">
@@ -243,7 +259,7 @@
             </div>
 
             <div class="action-wrapper">
-              <button id="javelin-action" class="action-container">
+              <button id="javelin-action" class="action-container" data-cooldown="round">
                 <img src="./images/Javelin.png" alt="Javelin" />
               </button>
               <div class="action-popup">
@@ -253,7 +269,7 @@
             </div>
 
             <div class="action-wrapper">
-              <button id="second-wind-action" class="action-container">
+              <button id="second-wind-action" class="action-container" data-cooldown="round,shortRest">
                 <img src="./images/Second Wind.png" alt="Second Wind" />
               </button>
               <div class="action-popup">
@@ -265,7 +281,7 @@
             </div>
 
             <div class="action-wrapper">
-              <button id="action-surge-action" class="action-container">
+              <button id="action-surge-action" class="action-container" data-cooldown="round,shortRest">
                 <img src="./images/Action surge.png" alt="Action Surge" />
               </button>
               <div class="action-popup">
@@ -277,7 +293,7 @@
             </div>
 
             <div class="action-wrapper">
-              <button id="potion-of-healing-action" class="action-container">
+              <button id="potion-of-healing-action" class="action-container" data-cooldown="round">
                 <img src="./images/Potion.png" alt="Potion" />
               </button>
               <div class="action-popup">

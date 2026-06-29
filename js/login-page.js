@@ -1,4 +1,6 @@
 
+localStorage.removeItem('accessToken')
+
 const sign_up_form = document.getElementsByClassName("signup-form")[0];
 const login_form = document.getElementsByClassName("login-form")[0];
 const buttons = document.getElementsByClassName("buttons")[0];
