@@ -2189,6 +2189,10 @@ nav {
   padding: 4px;
 }
 
+.shop-inventory-list-full-height {
+  height: 100%;
+}
+
 .shop-inventory-item {
   display: flex;
   justify-content: space-between;
@@ -2362,6 +2366,11 @@ nav {
 /* general empty state */
 .empty-state-text {
   color: #63748c;
+}
+
+.empty-state-text-centered {
+  text-align: center;
+  margin-top: 20px;
 }
 
 /* media for all */
