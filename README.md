@@ -1,11 +1,31 @@
-# DnD-Assistant-Part-One
-Welcome Traveler.
-We have a quest for you - review our DnD page. Will you accept?
-Here is some background for your upcoming quest:
-We have 3 pages as requested plus an additional one because we wanted the flow to not be broken.
-The pages stand as requested.
-Some of the additional functionality of the buttons is not implemented yet, but it will be in the future, and to the best of our understanding of the assignment it is ok.
-We made some minor changes to the Figma design as we decided that it will make the overall project look better and feel smoother.
-We are aware to the fact that we need to make it as close as possible to the original but we hope you will understand that we prioritized the quality in some areas, aswell as added some functionalities that we didn't think of when we were making the original Figma design (like having a header and make the active effects visible to the player aswell).
-We hope you enjoy final (for now) product as much as we enjoyed making it. :D
-Good luck adventurer! May the spirits bless you!
+frontend_content = """# 🐉 DnD Assistant (Frontend) 🎲
+
+*Roll for initiative!* Welcome to the frontend portal of the **DnD Assistant**—the ultimate digital companion for Dungeon Masters and Adventurers alike. 
+
+Whether you're exploring deep caverns, haggling with tavern merchants, or fighting off a horde of goblins, this web interface brings your tabletop experience to life on both desktop and mobile devices.
+
+## ✨ Features (The Loot)
+
+* **🗺️ Interactive Grid Map:** A fully synced HTML5 Canvas map! Drag and drop tokens, change backgrounds on the fly, and use custom two-finger pinch-to-zoom for mobile adventurers.
+* **🎵 Synced Bardic Inspiration:** A real-time audio engine. When the DM hits play on the battle music, it instantly plays on every player's device (with individual volume controls for the DM!).
+* **⚔️ Live Combat & Initiative:** An automated turn tracker that manages initiative rolls, tracks current rounds, and keeps the party in sync during the heat of battle.
+* **📜 Interactive Character Sheets:** Live stat tracking, saving throws, skill checks, and active effects that update dynamically.
+* **💰 The Local Merchant:** An interactive shop system! The DM stocks the shelves, and players can browse, add to cart, and checkout using their character's gold in real-time.
+* **💬 Whispers & Shouts:** A built-in chat system for party communication and combat log tracking.
+
+## 🛠️ The Arcane Stack (Tech)
+
+We kept the spells simple but powerful. No heavy frameworks—just pure, untamed web magic:
+* **HTML5 & CSS3:** Fully responsive design that gracefully adapts from desktop DM screens to mobile player sheets (say goodbye to the `100vh` mobile bug!).
+* **Vanilla JavaScript (ES6 Modules):** Clean, modular scripts for handling UI interactions, canvas drawing, and logic.
+* **Socket.io-client:** The magical tether that keeps everyone's game state, map tokens, and audio perfectly synced with the backend in real-time.
+
+## 🚀 Getting Started (Summoning the App)
+
+1. **Clone the Tome:** `git clone <your-repo-url>`
+2. **Open the Scroll:** You don't need a build step! Simply open `login.html` in your browser, or use VS Code's **Live Server** extension to host it locally.
+3. **Connect to the Nexus:** Ensure the backend server is running (see the Backend README). The app is pre-configured to detect if you are running on `localhost` or production.
+
+---
+*May your rolls be high and your critical fails be hilarious! Built with ❤️ (and lots of coffee) for our final presentation.*
+"""
