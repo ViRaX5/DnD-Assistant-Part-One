@@ -170,7 +170,7 @@ document.body.addEventListener('click', unlockAudio);
 document.body.addEventListener('touchstart', unlockAudio);
 
 // 2. Listen to the DM's commands
-socket.on('audio:syncPlay', (data) => {
+socket.on('audio:syncPlay', async (data) => {
     const currentFile = playerAudio.src ? playerAudio.src.split('/').pop().split('?')[0] : '';
     const targetFile = data.url.split('/').pop().split('?')[0];
 
