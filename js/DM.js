@@ -492,7 +492,6 @@ function renderShopInventory() {
             <button class="remove-btn" data-id="${item.id}">X</button>
         `;
 
-        // Add remove listener
         const removeBtn = div.querySelector('.remove-btn');
         removeBtn.addEventListener('click', () => {
             removeBtn.blur();
@@ -872,12 +871,17 @@ closeExistingModalBtn.addEventListener('click', () => {
 function renderExistingMonsters(savedMonsters) {
     existingCreaturesList.innerHTML = '';
 
+    const seenNames = new Set();
+
     savedMonsters.forEach(monster => {
-        // Assuming your backend sends back the parsed JSON in a 'data' or 'stats' field
-        // Adjust 'monster.monster_data' based on exactly how your SQL row is returned!
         const monsterStats = typeof monster.monster_data === 'string'
             ? JSON.parse(monster.monster_data)
             : monster.monster_data;
+
+        if (seenNames.has(monsterStats.name)) {
+            return; 
+        }
+        seenNames.add(monsterStats.name);
 
         const div = document.createElement('div');
         div.className = 'monster-list-item';
@@ -941,7 +945,7 @@ assetTabs.forEach(tab => {
             // If they clicked the Audio tab and a song is already playing, 
             // skip fetching the list and just show them the player UI!
             showAudioPlayer();
-        } 
+        }
         else {
             hideAudioPlayer();
             const assets = await loadAssets(assetType);
