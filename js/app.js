@@ -143,22 +143,26 @@ let audioUnlocked = false;
 // 1. The Mobile Unlock Trick (Requires them to tap a UI button, not the map)
 function unlockAudio() {
     if (audioUnlocked) return;
-    
-    playerAudio.src = 'data:audio/wav;base64,UklGRigAAABXQVZFZm10IBIAAAABAAEARKwAAIhYAQACABAAAABkYXRhAgAAAAEA';
-    playerAudio.load();
+
+    if (!playerAudio.src || playerAudio.src === window.location.href) {
+        playerAudio.src = 'data:audio/wav;base64,UklGRigAAABXQVZFZm10IBIAAAABAAEARKwAAIhYAQACABAAAABkYXRhAgAAAAEA';
+        playerAudio.load();
+    }
 
     // Play a silent blip to force the phone to unlock the audio engine
     playerAudio.play().then(() => {
-        playerAudio.pause();
+        if (playerAudio.src.startsWith('data:audio')) {
+            playerAudio.pause();
+        }
+
         audioUnlocked = true;
         console.log("Mobile audio engine unlocked!");
-    }).catch(err => {
-        // Will throw an error if they haven't interacted yet, which is fine!
-    });
 
-    // Clean up listeners after successful unlock
-    document.body.removeEventListener('click', unlockAudio);
-    document.body.removeEventListener('touchstart', unlockAudio);
+        document.body.removeEventListener('click', unlockAudio);
+        document.body.removeEventListener('touchstart', unlockAudio);
+    }).catch(err => {
+        console.log("Audio unlock pending... waiting for valid tap.");
+    });
 }
 
 // Listen for the very first tap anywhere on the main document body
@@ -167,15 +171,24 @@ document.body.addEventListener('touchstart', unlockAudio);
 
 // 2. Listen to the DM's commands
 socket.on('audio:syncPlay', (data) => {
-    if (!playerAudio.src.includes(data.url)) {
-        playerAudio.src = data.url;
+    const currentFile = playerAudio.src ? playerAudio.src.split('/').pop().split('?')[0] : '';
+    const targetFile = data.url.split('/').pop().split('?')[0];
+
+    if (currentFile !== targetFile) {
+        playerAudio.pause();        // 1. Force kill any playing ghost tracks
+        playerAudio.src = data.url; // 2. Assign the new track
+        playerAudio.load();         // 3. CRITICAL: Forces mobile browsers to completely flush the old buffer
     }
     if (data.time !== undefined) {
-        playerAudio.currentTime = data.time;
+        if (Math.abs(playerAudio.currentTime - data.time) > 0.5) {
+            playerAudio.currentTime = data.time;
+        }
     }
-    playerAudio.play().catch(err => {
-        console.warn("Browser blocked autoplay. User must tap a UI element to unlock audio.");
-    });
+    try {
+        await playerAudio.play();
+    } catch (err) {
+        console.warn("Browser blocked autoplay. User must tap the screen.");
+    }
 });
 
 socket.on('audio:syncPause', () => {
