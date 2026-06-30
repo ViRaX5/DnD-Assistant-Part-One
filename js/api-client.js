@@ -2,7 +2,7 @@ const BASE_URL = window.location.hostname === 'localhost' || window.location.hos
     ? 'http://localhost:8081'
     : 'https://dndassistantbackend.onrender.com'
 
-const isProduction = window.location.hostname !== 'localhost' && window.location.hostname !== '127.0.0.1';
+const isProduction = window.location.hostname !== 'localhost' && window.location.hostname !== '127.0.0.1'
 
 let refreshPromise = null
 let isRedirecting = false
@@ -70,30 +70,30 @@ async function fetchWithAuth(url, options = {}) {
                     throw new Error(`Backend rejected refresh. Status: ${refreshRes.status}`)
                 }
 
-                const data = await refreshRes.json();
+                const data = await refreshRes.json()
                 localStorage.setItem('accessToken', data.accessToken)
                 return data.accessToken
             }).catch((err) => {
                 forceLogout(err.message)
                 throw err
             }).finally(() => {
-                // 2. Once the refresh finishes (success or fail), destroy the lock 
-                // so it can trigger again in 15 minutes!
+                // Once the refresh finishes (success or fail), destroy the lock
+                // so it can trigger again in 15 minutes.
                 refreshPromise = null
-            });
+            })
         }
 
         try {
-            // 3. ALL simultaneous requests wait right here for the lock to resolve
+            // All simultaneous requests wait right here for the lock to resolve,
+            // then apply the new token and retry their original fetch.
             const newAccessToken = await refreshPromise
 
-            // 4. Once resolved, they all apply the new token and retry their original fetch!
             options.headers['Authorization'] = `Bearer ${newAccessToken}`
             response = await fetch(url, options)
         }
         catch (err) {
-            // If the refresh failed, just return the failed response (the user is being redirected anyway)
-            return response;
+            // Refresh failed, just return the failed response — the user is being redirected anyway
+            return response
         }
     }
 

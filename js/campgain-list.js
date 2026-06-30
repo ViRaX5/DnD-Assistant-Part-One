@@ -1,28 +1,24 @@
-const log_out = document.getElementsByClassName("log-out")[0];
-const log_out_modal = document.getElementById("logout-modal");
-const cancel_logout_button = document.getElementById("cancel-logout");
-const confirm_logout_button = document.getElementById("confirm-logout");
-const player_button = document.getElementsByClassName("player")[0];
-const dm_button = document.getElementsByClassName("DM")[0];
-const logo = document.getElementsByClassName("logo")[0];
-const button_container = document.getElementsByClassName("buttons-placeholder")[0];
-const dmAbandonModal = document.getElementById("dm-abandon-modal");
-const dmModalCampaignName = document.getElementById("dm-modal-campaign-name");
-const dmModalPlayerList = document.getElementById("dm-modal-player-list");
-const cancelDmAbandonBtn = document.getElementById("cancel-dm-abandon");
-const confirmDmAbandonBtn = document.getElementById("confirm-dm-abandon");
-const dmErrorMessage = document.getElementById("dm-error-message");
-const playerAbandonModal = document.getElementById("player-abandon-modal");
-const playerModalCampaignName = document.getElementById("player-modal-campaign-name");
-const cancelPlayerAbandonBtn = document.getElementById("cancel-player-abandon");
-const confirmPlayerAbandonBtn = document.getElementById("confirm-player-abandon");
-const deleteCampaignModal = document.getElementById("delete-campaign-modal");
-const cancelDeleteBtn = document.getElementById("cancel-delete-campaign");
-const confirmDeleteBtn = document.getElementById("confirm-delete-campaign");
-
-// const BASE_URL = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1'
-//     ? 'http://localhost:8081'
-//     : 'https://dndassistantbackend.onrender.com'
+const log_out = document.getElementsByClassName("log-out")[0]
+const log_out_modal = document.getElementById("logout-modal")
+const cancel_logout_button = document.getElementById("cancel-logout")
+const confirm_logout_button = document.getElementById("confirm-logout")
+const player_button = document.getElementsByClassName("player")[0]
+const dm_button = document.getElementsByClassName("DM")[0]
+const logo = document.getElementsByClassName("logo")[0]
+const button_container = document.getElementsByClassName("buttons-placeholder")[0]
+const dmAbandonModal = document.getElementById("dm-abandon-modal")
+const dmModalCampaignName = document.getElementById("dm-modal-campaign-name")
+const dmModalPlayerList = document.getElementById("dm-modal-player-list")
+const cancelDmAbandonBtn = document.getElementById("cancel-dm-abandon")
+const confirmDmAbandonBtn = document.getElementById("confirm-dm-abandon")
+const dmErrorMessage = document.getElementById("dm-error-message")
+const playerAbandonModal = document.getElementById("player-abandon-modal")
+const playerModalCampaignName = document.getElementById("player-modal-campaign-name")
+const cancelPlayerAbandonBtn = document.getElementById("cancel-player-abandon")
+const confirmPlayerAbandonBtn = document.getElementById("confirm-player-abandon")
+const deleteCampaignModal = document.getElementById("delete-campaign-modal")
+const cancelDeleteBtn = document.getElementById("cancel-delete-campaign")
+const confirmDeleteBtn = document.getElementById("confirm-delete-campaign")
 
 const campaigns_info = [
     {
@@ -47,12 +43,11 @@ const campaigns1 = [
         "campaign_id": 3, "campaign_name": "test3", "status": "player", "character_name": "Crash Bandicot"
     }
 ]
-//const campaigns2 = []
 
 const tempID = getUserIdFromToken()
 
 
-let campaigns = [];
+let campaigns = []
 const campaignContainerSection = document.querySelector('.campaigns-container')
 const noCampaignContainerSection = document.querySelector('.no-campaigns-container')
 async function loadPage() {
@@ -77,7 +72,6 @@ async function loadPage() {
         console.error("Error communicationg with backend:", err)
     }
 
-    /* no campaigns */
     if (campaigns.length === 0) {
         noSessions()
     }
@@ -94,7 +88,7 @@ async function loadPage() {
             else {
                 console.log("NOT A PLAYER OR A DM!!!")
             }
-        });
+        })
         addButtons(campaignContainerSection)
     }
 
@@ -119,7 +113,6 @@ campaignContainerSection.addEventListener('click', async (e) => {
         const campaignName = relevantCampaign.dataset.name
 
         if (relevantCampaign.classList.contains('dm-campaign')) {
-            // this should also have a backed part that selects relevant data
             dmModalCampaignName.innerText = campaignName
             dmModalPlayerList.innerHTML = ''
             dmErrorMessage.innerText = ''
@@ -127,8 +120,6 @@ campaignContainerSection.addEventListener('click', async (e) => {
             confirmDmAbandonBtn.dataset.campaignId = campaignId
 
             try {
-                // const matchedCampaign = campaigns_info.find(campaign => campaign.campaign_id === parseInt(campaignId))
-                // const playersNames = matchedCampaign.participants
                 const response = await fetchWithAuth(`${BASE_URL}/api/campaignListCampaignAndDM?id=${campaignId}`, {
                     method: "GET",
                     headers: { 'Content-Type': 'application/json' }
@@ -150,23 +141,8 @@ campaignContainerSection.addEventListener('click', async (e) => {
                         `
                         dmModalPlayerList.appendChild(li)
                     })
-                    // in the future add check if dm is only person
-                    // playersNames.forEach(playerName => {
-                    //     const li = document.createElement('li')
-                    //     li.innerHTML = `
-                    //     <label>
-                    //         <input type="radio" name="new-dm" value="${playerName}">
-                    //         ${playerName}
-                    //         </label>
-                    //     `
-                    //     dmModalPlayerList.appendChild(li)
 
-                    //     //future maintenance, make sure doesnt display the DM itself.
-
-                    // })
-
-                    dmAbandonModal.showModal();
-                    // add blur to buttons?
+                    dmAbandonModal.showModal()
                 }
             }
             catch (err) {
@@ -204,7 +180,6 @@ function addButtons() {
                 Cancel
             </button>
             </dialog>`
-    /* not to self the value="" should be value generated by backend */
     joinButton.classList.add("join-new-button")
     let htmlJoin = `<dialog id="join-new-campaign-modal">
                 <form action="" class="join-new-campaign-form">
@@ -264,7 +239,6 @@ function addButtons() {
                         <div id="stage-2-error" class="form-error-message"></div>
                         <div class="final-submit">
                             <button type="button" id="continue-to-proficiencies" class="continue-join">Continue to Skills</button>
-                        <!-- add logic in back to actually add this -->
                         </div>
                     </div>
                     <div id="stage-3-proficiencies" class="character-info not-active">
@@ -417,9 +391,6 @@ function displayPlayerSessions(campaign) {
     campaignContainerSection.appendChild(campaignInstance)
 }
 
-// const dmCampaigns = document.querySelectorAll('.dm-campaign')
-// const playerCampaigns = document.querySelectorAll('.player-campaign')
-
 player_button.addEventListener('click', () => {
 
     const dmCampaigns = document.querySelectorAll('.dm-campaign')
@@ -444,7 +415,7 @@ player_button.addEventListener('click', () => {
         dmCampaigns.forEach(campaign => campaign.style.display = '')
     }
 
-    player_button.blur()            //will probably need to chage it later to what it takes to
+    player_button.blur()
 })
 
 dm_button.addEventListener('click', () => {
@@ -469,7 +440,7 @@ dm_button.addEventListener('click', () => {
         playerCampaigns.forEach(campaign => campaign.style.display = '')
     }
 
-    dm_button.blur()                //will probably need to chage it later to what it takes to
+    dm_button.blur()
 })
 
 logo.addEventListener('click', () => {
@@ -479,7 +450,7 @@ logo.addEventListener('click', () => {
 log_out.addEventListener('click', () => {
     log_out_modal.showModal()
     cancel_logout_button.blur()
-});
+})
 
 cancel_logout_button.addEventListener('click', () => {
     log_out_modal.close()
@@ -487,29 +458,27 @@ cancel_logout_button.addEventListener('click', () => {
 })
 
 confirm_logout_button.addEventListener('click', () => {
-    /* some save to database logic that needs to come in the future */
     localStorage.removeItem('accessToken')
     sessionStorage.clear()
-    /* maybe in the future delete refresh cookie */
-    
+
     window.location.href = "index.html"
 })
 
 
 button_container.addEventListener('click', async (e) => {
-    const join_new_campaign = document.getElementsByClassName("join-new-button")[0];
-    const join_new_campaign_modal = document.getElementById("join-new-campaign-modal");
-    const cancel_join_new_campaign = document.getElementById("cancel-join");
-    const continue_join = document.getElementsByClassName("continue-join")[0];
-    const join_form = document.getElementsByClassName("join-new-campaign-form")[0];
-    const finish_join = document.getElementsByClassName("finish-join")[0];
-    const character_info = document.getElementsByClassName("character-info")[0];
-    const create_new_campaign = document.getElementsByClassName("create-button")[0];
-    const create_new_campaign_modal = document.getElementById("create-new-campaign-modal");
-    const cancel_create_new_campaign = document.getElementById("cancel-create");
-    const copy_button = document.getElementsByClassName("copy-button")[0];
-    const code_value = document.getElementsByClassName("campaign-code")[0];
-    const finish_creating = document.getElementsByClassName("finish-create")[0];
+    const join_new_campaign = document.getElementsByClassName("join-new-button")[0]
+    const join_new_campaign_modal = document.getElementById("join-new-campaign-modal")
+    const cancel_join_new_campaign = document.getElementById("cancel-join")
+    const continue_join = document.getElementsByClassName("continue-join")[0]
+    const join_form = document.getElementsByClassName("join-new-campaign-form")[0]
+    const finish_join = document.getElementsByClassName("finish-join")[0]
+    const character_info = document.getElementsByClassName("character-info")[0]
+    const create_new_campaign = document.getElementsByClassName("create-button")[0]
+    const create_new_campaign_modal = document.getElementById("create-new-campaign-modal")
+    const cancel_create_new_campaign = document.getElementById("cancel-create")
+    const copy_button = document.getElementsByClassName("copy-button")[0]
+    const code_value = document.getElementsByClassName("campaign-code")[0]
+    const finish_creating = document.getElementsByClassName("finish-create")[0]
 
     if (e.target.classList.contains('join-new-button')) {
         join_new_campaign_modal.showModal()
@@ -553,31 +522,20 @@ button_container.addEventListener('click', async (e) => {
     }
     else if (e.target.id === 'cancel-join') {
         join_new_campaign_modal.close()
-        e.target.blur() // Drops the button focus
+        e.target.blur()
 
-        // Trigger the reset!
         resetJoinModal()
     }
-    // else if (e.target.classList.contains('continue-join')) {
-    //     e.preventDefault()
-    //     // send message to dm to confirm the player can join
-    //     continue_join.blur()
-    //     join_form.classList.add("not-active")
-    //     setUpCharacterCreation()
-    //     character_info.classList.remove("not-active")
-    // }
     else if (e.target.id === 'btn-next-to-stage-2') {
         e.preventDefault()
         e.target.blur()
-        const codeInput = document.getElementById('campaign-code').value.trim();
-        const nameInput = document.getElementById('character-name').value.trim();
-        const stage1Error = document.getElementById('stage-1-error');
-        // 2. The Validation Check
+        const codeInput = document.getElementById('campaign-code').value.trim()
+        const nameInput = document.getElementById('character-name').value.trim()
+        const stage1Error = document.getElementById('stage-1-error')
         if (!codeInput || !nameInput) {
-            stage1Error.innerText = "Please enter both a Campaign Code and Character Name!\n";
-            return; // Stops the modal from advancing!
+            stage1Error.innerText = "Please enter both a Campaign Code and Character Name!\n"
+            return
         }
-        // check database
 
         try {
             const response = await fetchWithAuth(`${BASE_URL}/api/campaignListCode?code=${codeInput}`, {
@@ -610,58 +568,39 @@ button_container.addEventListener('click', async (e) => {
             console.error("Error communicationg with backend:", err)
         }
 
-        // 3. If everything is good, clear the error and advance!
-        stage1Error.innerText = "";
+        stage1Error.innerText = ""
 
-        join_form.classList.add("not-active");
-        setUpCharacterCreation();
+        join_form.classList.add("not-active")
+        setUpCharacterCreation()
 
-        character_info.classList.remove("not-active");
-        document.getElementById('stage-2-stats').classList.remove("not-active");
+        character_info.classList.remove("not-active")
+        document.getElementById('stage-2-stats').classList.remove("not-active")
     }
-    // else if (e.target.classList.contains('finish-join')) {
-    //     e.preventDefault(); 
-
-    //     // Grab the UI elements
-    //     const errorMessage = document.getElementById('join-error-message');
-    //     errorMessage.innerText = ""; // Clear any previous errors!
-
-    //     const campaignCode = document.getElementById('campaign-code').value;
-    //     const characterName = document.getElementById('character-name').value;
-    //     const characterClass = document.getElementById('characters-class').value;
-    //     const characterRace = document.getElementById('characters-race').value;
-
-    //     // Validation Check (Native UI, no alerts!)
-    //     if (!campaignCode || !characterName || !characterClass || !characterRace) {
-    //         errorMessage.innerText = "Please fill out all fields before joining!";
-    //         return; // Stops the function from running the fetch
-    //     }
     else if (e.target.id === 'btn-final-join') {
-        e.preventDefault();
+        e.preventDefault()
 
-        const errorMessage = document.getElementById('join-error-message');
-        errorMessage.innerText = "";
+        const errorMessage = document.getElementById('join-error-message')
+        errorMessage.innerText = ""
 
-        const campaignCode = document.getElementById('campaign-code').value;
-        const characterName = document.getElementById('character-name').value;
-        const characterClass = document.getElementById('characters-class').value;
-        const characterRace = document.getElementById('characters-race').value;
+        const campaignCode = document.getElementById('campaign-code').value
+        const characterName = document.getElementById('character-name').value
+        const characterClass = document.getElementById('characters-class').value
+        const characterRace = document.getElementById('characters-race').value
 
         if (!campaignCode || !characterName || !characterClass || !characterRace) {
-            errorMessage.innerText = "Please complete all previous steps!";
-            return;
+            errorMessage.innerText = "Please complete all previous steps!"
+            return
         }
 
-        const allChoiceGroups = document.querySelectorAll('.equip-group');
+        const allChoiceGroups = document.querySelectorAll('.equip-group')
 
         for (let group of allChoiceGroups) {
-            const allowed = parseInt(group.dataset.allowed);
-            const selected = parseInt(group.dataset.selectedCount);
+            const allowed = parseInt(group.dataset.allowed)
+            const selected = parseInt(group.dataset.selectedCount)
 
-            // If any group has fewer selections than allowed, stop the submission!
             if (selected < allowed) {
-                errorMessage.innerText = `You have unfinished choices! Please select ${allowed} option(s) in all categories.`;
-                return;
+                errorMessage.innerText = `You have unfinished choices! Please select ${allowed} option(s) in all categories.`
+                return
             }
         }
 
@@ -693,7 +632,7 @@ button_container.addEventListener('click', async (e) => {
         const guaranteedLangs = guaranteedLangsRaw ? JSON.parse(guaranteedLangsRaw) : []
         const languages = [...guaranteedLangs, ...selectedLangs]
 
-        const computedSheet = await computeCharacterSheet(characterClass, characterRace, stats, skills);
+        const computedSheet = await computeCharacterSheet(characterClass, characterRace, stats, skills)
 
         const payload = {
             userId: getUserIdFromToken(),
@@ -731,7 +670,6 @@ button_container.addEventListener('click', async (e) => {
                     loadPage()
                 }
                 else {
-                    // If the backend says the code is invalid, show it on the UI
                     errorMessage.innerText = data.error
                 }
             })
@@ -741,14 +679,13 @@ button_container.addEventListener('click', async (e) => {
             })
     }
     else if (e.target.id === 'cancel-create') {
-        create_new_campaign_modal.close();
-        e.target.blur();
+        create_new_campaign_modal.close()
+        e.target.blur()
 
-        // Trigger the reset!
-        resetCreateModal();
+        resetCreateModal()
     }
     else if (e.target.classList.contains('copy-button')) {
-        const codeToCopy = code_value.value;
+        const codeToCopy = code_value.value
         navigator.clipboard.writeText(codeToCopy)
             .then(() => {
                 copy_button.innerText = "Copied!"
@@ -800,76 +737,75 @@ button_container.addEventListener('click', async (e) => {
 
     }
     else if (e.target.id === 'continue-to-proficiencies') {
-        const errorMsg = document.getElementById('stage-2-error');
+        const errorMsg = document.getElementById('stage-2-error')
 
-        let warningList = [];
+        let warningList = []
 
-        const charClass = document.getElementById('characters-class').value;
-        const charRace = document.getElementById('characters-race').value;
+        const charClass = document.getElementById('characters-class').value
+        const charRace = document.getElementById('characters-race').value
 
         if (!charClass || !charRace) {
-            warningList.push("• Please select a Class and Race.");
+            warningList.push("• Please select a Class and Race.")
         }
 
-        const statInputs = document.querySelectorAll('.stats input');
-        let statsComplete = true;
+        const statInputs = document.querySelectorAll('.stats input')
+        let statsComplete = true
         statInputs.forEach(input => {
             if (input.value.trim() === "") {
-                statsComplete = false;
+                statsComplete = false
             }
-        });
+        })
 
         if (!statsComplete) {
-            warningList.push("• Please fill out all 6 ability scores.");
+            warningList.push("• Please fill out all 6 ability scores.")
         }
 
-        const equipmentGroups = document.querySelectorAll('#equipment-container .equip-group');
-        let equipComplete = true;
+        const equipmentGroups = document.querySelectorAll('#equipment-container .equip-group')
+        let equipComplete = true
         for (let group of equipmentGroups) {
-            const allowed = parseInt(group.dataset.allowed);
-            const selected = parseInt(group.dataset.selectedCount);
+            const allowed = parseInt(group.dataset.allowed)
+            const selected = parseInt(group.dataset.selectedCount)
 
             if (selected < allowed) {
-                equipComplete = false;
+                equipComplete = false
             }
         }
 
         if (!equipComplete) {
-            warningList.push("• Please finish selecting your starting equipment.");
+            warningList.push("• Please finish selecting your starting equipment.")
         }
 
         if (warningList.length > 0) {
-            errorMsg.innerText = warningList.join('\n');
-            return;
+            errorMsg.innerText = warningList.join('\n')
+            return
         }
 
-        errorMsg.innerText = "";
-        document.getElementById('stage-2-stats').classList.add('not-active');
-        document.getElementById('stage-3-proficiencies').classList.remove('not-active');
+        errorMsg.innerText = ""
+        document.getElementById('stage-2-stats').classList.add('not-active')
+        document.getElementById('stage-3-proficiencies').classList.remove('not-active')
 
-        // Optional: Scroll back to the top of the modal for the new stage!
-        document.getElementById('join-new-campaign-modal').scrollTo(0, 0);
+        document.getElementById('join-new-campaign-modal').scrollTo(0, 0)
     }
     else if (e.target.id === 'back-to-stats') {
-        document.getElementById('stage-3-proficiencies').classList.add('not-active');
-        document.getElementById('stage-2-stats').classList.remove('not-active');
+        document.getElementById('stage-3-proficiencies').classList.add('not-active')
+        document.getElementById('stage-2-stats').classList.remove('not-active')
     }
 })
 
 dmModalPlayerList.addEventListener('change', (e) => {
     if (e.target.name === 'new-dm') {
-        dmErrorMessage.innerText = "";
+        dmErrorMessage.innerText = ""
     }
 })
 
 cancelDmAbandonBtn.addEventListener('click', () => {
     dmErrorMessage.innerText = ""
     dmAbandonModal.close()
-});
+})
 
 confirmDmAbandonBtn.addEventListener('click', async (e) => {
     const campaignId = e.target.dataset.campaignId
-    const selectedPlayerID = document.querySelector('input[name="new-dm"]:checked');
+    const selectedPlayerID = document.querySelector('input[name="new-dm"]:checked')
 
     if (selectedPlayerID) {
         const newDMID = selectedPlayerID.value
@@ -889,18 +825,16 @@ confirmDmAbandonBtn.addEventListener('click', async (e) => {
         catch (err) {
             console.error("Error communicationg with backend:", err)
         }
-        // TODO: In the future, add backend call here to update the database
-        // TODO: Remove the campaign from the screen
         dmErrorMessage.innerText = ""
-        dmAbandonModal.close();
+        dmAbandonModal.close()
     } else {
         dmErrorMessage.innerText = "Please select a player to take over before leaving."
     }
-});
+})
 
 cancelPlayerAbandonBtn.addEventListener('click', () => {
     playerAbandonModal.close()
-});
+})
 
 confirmPlayerAbandonBtn.addEventListener('click', async (e) => {
     const campaignId = e.target.dataset.campaignId
@@ -920,14 +854,12 @@ confirmPlayerAbandonBtn.addEventListener('click', async (e) => {
     catch (err) {
         console.error("Error communicationg with backend:", err)
     }
-    // TODO: In the future, add backend call here to update the database
-    // TODO: Remove the campaign from the screen
-    playerAbandonModal.close();
+    playerAbandonModal.close()
 })
 
 cancelDeleteBtn.addEventListener('click', () => {
     deleteCampaignModal.close()
-});
+})
 
 confirmDeleteBtn.addEventListener('click', async (e) => {
     const campaignId = e.target.dataset.campaignId
@@ -936,7 +868,7 @@ confirmDeleteBtn.addEventListener('click', async (e) => {
         const response = await fetchWithAuth(`${BASE_URL}/api/deleteEntireCampaign?campaignID=${campaignId}`, {
             method: "DELETE",
             headers: { 'Content-Type': 'application/json' }
-        });
+        })
         const data = await response.json()
 
         if (response.ok && data.success) {
@@ -975,71 +907,42 @@ async function setUpCharacterCreation() {
             option.value = c.index
             option.innerText = c.name
             classDropdown.appendChild(option)
-        });
+        })
 
         raceData.results.forEach(r => {
             const option = document.createElement('option')
             option.value = r.index
             option.innerText = r.name
             raceDropdown.appendChild(option)
-        });
+        })
 
     } catch (err) {
         console.error("Failed to load D&D 5e API data: ", err)
         classDropdown.innerHTML = '<option value="">Error loading classes</option>'
         raceDropdown.innerHTML = '<option value="">Error loading races</option>'
     }
-    // classDropdown.addEventListener('change', async (e) => {
-    //     const selectedClass = e.target.value;
-    //     const equipmentContainer = document.getElementById('equipment-container');
-
-    //     if (!selectedClass) {
-    //         equipmentContainer.style.display = 'none';
-    //         return;
-    //     }
-
-    //     try {
-    //         equipmentContainer.style.display = 'block';
-    //         equipmentContainer.innerHTML = "<p><em>Fetching starting equipment...</em></p>";
-
-    //         const response = await fetch(`https://www.dnd5eapi.co/api/classes/${selectedClass}/starting-equipment`);
-    //         const equipData = await response.json();
-
-    //         let equipHtml = "<strong>Guaranteed Starting Equipment:</strong><ul>";
-    //         equipData.starting_equipment.forEach(item => {
-    //             equipHtml += `<li>${item.equipment.name} (x${item.quantity})</li>`;
-    //         });
-    //         equipHtml += "</ul><p style='color: var(--text-color-alt); font-size: 0.7rem;'>Plus additional class choices made in-game.</p>";
-
-    //         equipmentContainer.innerHTML = equipHtml;
-
-    //     } catch (err) {
-    //         console.error("Failed to load equipment: ", err);
-    //         equipmentContainer.innerHTML = "<p>Error loading equipment.</p>";
-    //     }
-    // });
     classDropdown.addEventListener('change', async (e) => {
-        const selectedClass = e.target.value;
-        const equipmentContainer = document.getElementById('equipment-container');
+        const selectedClass = e.target.value
+        const equipmentContainer = document.getElementById('equipment-container')
 
         if (!selectedClass) {
-            equipmentContainer.style.display = 'none';
-            return;
+            equipmentContainer.style.display = 'none'
+            return
         }
 
         try {
             document.getElementById('class-proficiencies-container').innerHTML = ''
 
-            equipmentContainer.style.display = 'block';
-            equipmentContainer.innerHTML = "<p><em>Drafting equipment armory...</em></p>";
+            equipmentContainer.style.display = 'block'
+            equipmentContainer.innerHTML = "<p><em>Drafting equipment armory...</em></p>"
 
             const [equipRes, classRes] = await Promise.all([
                 fetch(`https://www.dnd5eapi.co/api/classes/${selectedClass}/starting-equipment`),
                 fetch(`https://www.dnd5eapi.co/api/classes/${selectedClass}`)
-            ]);
+            ])
 
-            const equipData = await equipRes.json();
-            const classData = await classRes.json();
+            const equipData = await equipRes.json()
+            const classData = await classRes.json()
             const skillChoices = []
             const toolChoices = []
 
@@ -1057,96 +960,94 @@ async function setUpCharacterCreation() {
             renderProficiencyChoices(skillChoices, 'class-proficiencies-container', 'Class Skills', 'skill')
             renderProficiencyChoices(toolChoices, 'class-proficiencies-container', 'Tool Proficiencies', 'tool')
 
-            // 1. Render Guaranteed Starting Equipment (Using our CSS class, no inline styles!)
+            // No inline styles — guaranteed items list uses the CSS class below
             let equipHtml = "<strong>Guaranteed Items:</strong><ul class='guaranteed-items-list'>"
             const guaranteedItemsArray = []
 
             equipData.starting_equipment.forEach(item => {
-                const itemString = `${item.equipment.name} (x${item.quantity})`;
-                equipHtml += `<li>${itemString}</li>`;
-                guaranteedItemsArray.push(itemString); // Push to holding array
-            });
+                const itemString = `${item.equipment.name} (x${item.quantity})`
+                equipHtml += `<li>${itemString}</li>`
+                guaranteedItemsArray.push(itemString)
+            })
 
             classDropdown.dataset.guaranteedEquipment = JSON.stringify(guaranteedItemsArray)
 
             equipHtml += "</ul><div id='equip-choices-container'></div>"
 
-            equipmentContainer.innerHTML = equipHtml;
-            const choicesContainer = document.getElementById('equip-choices-container');
+            equipmentContainer.innerHTML = equipHtml
+            const choicesContainer = document.getElementById('equip-choices-container')
 
-            // 2. Parse the complex "Choices" array
             equipData.starting_equipment_options.forEach((choiceGroup) => {
-                const allowedCount = choiceGroup.choose;
+                const allowedCount = choiceGroup.choose
 
-                const groupDiv = document.createElement('div');
-                groupDiv.className = 'equip-group';
-                groupDiv.dataset.allowed = allowedCount;
-                groupDiv.dataset.selectedCount = 0;
-                groupDiv.innerHTML = `<h4>Choose ${allowedCount} from below:</h4><div class="equip-grid"></div>`;
+                const groupDiv = document.createElement('div')
+                groupDiv.className = 'equip-group'
+                groupDiv.dataset.allowed = allowedCount
+                groupDiv.dataset.selectedCount = 0
+                groupDiv.innerHTML = `<h4>Choose ${allowedCount} from below:</h4><div class="equip-grid"></div>`
 
-                const grid = groupDiv.querySelector('.equip-grid');
+                const grid = groupDiv.querySelector('.equip-grid')
 
-                // HELPER: Creates and appends a clickable card
                 const appendCard = (displayText, isCategory, categoryUrl) => {
-                    const card = document.createElement('div');
-                    card.className = 'equip-card';
-                    if (isCategory) card.classList.add('needs-sub-choice');
+                    const card = document.createElement('div')
+                    card.className = 'equip-card'
+                    if (isCategory) card.classList.add('needs-sub-choice')
 
-                    card.innerText = displayText;
-                    card.dataset.rawText = displayText;
-                    card.dataset.isCategory = isCategory;
-                    card.dataset.categoryUrl = categoryUrl;
+                    card.innerText = displayText
+                    card.dataset.rawText = displayText
+                    card.dataset.isCategory = isCategory
+                    card.dataset.categoryUrl = categoryUrl
 
-                    card.addEventListener('click', () => handleEquipClick(card, groupDiv, allowedCount));
-                    grid.appendChild(card);
-                };
+                    card.addEventListener('click', () => handleEquipClick(card, groupDiv, allowedCount))
+                    grid.appendChild(card)
+                }
 
                 // SCENARIO A: The API gives us a broad category (This fixes the Cleric/Druid crash!)
                 if (choiceGroup.from.option_set_type === 'equipment_category') {
-                    const cat = choiceGroup.from.equipment_category;
-                    appendCard(`Any ${cat.name}`, true, cat.index);
+                    const cat = choiceGroup.from.equipment_category
+                    appendCard(`Any ${cat.name}`, true, cat.index)
                 }
                 // SCENARIO B: The API gives us a specific list of options
                 else if (choiceGroup.from.option_set_type === 'options_array' && choiceGroup.from.options) {
                     choiceGroup.from.options.forEach((opt) => {
-                        let displayText = "Unknown Item";
-                        let isCategory = false;
-                        let categoryUrl = "";
+                        let displayText = "Unknown Item"
+                        let isCategory = false
+                        let categoryUrl = ""
 
                         if (opt.option_type === 'item') {
-                            displayText = opt.item.name;
+                            displayText = opt.item.name
                         }
                         else if (opt.option_type === 'counted_reference') {
-                            displayText = opt.count > 1 ? `${opt.of.name} (x${opt.count})` : opt.of.name;
+                            displayText = opt.count > 1 ? `${opt.of.name} (x${opt.count})` : opt.of.name
                         }
                         else if (opt.option_type === 'multiple') {
                             displayText = opt.items.map(i => {
                                 if (i.option_type === 'counted_reference') {
-                                    return i.count > 1 ? `${i.of.name} (x${i.count})` : i.of.name;
+                                    return i.count > 1 ? `${i.of.name} (x${i.count})` : i.of.name
                                 }
-                                if (i.option_type === 'item') return i.item.name;
-                                if (i.option_type === 'choice') return i.choice.desc || `Any ${i.choice.from.equipment_category.name}`;
-                                return 'Item';
-                            }).join(' + ');
+                                if (i.option_type === 'item') return i.item.name
+                                if (i.option_type === 'choice') return i.choice.desc || `Any ${i.choice.from.equipment_category.name}`
+                                return 'Item'
+                            }).join(' + ')
                         }
                         else if (opt.option_type === 'choice') {
-                            displayText = opt.choice.desc || `Any ${opt.choice.from.equipment_category.name}`;
-                            isCategory = true;
-                            categoryUrl = opt.choice.from.equipment_category.index;
+                            displayText = opt.choice.desc || `Any ${opt.choice.from.equipment_category.name}`
+                            isCategory = true
+                            categoryUrl = opt.choice.from.equipment_category.index
                         }
 
-                        appendCard(displayText, isCategory, categoryUrl);
-                    });
+                        appendCard(displayText, isCategory, categoryUrl)
+                    })
                 }
-                choicesContainer.appendChild(groupDiv);
-            });
+                choicesContainer.appendChild(groupDiv)
+            })
 
         } catch (err) {
-            console.error("Failed to load equipment: ", err);
+            console.error("Failed to load equipment: ", err)
             // Replaced inline style with our form-error-message class!
-            equipmentContainer.innerHTML = '<p class="form-error-message">Error loading equipment.</p>';
+            equipmentContainer.innerHTML = '<p class="form-error-message">Error loading equipment.</p>'
         }
-    });
+    })
     raceDropdown.addEventListener('change', async (e) => {
         if (e.target.value !== "" && e.target.value !== "Select a Race") {
             const selectedRace = e.target.value
@@ -1162,7 +1063,6 @@ async function setUpCharacterCreation() {
                 const response = await fetch(`https://www.dnd5eapi.co/api/races/${selectedRace}`)
                 const raceDetails = await response.json()
 
-                // 1. Sort the Race Proficiencies (Skills vs Tools)
                 const raceSkillChoices = []
                 const raceToolChoices = []
 
@@ -1184,7 +1084,6 @@ async function setUpCharacterCreation() {
                     })
                 }
 
-                // 2. Render everything with strict tags!
                 if (raceDetails.languages && raceDetails.languages.length > 0) {
                     const langContainer = document.getElementById('race-proficiencies-container')
                     const langNames = raceDetails.languages.map(l => l.name)
@@ -1195,7 +1094,7 @@ async function setUpCharacterCreation() {
                     guaranteedLangs.className = 'sub-modal-desc'
                     guaranteedLangs.innerHTML = `<strong>Known Languages:</strong> ${langNames}`
 
-                    langContainer.appendChild(guaranteedLangs);
+                    langContainer.appendChild(guaranteedLangs)
                 }
                 renderProficiencyChoices(raceSkillChoices, 'race-proficiencies-container', 'Race Skills', 'skill')
                 renderProficiencyChoices(raceToolChoices, 'race-proficiencies-container', 'Race Tools', 'tool')
@@ -1209,7 +1108,6 @@ async function setUpCharacterCreation() {
                     renderProficiencyChoices(langChoices, 'race-proficiencies-container', 'Bonus Languages', 'language')
                 }
 
-                // 3. Existing stat bonus logic
                 raceDetails.ability_bonuses.forEach(bonusObj => {
                     const statIndex = bonusObj.ability_score.index
                     const bonusValue = bonusObj.bonus
@@ -1225,7 +1123,7 @@ async function setUpCharacterCreation() {
 
                         updateModifierDisplay(targetInput, targetSpan)
                     }
-                });
+                })
             } catch (err) {
                 console.error("Failed to fetch race bonuses: ", err)
             }
@@ -1257,14 +1155,12 @@ function updateModifierDisplay(inputEl, spanEl) {
     const modString = modifier >= 0 ? `+${modifier}` : `${modifier}`
 
     spanEl.innerText = `Total: ${totalScore} (Mod: ${modString})`
-    spanEl.style.color = "var(--text-color-base)" // Change back to standard color
+    spanEl.style.color = "var(--text-color-base)"
 }
 
-// Handles standard clicks and limits
 function applySelection(card, groupDiv, allowedCount) {
-    // 1. If we are at the limit, we must SWAP
+    // If we are at the limit, we must SWAP
     if (parseInt(groupDiv.dataset.selectedCount) >= allowedCount) {
-        // Find the oldest selected card in this specific group
         const oldestSelection = groupDiv.querySelector('.selected')
         if (oldestSelection) {
             oldestSelection.classList.remove('selected')
@@ -1277,12 +1173,10 @@ function applySelection(card, groupDiv, allowedCount) {
         }
     }
 
-    // 2. Safely apply the new selection
     card.classList.add('selected')
     groupDiv.dataset.selectedCount = parseInt(groupDiv.dataset.selectedCount) + 1
 }
 
-// Handles the logic when a user clicks a card
 async function handleEquipClick(card, groupDiv, allowedCount) {
     const isSelected = card.classList.contains('selected')
 
@@ -1328,18 +1222,15 @@ async function openSubEquipmentModal(categoryIndex, parentCard, groupDiv, allowe
             subCard.className = 'equip-card'
             subCard.innerText = item.name
 
-            // When a specific item is picked from the sub-modal:
             subCard.addEventListener('click', () => {
-                // Use the auto-swap helper!
                 applySelection(parentCard, groupDiv, allowedCount)
 
-                // Update the original card's text to show what they picked
                 parentCard.innerText = item.name
                 subModal.close()
-            });
+            })
 
             grid.appendChild(subCard)
-        });
+        })
     } catch (err) {
         console.error("Failed to load category:", err)
         grid.innerHTML = '<p class="form-error-message">Error loading category items.</p>'
@@ -1383,139 +1274,43 @@ function renderProficiencyChoices(choicesArray, containerId, titlePrefix, catego
 
 // Completely wipes the Join Modal clean and returns to Stage 1
 function resetJoinModal() {
-    // 1. Clear Stage 1 (Basic Info)
     document.getElementById('campaign-code').value = ''
     document.getElementById('character-name').value = ''
     document.getElementById('stage-1-error').innerText = ""
 
-    // 2. Clear Stage 2 (Dropdowns & Stats)
     document.getElementById('characters-class').value = ''
     document.getElementById('characters-race').value = ''
 
     const statInputs = document.querySelectorAll('.stats input')
     statInputs.forEach(input => {
         input.value = ''
-        input.dataset.raceBonus = 0 // Wipe the hidden bonus data
+        input.dataset.raceBonus = 0
     })
 
     const statMods = document.querySelectorAll('.race-mod')
     statMods.forEach(mod => mod.innerText = '')
 
-    // 3. Clear Dynamic Containers
     document.getElementById('equipment-container').style.display = 'none'
     document.getElementById('equipment-container').innerHTML = ''
     document.getElementById('class-proficiencies-container').innerHTML = ''
     document.getElementById('race-proficiencies-container').innerHTML = ''
 
-    // 4. Clear all error messages
     document.getElementById('stage-2-error').innerText = ''
     document.getElementById('join-error-message').innerText = ''
 
-    // 5. Reset the UI back to Stage 1
     document.getElementsByClassName("join-new-campaign-form")[0].classList.remove("not-active")
     document.getElementById('stage-2-stats').classList.add("not-active")
     document.getElementById('stage-3-proficiencies').classList.add("not-active")
 
-    // 6. Reset cache
     document.getElementById('characters-class').dataset.guaranteedEquipment = "[]"
     document.getElementById('characters-race').dataset.guaranteedLanguages = "[]"
 }
 
-// Clears the Create Modal
 function resetCreateModal() {
     document.getElementById('new-campaign-name').value = ''
-    const errorMsgBox = document.getElementById('create-error-message');
+    const errorMsgBox = document.getElementById('create-error-message')
     if (errorMsgBox) {
-        errorMsgBox.innerText = '';
+        errorMsgBox.innerText = ''
     }
     // The code input will automatically overwrite itself with "Generating..." next time it opens!
 }
-
-// async function setUpCharacterCreation() {
-//     const myHeaders = new Headers()
-//     myHeaders.append("Accept", "application/json")
-
-
-//     const requestOptions = {
-//         method: "GET",
-//         headers: myHeaders,
-//         redirect: "follow"
-//     }
-//     //part of the dnd api and how they said to use it
-
-//     const classDropdown = document.getElementById('characters-class')
-//     const raceDropdown = document.getElementById('characters-race')
-
-//     // const possibleClasses = ["barbarian", "bard", "cleric", "druid", "fighter", "monk", "paladin", "ranger", "rogue",
-//     // "sorcerer", "warlock", "wizard"]
-
-//     const possibleRaces = ["dragonborn", "dwarf", "elf", "gnome", "half-elf", "half-orc", "halfling", "human", "tiefling"]
-
-//     const possibleClassesFromFetch = await Promise(fetch("https://www.dnd5eapi.co/api/2014/races/", requestOptions)
-//         .then((response) => response.text())
-//         .then((result) => console.log(result))
-//         .catch((error) => console.error(error)))
-
-//     const classData = await possibleClassesFromFetch.json()
-
-//     classData.results.forEach(c => {
-//         const option = document.createElement('option');
-//         option.value = c.index;
-//         option.innerText = c.name;
-//         classDropdown.appendChild(option)
-//     })
-
-//     classDropdown.innerHTML = '<option value="">Select a Class</option>';
-//     raceDropdown.innerHTML = '<option value="">Select a Race</option>';
-
-//     // possibleClasses.forEach(c => {
-//     //     const option = document.createElement('option')
-//     //     option.value = c
-//     //     option.innerHTML = c
-//     //     classDropdown.appendChild(option)
-//     // })
-
-//     possibleRaces.forEach(r => {
-//         const option = document.createElement('option')
-//         option.value = r
-//         option.innerHTML = r
-//         raceDropdown.appendChild(option)
-//     })
-
-//     let classJson
-//     let raceJson
-
-//     classDropdown.addEventListener('change', (e) => {
-//         if (e.target.value !== "") {
-//             const requestedClass = e.target.value
-//             // console.log(e.target.value)
-//             const classRes = fetch(`https://www.dnd5eapi.co/api/2014/classes/${requestedClass}`, requestOptions)
-//                 .then((response) => response.text())
-//                 .then((result) => console.log(result))
-//                 .catch((error) => console.error(error));
-//             // this is the dnd api, this is how they said to use it
-
-//             if (classRes) {
-//                 classJson = classRes
-//             }
-//         }
-//     })
-
-//     raceDropdown.addEventListener('change', (e) => {
-//         if (e.target.value !== "") {
-//             const requestedRace = e.target.value
-//             // console.log(e.target.value)
-//             const raceRes = fetch(`https://www.dnd5eapi.co/api/2014/races/${requestedRace}`, requestOptions)
-//                 .then((response) => response.text())
-//                 .then((result) => console.log(result))
-//                 .catch((error) => console.error(error))
-//             if (raceRes) {
-//                 raceJson = raceRes
-//                 // const abilityBonuses = raceJson.
-//             }
-//         }
-
-//     })
-
-
-// }

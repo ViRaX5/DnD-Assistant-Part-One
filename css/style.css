@@ -153,10 +153,6 @@ div:has(input:focus) > label {
   background-color: var(--text-color-alt);
 }
 
-/* form input::placeholder {                //THIS IS OPTIONAL IF WE WANT LATER
-    color: var(--text-color-alt);
-} */
-
 form button {
   margin-top: 10px;
   border: none;

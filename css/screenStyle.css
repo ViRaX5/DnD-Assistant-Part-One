@@ -480,16 +480,12 @@ h6 {
 
 .weapon-name {
   flex: 1;
-  /* Takes up all available space on the left */
   text-align: left;
-  /* Aligns text to the left edge */
 }
 
 .damage-dice {
   flex: 0 0 auto;
-  /* Takes up the exact same amount of space on the right */
   text-align: right;
-  /* Aligns text to the right edge */
   min-width: 40px;
 }
 
@@ -502,10 +498,8 @@ h6 {
 
   min-width: 24px;
   height: 24px;
-  border-radius: 12px;
-  /* Half of the height keeps the edges perfectly round */
+  border-radius: 12px; /* Half of the height keeps the edges perfectly round */
   padding: 0 6px;
-  /* Gives the text breathing room on the left/right */
   box-sizing: border-box;
 
   border-radius: 50%;
@@ -694,7 +688,6 @@ h6 {
   box-sizing: border-box;
   display: flex;
   flex-direction: row;
-  /* started change make sure doesnt break player */
   justify-content: space-evenly;
   align-items: center;
   gap: 8px;
@@ -783,17 +776,12 @@ h6 {
 
   border-right: 1px solid #656c7c;
   padding-right: 16px;
-
-  /* overflow-x: auto; */
-  /* overflow-y: hidden; */
 }
 
 .action-wrapper {
   position: relative;
   display: flex;
   justify-content: center;
-  /* width: 100%; */
-  /* flex: 0.3 0 0; */
 }
 
 .action-container {
@@ -1342,15 +1330,12 @@ h6 {
   border-radius: 42px;
   border: 1px solid var(--panel-stroke);
   width: 100%;
-  /* padding: 16px; */
   box-sizing: border-box;
   display: flex;
   flex-direction: column;
-  /* gap: 12px; */
 }
 
 .panel-title {
-  /* border: 10px solid var(--form-stroke); */
   border-radius: 41px 41px 0 0;
   padding-top: 12px;
   font-size: 1.2rem;
@@ -1446,9 +1431,6 @@ h6 {
   background: transparent;
   border: none;
   border-top: 1px solid #cbd0d6;
-  /* border: 2px solid #cbd5e1; */
-  /* border-radius: 1000px; */
-  /* padding: 8px 16px; */
   font: inherit;
   font-weight: bold;
   cursor: pointer;
@@ -1572,7 +1554,6 @@ dialog::backdrop {
 
 .assets-tabs {
   display: flex;
-  /* border-bottom: 2px solid #cbd5e1; */
   border-radius: 39px 39px 0 0;
   flex-shrink: 0;
   overflow-x: auto;
@@ -1616,7 +1597,6 @@ dialog::backdrop {
   display: flex;
   flex-wrap: wrap;
   padding: 6px;
-  /* grid-template-columns: repeat(2, minmax(90px, 130px));  */
   align-content: flex-start;
   justify-content: flex-start;
   gap: 10px;
@@ -1897,8 +1877,7 @@ nav {
   flex-direction: column;
   gap: 15px;
   padding: 22px;
-  background-color: #2d3748;
-  /* Matches your UI void color */
+  background-color: #2d3748; /* Matches the map canvas's void color */
   border-radius: 8px;
   color: #ffffff;
   margin-top: 10px;
@@ -1929,13 +1908,11 @@ nav {
   font-size: 0.85rem;
 }
 
-/* Make the sliders look cleaner */
 .seek-container input,
 .volume-container input {
   flex-grow: 1;
   cursor: pointer;
-  accent-color: #4a749f;
-  /* Slate blue */
+  accent-color: #4a749f; /* Slate blue */
 }
 
 /* Helper class to hide elements */
@@ -2286,7 +2263,7 @@ nav {
 #shop-modal .cart-item {
   display: flex;
   justify-content: space-between;
-  align-items: center; /* This perfectly centers the row vertically */
+  align-items: center;
   padding: 10px 4px;
   border-bottom: 1px solid #e2e8f0;
   font-size: 0.95rem;
@@ -2375,18 +2352,6 @@ nav {
 }
 
 /* media for all */
-
-/* @media (max-width: 1500px) {
-  #info-page-2 {
-    overflow-y: auto;
-  }
-
-  #skill-list {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-  }
-} */
 
 @media (max-width: 1200px) {
   #wrapper {

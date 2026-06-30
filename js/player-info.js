@@ -1,55 +1,49 @@
 export function renderPlayerInfo(data) {
-    document.getElementById("player-name").textContent = data.name;
-    document.getElementById("player-character-summary").textContent = `${data.race} ${data.class} Level ${data.level}`;
-    document.getElementById("xp-amount").textContent = data.xp;
+    document.getElementById("player-name").textContent = data.name
+    document.getElementById("player-character-summary").textContent = `${data.race} ${data.class} Level ${data.level}`
+    document.getElementById("xp-amount").textContent = data.xp
 
-    // Attributes
-    document.getElementById("strength-modifier").textContent = data.attributes.strength.modifier;
-    document.getElementById("strength-amount").textContent = data.attributes.strength.score;
-    document.getElementById("dexterity-modifier").textContent = data.attributes.dexterity.modifier;
-    document.getElementById("dexterity-amount").textContent = data.attributes.dexterity.score;
-    document.getElementById("constitution-modifier").textContent = data.attributes.constitution.modifier;
-    document.getElementById("constitution-amount").textContent = data.attributes.constitution.score;
-    document.getElementById("intelligence-modifier").textContent = data.attributes.intelligence.modifier;
-    document.getElementById("intelligence-amount").textContent = data.attributes.intelligence.score;
-    document.getElementById("wisdom-modifier").textContent = data.attributes.wisdom.modifier;
-    document.getElementById("wisdom-amount").textContent = data.attributes.wisdom.score;
-    document.getElementById("charisma-modifier").textContent = data.attributes.charisma.modifier;
-    document.getElementById("charisma-amount").textContent = data.attributes.charisma.score;
+    document.getElementById("strength-modifier").textContent = data.attributes.strength.modifier
+    document.getElementById("strength-amount").textContent = data.attributes.strength.score
+    document.getElementById("dexterity-modifier").textContent = data.attributes.dexterity.modifier
+    document.getElementById("dexterity-amount").textContent = data.attributes.dexterity.score
+    document.getElementById("constitution-modifier").textContent = data.attributes.constitution.modifier
+    document.getElementById("constitution-amount").textContent = data.attributes.constitution.score
+    document.getElementById("intelligence-modifier").textContent = data.attributes.intelligence.modifier
+    document.getElementById("intelligence-amount").textContent = data.attributes.intelligence.score
+    document.getElementById("wisdom-modifier").textContent = data.attributes.wisdom.modifier
+    document.getElementById("wisdom-amount").textContent = data.attributes.wisdom.score
+    document.getElementById("charisma-modifier").textContent = data.attributes.charisma.modifier
+    document.getElementById("charisma-amount").textContent = data.attributes.charisma.score
 
-    // Combat Stats
-    document.getElementById("armor-class-amount").textContent = data.combat.armorClass;
-    document.getElementById("initiative-amount").textContent = data.combat.initiative;
-    document.getElementById("speed-amount").textContent = data.combat.speed;
+    document.getElementById("armor-class-amount").textContent = data.combat.armorClass
+    document.getElementById("initiative-amount").textContent = data.combat.initiative
+    document.getElementById("speed-amount").textContent = data.combat.speed
 
-    // Health, Temp HP, and Proficiency
-    document.getElementById("hit-points-amount").textContent = data.health.current;
-    document.getElementById("hit-point-max").textContent = `MAX: ${data.health.max}`;
-    document.getElementById("temp-hit-points-amount").textContent = data.health.temp;
-    document.getElementById("proficiency-amount").textContent = data.proficiencyBonus;
+    document.getElementById("hit-points-amount").textContent = data.health.current
+    document.getElementById("hit-point-max").textContent = `MAX: ${data.health.max}`
+    document.getElementById("temp-hit-points-amount").textContent = data.health.temp
+    document.getElementById("proficiency-amount").textContent = data.proficiencyBonus
 
-    // Saving Throws
     if (data.savingThrows) {
-        renderSavingThrows(data.savingThrows);
+        renderSavingThrows(data.savingThrows)
     }
 
-    // Skills
     if (data.skills) {
-        renderSkills(data.skills);
+        renderSkills(data.skills)
     }
 
-    // Attacks
     if (data.attacks) {
-        renderAttacks(data.attacks);
+        renderAttacks(data.attacks)
     }
 }
 
 function renderSavingThrows(savesData) {
-    const savesList = document.getElementById("saving-throws-list");
+    const savesList = document.getElementById("saving-throws-list")
 
-    savesList.innerHTML = '';
+    savesList.innerHTML = ''
 
-    let htmlString = '';
+    let htmlString = ''
 
     savesData.forEach(save => {
         if (save.proficient === true) {
@@ -63,7 +57,7 @@ function renderSavingThrows(savesData) {
               checked
             />
             <label for="${save.id}">${save.modifier} ${save.name}</label>
-        </div>`;
+        </div>`
         }
         else {
             htmlString +=
@@ -75,19 +69,19 @@ function renderSavingThrows(savesData) {
               value="${save.id}"
             />
             <label for="${save.id}">${save.modifier} ${save.name}</label>
-        </div>`;
+        </div>`
         }
-    });
+    })
 
-    savesList.innerHTML = htmlString;
+    savesList.innerHTML = htmlString
 }
 
 function renderSkills(skillsData) {
-    const skillList = document.getElementById("skill-list");
+    const skillList = document.getElementById("skill-list")
 
-    skillList.innerHTML = '';
+    skillList.innerHTML = ''
 
-    let htmlString = '';
+    let htmlString = ''
 
     skillsData.forEach(skill => {
         if (skill.proficient === true) {
@@ -101,7 +95,7 @@ function renderSkills(skillsData) {
               checked
             />
             <label for="${skill.id}">${skill.modifier} ${skill.name} (${skill.attribute})</label>
-        </div>`;
+        </div>`
         }
         else {
             htmlString +=
@@ -113,19 +107,19 @@ function renderSkills(skillsData) {
               value="${skill.id}"
             />
             <label for="${skill.id}">${skill.modifier} ${skill.name} (${skill.attribute})</label>
-        </div>`;
+        </div>`
         }
-    });
+    })
 
-    skillList.innerHTML = htmlString;
+    skillList.innerHTML = htmlString
 }
 
 function renderAttacks(attacksData) {
-    const attacksList = document.getElementById("player-info-footer");
+    const attacksList = document.getElementById("player-info-footer")
 
-    attacksList.innerHTML = '';
+    attacksList.innerHTML = ''
 
-    let htmlString = '';
+    let htmlString = ''
 
     attacksData.forEach(attack => {
         if (attack.bonus === "N/A" || attack.bonus === "n/a") {
@@ -133,7 +127,7 @@ function renderAttacks(attacksData) {
                 `<div id="${attack.id}" class="attack-container">
               <span class="weapon-name">${attack.name}</span>
               <span class="damage-dice">${attack.damage}</span>
-            </div>`;
+            </div>`
         }
         else {
             htmlString +=
@@ -141,9 +135,9 @@ function renderAttacks(attacksData) {
               <span class="weapon-name">${attack.name}</span>
               <span class="attack-bonus">${attack.bonus}</span>
               <span class="damage-dice">${attack.damage}</span>
-            </div>`;
+            </div>`
         }
-    });
+    })
 
-    attacksList.innerHTML = htmlString;
+    attacksList.innerHTML = htmlString
 }

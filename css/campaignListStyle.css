@@ -762,14 +762,14 @@ nav {
 @media (max-width: 450px) {
   /* 1. Reclaim horizontal space */
   #logout-modal, #join-new-campaign-modal, #create-new-campaign-modal, #dm-abandon-modal, #player-abandon-modal {
-    padding: 20px 15px; /* Shrink side padding from 30px to 15px */
-    width: 95%; /* Let the modal expand slightly closer to the screen edges */
+    padding: 20px 15px;
+    width: 95%;
   }
 
   /* 2. Fix the cramped input boxes */
   #join-new-campaign-modal input {
-    font-size: 0.9rem; /* Slightly smaller font for long words */
-    padding: 10px; /* Reduce the inner padding of the text boxes */
+    font-size: 0.9rem;
+    padding: 10px;
   }
 
   /* 3. Drop the 3x2 grid to a 2x3 grid! */

@@ -1,4 +1,4 @@
-const BASE = 'https://www.dnd5eapi.co/api';
+const BASE = 'https://www.dnd5eapi.co/api'
 
 const ABILITY_LIST = [
     { id: 'str', name: 'STR' },

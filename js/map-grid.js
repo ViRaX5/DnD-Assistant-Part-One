@@ -10,8 +10,8 @@
   4) `zoomAt()` zooms around the cursor point (not the top-left corner).
   5) `resize()` keeps canvas crisp on high-DPI screens and window resize.
 */
-const canvas = document.getElementById("map");
-const ctx = canvas.getContext("2d");
+const canvas = document.getElementById("map")
+const ctx = canvas.getContext("2d")
 
 const state = {
   scale: 1,
@@ -23,542 +23,411 @@ const state = {
   gridCols: 50,
   gridRows: 50,
   tokens: []
-};
+}
 
-let isDraggingMap = false;
-let draggingTokenId = null;
-let lastX = 0;
-let lastY = 0;
+let isDraggingMap = false
+let draggingTokenId = null
+let lastX = 0
+let lastY = 0
 
-let initialPinchDistance = null;
+let initialPinchDistance = null
 
 function getDistance(touch1, touch2) {
-  const dx = touch1.clientX - touch2.clientX;
-  const dy = touch1.clientY - touch2.clientY;
-  return Math.sqrt(dx * dx + dy * dy);
+  const dx = touch1.clientX - touch2.clientX
+  const dy = touch1.clientY - touch2.clientY
+  return Math.sqrt(dx * dx + dy * dy)
 }
 
 function resize() {
-  const dpr = window.devicePixelRatio || 1;
-  canvas.width = Math.floor(canvas.clientWidth * dpr);
-  canvas.height = Math.floor(canvas.clientHeight * dpr);
-  ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
-  draw();
+  const dpr = window.devicePixelRatio || 1
+  canvas.width = Math.floor(canvas.clientWidth * dpr)
+  canvas.height = Math.floor(canvas.clientHeight * dpr)
+  ctx.setTransform(dpr, 0, 0, dpr, 0, 0)
+  draw()
 }
 
 function draw() {
-  const w = canvas.clientWidth;
-  const h = canvas.clientHeight;
+  const w = canvas.clientWidth
+  const h = canvas.clientHeight
 
-  // 1. Clear canvas and paint the "out of bounds" void (Dark Gray)
-  ctx.clearRect(0, 0, w, h);
-  ctx.fillStyle = "#2d3748";
-  ctx.fillRect(0, 0, w, h);
+  ctx.clearRect(0, 0, w, h)
+  ctx.fillStyle = "#2d3748"
+  ctx.fillRect(0, 0, w, h)
 
-  const step = state.baseGrid * state.scale;
-  const mapWidth = state.gridCols * step;
-  const mapHeight = state.gridRows * step;
+  const step = state.baseGrid * state.scale
+  const mapWidth = state.gridCols * step
+  const mapHeight = state.gridRows * step
 
-  // 2. Paint the actual grid board area (White/Blue)
-  ctx.fillStyle = "#f0f8ff";
-  ctx.fillRect(state.offsetX, state.offsetY, mapWidth, mapHeight);
+  ctx.fillStyle = "#f0f8ff"
+  ctx.fillRect(state.offsetX, state.offsetY, mapWidth, mapHeight)
 
-  // 3. Draw the map image (Scaled and Centered)
   if (mapImageObj) {
-    const imgAspect = mapImageObj.width / mapImageObj.height;
-    const gridAspect = mapWidth / mapHeight;
+    const imgAspect = mapImageObj.width / mapImageObj.height
+    const gridAspect = mapWidth / mapHeight
 
-    let drawWidth = mapWidth;
-    let drawHeight = mapHeight;
+    let drawWidth = mapWidth
+    let drawHeight = mapHeight
 
     // Adjust dimensions to prevent stretching
     if (imgAspect > gridAspect) {
-      drawHeight = mapWidth / imgAspect; // Image is wider, scale height down
+      drawHeight = mapWidth / imgAspect // Image is wider, scale height down
     } else {
-      drawWidth = mapHeight * imgAspect; // Image is taller, scale width down
+      drawWidth = mapHeight * imgAspect // Image is taller, scale width down
     }
 
-    // Center the image perfectly inside the white-blue grid board!
-    const centerX = state.offsetX + (mapWidth - drawWidth) / 2;
-    const centerY = state.offsetY + (mapHeight - drawHeight) / 2;
+    const centerX = state.offsetX + (mapWidth - drawWidth) / 2
+    const centerY = state.offsetY + (mapHeight - drawHeight) / 2
 
-    ctx.drawImage(mapImageObj, centerX, centerY, drawWidth, drawHeight);
+    ctx.drawImage(mapImageObj, centerX, centerY, drawWidth, drawHeight)
   }
 
   state.tokens.forEach(token => {
-    const screenX = state.offsetX + (token.gridX * state.baseGrid * state.scale);
-    const screenY = state.offsetY + (token.gridY * state.baseGrid * state.scale);
-    const squareSize = state.baseGrid * state.scale;
+    const screenX = state.offsetX + (token.gridX * state.baseGrid * state.scale)
+    const screenY = state.offsetY + (token.gridY * state.baseGrid * state.scale)
+    const squareSize = state.baseGrid * state.scale
 
     if (token.imgObj) {
-      // Draw the uploaded token image exactly inside the grid square!
-      ctx.drawImage(token.imgObj, screenX, screenY, squareSize, squareSize);
+      ctx.drawImage(token.imgObj, screenX, screenY, squareSize, squareSize)
     } else {
-      // Fallback for your hardcoded colored tokens
-      const halfSquare = squareSize / 2;
-      ctx.beginPath();
-      ctx.arc(screenX + halfSquare, screenY + halfSquare, token.radius * state.scale, 0, Math.PI * 2);
-      ctx.fillStyle = token.color;
-      ctx.fill();
-      ctx.stroke();
+      const halfSquare = squareSize / 2
+      ctx.beginPath()
+      ctx.arc(screenX + halfSquare, screenY + halfSquare, token.radius * state.scale, 0, Math.PI * 2)
+      ctx.fillStyle = token.color
+      ctx.fill()
+      ctx.stroke()
     }
   })
 
-  // 4. Draw the Grid Lines
-  ctx.strokeStyle = "#000000";
-  ctx.lineWidth = 1;
-  ctx.beginPath();
+  ctx.strokeStyle = "#000000"
+  ctx.lineWidth = 1
+  ctx.beginPath()
 
-  // Vertical lines
   for (let col = 0; col <= state.gridCols; col++) {
-    const x = state.offsetX + (col * step);
-    ctx.moveTo(x, state.offsetY);
-    ctx.lineTo(x, state.offsetY + mapHeight);
+    const x = state.offsetX + (col * step)
+    ctx.moveTo(x, state.offsetY)
+    ctx.lineTo(x, state.offsetY + mapHeight)
   }
 
-  // Horizontal lines
   for (let row = 0; row <= state.gridRows; row++) {
-    const y = state.offsetY + (row * step);
-    ctx.moveTo(state.offsetX, y);
-    ctx.lineTo(state.offsetX + mapWidth, y);
+    const y = state.offsetY + (row * step)
+    ctx.moveTo(state.offsetX, y)
+    ctx.lineTo(state.offsetX + mapWidth, y)
   }
 
-  ctx.stroke();
+  ctx.stroke()
 
-  // 5. Draw the Tokens
   state.tokens.forEach(token => {
-    // Translate Grid Math to Pixel Math
-    const screenX = state.offsetX + (token.gridX * state.baseGrid * state.scale);
-    const screenY = state.offsetY + (token.gridY * state.baseGrid * state.scale);
+    const screenX = state.offsetX + (token.gridX * state.baseGrid * state.scale)
+    const screenY = state.offsetY + (token.gridY * state.baseGrid * state.scale)
 
-    // Find the center of the grid square
-    const halfSquare = (state.baseGrid * state.scale) / 2;
-    const tokenCenterX = screenX + halfSquare;
-    const tokenCenterY = screenY + halfSquare;
+    const halfSquare = (state.baseGrid * state.scale) / 2
+    const tokenCenterX = screenX + halfSquare
+    const tokenCenterY = screenY + halfSquare
 
-    // Draw the token
-    ctx.beginPath();
-    ctx.arc(tokenCenterX, tokenCenterY, token.radius * state.scale, 0, Math.PI * 2);
-    ctx.fillStyle = token.color;
-    ctx.fill();
-    ctx.stroke();
-  });
+    ctx.beginPath()
+    ctx.arc(tokenCenterX, tokenCenterY, token.radius * state.scale, 0, Math.PI * 2)
+    ctx.fillStyle = token.color
+    ctx.fill()
+    ctx.stroke()
+  })
 }
 
-// function draw() {
-//   // const w = canvas.clientWidth;
-//   // const h = canvas.clientHeight;
-
-//   // ctx.clearRect(0, 0, w, h);
-//   // ctx.fillStyle = "#2d3748";
-//   // ctx.fillRect(0, 0, w, h);
-
-//   // const step = state.baseGrid * state.scale;
-//   // const mapWidth = state.gridCols * step;
-//   // const mapHeight = state.gridRows * step;
-
-//   // ctx.fillStyle = "#f0f8ff";
-//   // ctx.fillRect(state.offsetX, state.offsetY, mapWidth, mapHeight);
-
-//   // ctx.strokeStyle = "#000000";
-//   // ctx.lineWidth = 1;
-//   // ctx.beginPath();
-
-//   const w = canvas.clientWidth;
-//   const h = canvas.clientHeight;
-
-//   // 1. Clear the entire canvas first
-//   ctx.clearRect(0, 0, w, h);
-
-//   // 2. Fill the "out of bounds" void with your dark gray color
-//   ctx.fillStyle = "#2d3748";
-//   ctx.fillRect(0, 0, w, h);
-
-//   const step = state.baseGrid * state.scale;
-//   const mapWidth = state.gridCols * step;
-//   const mapHeight = state.gridRows * step;
-
-//   // 3. Always paint the white-blue grid background first!
-//   ctx.fillStyle = "#f0f8ff";
-//   ctx.fillRect(state.offsetX, state.offsetY, mapWidth, mapHeight);
-
-//   // 4. Draw the map on top, preserving its natural aspect ratio
-//   if (mapImageObj) {
-//     const imgAspect = mapImageObj.width / mapImageObj.height;
-//     const gridAspect = mapWidth / mapHeight;
-
-//     let drawWidth = mapWidth;
-//     let drawHeight = mapHeight;
-
-//     // Adjust dimensions to prevent stretching
-//     if (imgAspect > gridAspect) {
-//       // Image is wider than the grid
-//       drawHeight = mapWidth / imgAspect;
-//     } else {
-//       // Image is taller than the grid
-//       drawWidth = mapHeight * imgAspect;
-//     }
-
-//     // Draw the image starting from the top-left corner so it aligns perfectly with the grid lines!
-//     ctx.drawImage(mapImageObj, state.offsetX, state.offsetY, drawWidth, drawHeight);
-//   }
-
-//   // --- Leave the rest of your grid-drawing code exactly as it was! ---
-//   ctx.strokeStyle = "#000000";
-//   ctx.lineWidth = 1;
-//   ctx.beginPath();
-
-//   // Vertical lines
-//   for (let col = 0; col <= state.gridCols; col++) {
-//     const x = state.offsetX + (col * step);
-//     ctx.moveTo(x, state.offsetY);
-//     ctx.lineTo(x, state.offsetY + mapHeight);
-//   }
-
-//   // Horizontal lines
-//   for (let row = 0; row <= state.gridRows; row++) {
-//     const y = state.offsetY + (row * step);
-//     ctx.moveTo(state.offsetX, y);
-//     ctx.lineTo(state.offsetX + mapWidth, y);
-//   }
-
-//   ctx.stroke();
-
-//   state.tokens.forEach(token => {
-//     // Translate Grid Math to Pixel Math
-//     const screenX = state.offsetX + (token.gridX * state.baseGrid * state.scale);
-//     const screenY = state.offsetY + (token.gridY * state.baseGrid * state.scale);
-
-//     // Find the center of the grid square
-//     const halfSquare = (state.baseGrid * state.scale) / 2;
-//     const centerX = screenX + halfSquare;
-//     const centerY = screenY + halfSquare;
-
-//     // Draw the token
-//     ctx.beginPath();
-//     ctx.arc(centerX, centerY, token.radius * state.scale, 0, Math.PI * 2);
-//     ctx.fillStyle = token.color;
-//     ctx.fill();
-//     ctx.stroke();
-//   });
-// }
-
 function zoomAt(clientX, clientY, factor) {
-  const rect = canvas.getBoundingClientRect();
-  const mouseX = clientX - rect.left;
-  const mouseY = clientY - rect.top;
+  const rect = canvas.getBoundingClientRect()
+  const mouseX = clientX - rect.left
+  const mouseY = clientY - rect.top
 
-  const prevScale = state.scale;
+  const prevScale = state.scale
   const nextScale = Math.min(
     state.maxScale,
     Math.max(state.minScale, prevScale * factor)
-  );
-  if (nextScale === prevScale) return;
+  )
+  if (nextScale === prevScale) return
 
-  state.offsetX = mouseX - ((mouseX - state.offsetX) * nextScale) / prevScale;
-  state.offsetY = mouseY - ((mouseY - state.offsetY) * nextScale) / prevScale;
-  state.scale = nextScale;
-  draw();
+  state.offsetX = mouseX - ((mouseX - state.offsetX) * nextScale) / prevScale
+  state.offsetY = mouseY - ((mouseY - state.offsetY) * nextScale) / prevScale
+  state.scale = nextScale
+  draw()
 }
 
 function getGridCoords(clientX, clientY) {
-  const rect = canvas.getBoundingClientRect();
-  const mouseX = clientX - rect.left;
-  const mouseY = clientY - rect.top;
+  const rect = canvas.getBoundingClientRect()
+  const mouseX = clientX - rect.left
+  const mouseY = clientY - rect.top
 
-  const step = state.baseGrid * state.scale;
+  const step = state.baseGrid * state.scale
 
-  // Translate screen pixel to exact floating grid coordinate
-  const floatX = (mouseX - state.offsetX) / step;
-  const floatY = (mouseY - state.offsetY) / step;
+  const floatX = (mouseX - state.offsetX) / step
+  const floatY = (mouseY - state.offsetY) / step
 
-  return { x: floatX, y: floatY };
+  return { x: floatX, y: floatY }
 }
 
-// --- AUTO-FOCUS LOGIC ---
 function focusOnFirstToken() {
-  if (state.tokens.length === 0) return;
+  if (state.tokens.length === 0) return
 
-  const w = canvas.clientWidth;
-  const h = canvas.clientHeight;
-  const token = state.tokens[0]; // Grab the first token in the array
+  const w = canvas.clientWidth
+  const h = canvas.clientHeight
+  const token = state.tokens[0]
 
-  const step = state.baseGrid * state.scale;
+  const step = state.baseGrid * state.scale
 
-  // 1. Calculate the exact pixel center of the token relative to the grid
-  const tokenCenterX = (token.gridX * step) + (step / 2);
-  const tokenCenterY = (token.gridY * step) + (step / 2);
+  const tokenCenterX = (token.gridX * step) + (step / 2)
+  const tokenCenterY = (token.gridY * step) + (step / 2)
 
-  // 2. Adjust the map offsets so the token's center perfectly aligns with the screen's center
-  state.offsetX = (w / 2) - tokenCenterX;
-  state.offsetY = (h / 2) - tokenCenterY;
+  state.offsetX = (w / 2) - tokenCenterX
+  state.offsetY = (h / 2) - tokenCenterY
 
-  draw();
+  draw()
 }
 
-// 3. Fire this function exactly once after the iframe and CSS have fully loaded
+// Fire this function exactly once after the iframe and CSS have fully loaded
 window.addEventListener("load", () => {
-  focusOnFirstToken();
-});
+  focusOnFirstToken()
+})
 
 canvas.addEventListener("mousedown", (event) => {
-  document.getElementById("hint").classList.add("hidden-ui");
+  document.getElementById("hint").classList.add("hidden-ui")
 
-  const { x, y } = getGridCoords(event.clientX, event.clientY);
+  const { x, y } = getGridCoords(event.clientX, event.clientY)
 
-  // 1. Check if a token occupies this integer cell
   const clickedToken = state.tokens.find(t =>
     Math.floor(x) === Math.floor(t.gridX) &&
     Math.floor(y) === Math.floor(t.gridY)
-  );
+  )
 
   if (clickedToken) {
-    // 2a. A token was clicked! Lock onto it.
-    draggingTokenId = clickedToken.id;
+    draggingTokenId = clickedToken.id
 
-    clickedToken.originalGridX = clickedToken.gridX;
-    clickedToken.originalGridY = clickedToken.gridY;
+    clickedToken.originalGridX = clickedToken.gridX
+    clickedToken.originalGridY = clickedToken.gridY
   } else {
-    // 2b. Empty space was clicked. Pan the map.
-    isDraggingMap = true;
+    isDraggingMap = true
   }
 
-  lastX = event.clientX;
-  lastY = event.clientY;
-  canvas.classList.add("dragging");
-});
+  lastX = event.clientX
+  lastY = event.clientY
+  canvas.classList.add("dragging")
+})
 
 window.addEventListener("mousemove", (event) => {
   if (draggingTokenId) {
-    // --- TOKEN DRAGGING LOGIC ---
-    const { x, y } = getGridCoords(event.clientX, event.clientY);
-    const token = state.tokens.find(t => t.id === draggingTokenId);
+    const { x, y } = getGridCoords(event.clientX, event.clientY)
+    const token = state.tokens.find(t => t.id === draggingTokenId)
 
     // We subtract 0.5 so the center of the token stays pinned to the mouse cursor
-    token.gridX = x - 0.5;
-    token.gridY = y - 0.5;
+    token.gridX = x - 0.5
+    token.gridY = y - 0.5
 
-    draw(); // Redraw immediately to show movement
+    draw()
 
   } else if (isDraggingMap) {
-    // --- MAP PANNING LOGIC ---
-    state.offsetX += event.clientX - lastX;
-    state.offsetY += event.clientY - lastY;
-    lastX = event.clientX;
-    lastY = event.clientY;
+    state.offsetX += event.clientX - lastX
+    state.offsetY += event.clientY - lastY
+    lastX = event.clientX
+    lastY = event.clientY
 
-    draw();
+    draw()
   }
-});
+})
 
 window.addEventListener("mouseup", () => {
   if (draggingTokenId) {
-    const token = state.tokens.find(t => t.id === draggingTokenId);
+    const token = state.tokens.find(t => t.id === draggingTokenId)
     if (token) {
-      // 1. Calculate the exact integer square we are hovering over
-      let droppedX = Math.round(token.gridX);
-      let droppedY = Math.round(token.gridY);
+      let droppedX = Math.round(token.gridX)
+      let droppedY = Math.round(token.gridY)
 
-      // 2. Check if that square is outside the white map boundaries
-      const isOutsideX = droppedX < 0 || droppedX >= state.gridCols;
-      const isOutsideY = droppedY < 0 || droppedY >= state.gridRows;
+      const isOutsideX = droppedX < 0 || droppedX >= state.gridCols
+      const isOutsideY = droppedY < 0 || droppedY >= state.gridRows
 
       if (isOutsideX || isOutsideY) {
-        // REJECT: Teleport back to the original integer square
-        token.gridX = token.originalGridX;
-        token.gridY = token.originalGridY;
+        token.gridX = token.originalGridX
+        token.gridY = token.originalGridY
       } else {
-        // ACCEPT: Snap to the new integer square
-        token.gridX = droppedX;
-        token.gridY = droppedY;
+        token.gridX = droppedX
+        token.gridY = droppedY
 
         if (window.parent !== window && window.parent.broadcastTokenMove) {
           window.parent.broadcastTokenMove({
             tokenId: token.id,
             newX: token.gridX,
             newY: token.gridY
-          });
+          })
         }
       }
 
-      draw();
+      draw()
     }
-    draggingTokenId = null; // Successfully drop the token!
+    draggingTokenId = null
   }
 
-  isDraggingMap = false;
-  canvas.classList.remove("dragging");
-});
+  isDraggingMap = false
+  canvas.classList.remove("dragging")
+})
 
 document.addEventListener("mouseleave", () => {
   if (draggingTokenId) {
-    const token = state.tokens.find(t => t.id === draggingTokenId);
+    const token = state.tokens.find(t => t.id === draggingTokenId)
 
     // If we lose track of the mouse, revert the token to its original safe spot
     if (token && token.originalGridX !== undefined) {
-      token.gridX = token.originalGridX;
-      token.gridY = token.originalGridY;
-      draw();
+      token.gridX = token.originalGridX
+      token.gridY = token.originalGridY
+      draw()
     }
 
-    draggingTokenId = null; // Let go of the token
+    draggingTokenId = null
   }
 
-  isDraggingMap = false;
-  canvas.classList.remove("dragging");
-});
+  isDraggingMap = false
+  canvas.classList.remove("dragging")
+})
 
 canvas.addEventListener(
   "wheel",
   (event) => {
-    document.getElementById("hint").classList.add("hidden-ui");
+    document.getElementById("hint").classList.add("hidden-ui")
 
-    event.preventDefault();
-    const factor = event.deltaY < 0 ? 1.1 : 0.9;
-    zoomAt(event.clientX, event.clientY, factor);
+    event.preventDefault()
+    const factor = event.deltaY < 0 ? 1.1 : 0.9
+    zoomAt(event.clientX, event.clientY, factor)
   },
   { passive: false }
-);
+)
 
 canvas.addEventListener("touchstart", (event) => {
-  document.getElementById("hint").classList.add("hidden-ui");
+  document.getElementById("hint").classList.add("hidden-ui")
 
   if (event.touches.length === 2) {
-    initialPinchDistance = getDistance(event.touches[0], event.touches[1]);
-    isDraggingMap = false; // Disable panning while zooming
-    return; // Skip single-finger logic
+    initialPinchDistance = getDistance(event.touches[0], event.touches[1])
+    isDraggingMap = false // Disable panning while zooming
+    return // Skip single-finger logic
   }
 
-  const touch = event.touches[0];
-  const { x, y } = getGridCoords(touch.clientX, touch.clientY);
+  const touch = event.touches[0]
+  const { x, y } = getGridCoords(touch.clientX, touch.clientY)
 
   const clickedToken = state.tokens.find(t =>
     Math.floor(x) === Math.floor(t.gridX) &&
     Math.floor(y) === Math.floor(t.gridY)
-  );
+  )
 
   if (clickedToken) {
-    draggingTokenId = clickedToken.id;
-    clickedToken.originalGridX = clickedToken.gridX;
-    clickedToken.originalGridY = clickedToken.gridY;
+    draggingTokenId = clickedToken.id
+    clickedToken.originalGridX = clickedToken.gridX
+    clickedToken.originalGridY = clickedToken.gridY
   } else {
-    isDraggingMap = true;
+    isDraggingMap = true
   }
 
-  lastX = touch.clientX;
-  lastY = touch.clientY;
-  canvas.classList.add("dragging");
-});
+  lastX = touch.clientX
+  lastY = touch.clientY
+  canvas.classList.add("dragging")
+})
 
 canvas.addEventListener("touchend", () => {
   if (event.touches.length < 2) {
-    initialPinchDistance = null;
+    initialPinchDistance = null
   }
   if (event.touches.length === 1) {
-    lastX = event.touches[0].clientX;
-    lastY = event.touches[0].clientY;
+    lastX = event.touches[0].clientX
+    lastY = event.touches[0].clientY
   }
   if (draggingTokenId) {
-    const token = state.tokens.find(t => t.id === draggingTokenId);
+    const token = state.tokens.find(t => t.id === draggingTokenId)
     if (token) {
-      let droppedX = Math.round(token.gridX);
-      let droppedY = Math.round(token.gridY);
+      let droppedX = Math.round(token.gridX)
+      let droppedY = Math.round(token.gridY)
 
-      const isOutsideX = droppedX < 0 || droppedX >= state.gridCols;
-      const isOutsideY = droppedY < 0 || droppedY >= state.gridRows;
+      const isOutsideX = droppedX < 0 || droppedX >= state.gridCols
+      const isOutsideY = droppedY < 0 || droppedY >= state.gridRows
 
       if (isOutsideX || isOutsideY) {
-        token.gridX = token.originalGridX;
-        token.gridY = token.originalGridY;
+        token.gridX = token.originalGridX
+        token.gridY = token.originalGridY
       } else {
-        token.gridX = droppedX;
-        token.gridY = droppedY;
+        token.gridX = droppedX
+        token.gridY = droppedY
 
         if (window.parent !== window && window.parent.broadcastTokenMove) {
           window.parent.broadcastTokenMove({
             tokenId: token.id,
             newX: token.gridX,
             newY: token.gridY
-          });
+          })
         }
       }
-      draw();
+      draw()
     }
-    draggingTokenId = null;
+    draggingTokenId = null
   }
 
-  isDraggingMap = false;
-  canvas.classList.remove("dragging");
-});
+  isDraggingMap = false
+  canvas.classList.remove("dragging")
+})
 
 canvas.addEventListener("touchmove", (event) => {
   event.preventDefault()
   if (event.touches.length === 2) {
     if (initialPinchDistance) {
-      const currentDistance = getDistance(event.touches[0], event.touches[1]);
-      const pinchFactor = currentDistance / initialPinchDistance;
+      const currentDistance = getDistance(event.touches[0], event.touches[1])
+      const pinchFactor = currentDistance / initialPinchDistance
 
       // Find the center point between the two fingers to zoom exactly where they are looking
-      const centerX = (event.touches[0].clientX + event.touches[1].clientX) / 2;
-      const centerY = (event.touches[0].clientY + event.touches[1].clientY) / 2;
+      const centerX = (event.touches[0].clientX + event.touches[1].clientX) / 2
+      const centerY = (event.touches[0].clientY + event.touches[1].clientY) / 2
 
-      // Leverage your existing Canvas zoom function!
-      zoomAt(centerX, centerY, pinchFactor);
+      zoomAt(centerX, centerY, pinchFactor)
 
-      // Reset initial distance for the next movement frame
-      initialPinchDistance = currentDistance;
+      initialPinchDistance = currentDistance
     }
   }
   else if (event.touches.length === 1) {
-    event.preventDefault(); // Prevents the whole browser from scrolling down
-    const touch = event.touches[0];
+    event.preventDefault() // Prevents the whole browser from scrolling down
+    const touch = event.touches[0]
 
     if (draggingTokenId) {
-      // Move token via touch
-      const { x, y } = getGridCoords(touch.clientX, touch.clientY);
-      const token = state.tokens.find(t => t.id === draggingTokenId);
-      token.gridX = x - 0.5;
-      token.gridY = y - 0.5;
-      draw();
+      const { x, y } = getGridCoords(touch.clientX, touch.clientY)
+      const token = state.tokens.find(t => t.id === draggingTokenId)
+      token.gridX = x - 0.5
+      token.gridY = y - 0.5
+      draw()
     } else if (isDraggingMap) {
-      // Pan map via touch
-      state.offsetX += touch.clientX - lastX;
-      state.offsetY += touch.clientY - lastY;
-      lastX = touch.clientX;
-      lastY = touch.clientY;
-      draw();
+      state.offsetX += touch.clientX - lastX
+      state.offsetY += touch.clientY - lastY
+      lastX = touch.clientX
+      lastY = touch.clientY
+      draw()
     }
   }
-}, { passive: false });
+}, { passive: false })
 
 document.addEventListener('click', () => {
   if (window.parent !== window) {
 
-    const parentWrapper = window.parent.document.getElementById("active-effects-wrapper");
+    const parentWrapper = window.parent.document.getElementById("active-effects-wrapper")
 
     if (parentWrapper && parentWrapper.classList.contains("is-open")) {
-      parentWrapper.classList.remove("is-open");
+      parentWrapper.classList.remove("is-open")
     }
   }
-});
+})
 
 window.updateRemoteToken = (tokenId, newX, newY) => {
-  const token = state.tokens.find(t => t.id === tokenId);
+  const token = state.tokens.find(t => t.id === tokenId)
   if (token) {
-    token.gridX = newX;
-    token.gridY = newY;
-    draw();
+    token.gridX = newX
+    token.gridY = newY
+    draw()
   }
-};
+}
 
-// Creates an observer that calls your resize() function 
-// whenever the canvas's physical layout dimensions change.
 const canvasObserver = new ResizeObserver(() => {
-  resize();
-});
+  resize()
+})
 
-// Attach it to the canvas
-canvasObserver.observe(canvas);
+canvasObserver.observe(canvas)
 
 
 let mapImageObj = null
@@ -573,7 +442,7 @@ window.setMapImage = (imageUrl) => {
 }
 
 window.addToken = (imageUrl) => {
-  const img = new Image();
+  const img = new Image()
   img.onload = () => {
     const newToken = {
       id: 'token-' + Date.now(),
@@ -581,9 +450,9 @@ window.addToken = (imageUrl) => {
       gridY: Math.floor(state.gridRows / 2),
       imageUrl: imageUrl,
       imgObj: img
-    };
-    state.tokens.push(newToken);
-    draw();
+    }
+    state.tokens.push(newToken)
+    draw()
 
     if (window.parent !== window && window.parent.broadcastTokenSpawn) {
       window.parent.broadcastTokenSpawn({
@@ -591,16 +460,16 @@ window.addToken = (imageUrl) => {
         gridX: newToken.gridX,
         gridY: newToken.gridY,
         imageUrl: newToken.imageUrl
-      });
+      })
     }
   }
   img.src = imageUrl
 }
 
 window.addRemoteToken = (data) => {
-  const img = new Image();
-  img.onload = () => draw();
-  img.src = data.imageUrl;
+  const img = new Image()
+  img.onload = () => draw()
+  img.src = data.imageUrl
 
   state.tokens.push({
     id: data.id,
@@ -608,22 +477,22 @@ window.addRemoteToken = (data) => {
     gridY: data.gridY,
     imageUrl: data.imageUrl,
     imgObj: img
-  });
-  draw();
+  })
+  draw()
 }
 
 window.setInitialTokens = (tokens) => {
   state.tokens = (tokens || []).map(token => {
-    const restored = { ...token, imgObj: null };
+    const restored = { ...token, imgObj: null }
     if (token.imageUrl) {
-      const img = new Image();
-      img.onload = () => draw();
-      img.src = token.imageUrl;
-      restored.imgObj = img;
+      const img = new Image()
+      img.onload = () => draw()
+      img.src = token.imageUrl
+      restored.imgObj = img
     }
-    return restored;
-  });
-  draw();
+    return restored
+  })
+  draw()
 }
 
 window.resetMap = () => {
