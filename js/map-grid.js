@@ -30,6 +30,14 @@ let draggingTokenId = null;
 let lastX = 0;
 let lastY = 0;
 
+let initialPinchDistance = null;
+
+function getDistance(touch1, touch2) {
+  const dx = touch1.clientX - touch2.clientX;
+  const dy = touch1.clientY - touch2.clientY;
+  return Math.sqrt(dx * dx + dy * dy);
+}
+
 function resize() {
   const dpr = window.devicePixelRatio || 1;
   canvas.width = Math.floor(canvas.clientWidth * dpr);
@@ -415,6 +423,12 @@ canvas.addEventListener(
 canvas.addEventListener("touchstart", (event) => {
   document.getElementById("hint").classList.add("hidden-ui");
 
+  if (event.touches.length === 2) {
+    initialPinchDistance = getDistance(event.touches[0], event.touches[1]);
+    isDraggingMap = false; // Disable panning while zooming
+    return; // Skip single-finger logic
+  }
+
   const touch = event.touches[0];
   const { x, y } = getGridCoords(touch.clientX, touch.clientY);
 
@@ -437,6 +451,13 @@ canvas.addEventListener("touchstart", (event) => {
 });
 
 canvas.addEventListener("touchend", () => {
+  if (event.touches.length < 2) {
+    initialPinchDistance = null;
+  }
+  if (event.touches.length === 1) {
+    lastX = event.touches[0].clientX;
+    lastY = event.touches[0].clientY;
+  }
   if (draggingTokenId) {
     const token = state.tokens.find(t => t.id === draggingTokenId);
     if (token) {
@@ -471,7 +492,24 @@ canvas.addEventListener("touchend", () => {
 });
 
 canvas.addEventListener("touchmove", (event) => {
-  if (event.touches.length === 1) {
+  event.preventDefault()
+  if (event.touches.length === 2) {
+    if (initialPinchDistance) {
+      const currentDistance = getDistance(event.touches[0], event.touches[1]);
+      const pinchFactor = currentDistance / initialPinchDistance;
+
+      // Find the center point between the two fingers to zoom exactly where they are looking
+      const centerX = (event.touches[0].clientX + event.touches[1].clientX) / 2;
+      const centerY = (event.touches[0].clientY + event.touches[1].clientY) / 2;
+
+      // Leverage your existing Canvas zoom function!
+      zoomAt(centerX, centerY, pinchFactor);
+
+      // Reset initial distance for the next movement frame
+      initialPinchDistance = currentDistance;
+    }
+  }
+  else if (event.touches.length === 1) {
     event.preventDefault(); // Prevents the whole browser from scrolling down
     const touch = event.touches[0];
 
@@ -491,7 +529,7 @@ canvas.addEventListener("touchmove", (event) => {
       draw();
     }
   }
-});
+}, { passive: false });
 
 document.addEventListener('click', () => {
   if (window.parent !== window) {
