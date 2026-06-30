@@ -2397,7 +2397,6 @@ nav {
     height: 100dvh;
   }
 
-  #action-bar,
   #left-panel,
   #main,
   #right-panel {
@@ -2436,6 +2435,47 @@ nav {
 
   .nav-tab.active {
     background-color: #e2e8f0;
+  }
+
+  #action-bar {
+    flex: 0 0 75px; /* Slightly thinner for mobile screens */
+    border-radius: 16px;
+    justify-content: flex-start; /* Aligns items to the left so they scroll naturally */
+    overflow-x: auto; /* Enables the horizontal scroll! */
+    padding: 8px 12px;
+  }
+
+  /* Hide the scrollbar for a cleaner look */
+  #action-bar::-webkit-scrollbar {
+    display: none;
+  }
+
+  /* Prevent the buttons from shrinking when the bar gets crowded */
+  .action-wrapper, 
+  #active-effects-wrapper,
+  .combat-group,
+  #reset-map-btn,
+  #active-effects {
+    flex-shrink: 0;
+  }
+
+  /* Remove the vertical divider on mobile */
+  #actions-list {
+    border-right: none;
+    padding-right: 0;
+  }
+
+  #action-bar .action-popup {
+    display: none; 
+  }
+
+  /* Break the Active Effects popup out of the scrollable container so it isn't clipped */
+  #action-bar #active-effects-popup-wrapper {
+    position: fixed;
+    bottom: 155px; 
+    left: 10px;
+    right: 10px;
+    z-index: 1000;
   }
 }
 
