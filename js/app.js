@@ -144,6 +144,9 @@ let audioUnlocked = false;
 function unlockAudio() {
     if (audioUnlocked) return;
     
+    playerAudio.src = 'data:audio/wav;base64,UklGRigAAABXQVZFZm10IBIAAAABAAEARKwAAIhYAQACABAAAABkYXRhAgAAAAEA';
+    playerAudio.load();
+
     // Play a silent blip to force the phone to unlock the audio engine
     playerAudio.play().then(() => {
         playerAudio.pause();
