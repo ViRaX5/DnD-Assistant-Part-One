@@ -1,4 +1,4 @@
-frontend_content = """# 🐉 DnD Assistant (Frontend) 🎲
+# 🐉 DnD Assistant (Frontend) 🎲
 
 *Roll for initiative!* Welcome to the frontend portal of the **DnD Assistant**—the ultimate digital companion for Dungeon Masters and Adventurers alike. 
 
@@ -28,4 +28,3 @@ We kept the spells simple but powerful. No heavy frameworks—just pure, untamed
 
 ---
 *May your rolls be high and your critical fails be hilarious! Built with ❤️ (and lots of coffee) for our final presentation.*
-"""
