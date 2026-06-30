@@ -637,7 +637,7 @@ initiativePanelStartBtn.addEventListener('click', () => {
 endCombatBtn.addEventListener('click', () => {
     activeCombatTracker = JSON.parse(JSON.stringify(emptyCombatTracker));
     combatActive = false;
-    roundNumber = 1;
+    roundNumber = 0;
     pendingCreatures = [];
     initiativeRollPhaseActive = false;
 
