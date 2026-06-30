@@ -167,7 +167,12 @@ document.body.addEventListener('touchstart', unlockAudio);
 
 // 2. Listen to the DM's commands
 socket.on('audio:syncPlay', (data) => {
-    playerAudio.src = data.url;
+    if (!playerAudio.src.includes(data.url)) {
+        playerAudio.src = data.url;
+    }
+    if (data.time !== undefined) {
+        playerAudio.currentTime = data.time;
+    }
     playerAudio.play().catch(err => {
         console.warn("Browser blocked autoplay. User must tap a UI element to unlock audio.");
     });
